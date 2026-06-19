@@ -20,3 +20,4 @@ This file records completed project work in chronological order.
 - Compared the ignored generated model against `formulas`, confirmed both controlled outputs match, and recorded findings in `planning/codegen-comparison-findings.md`.
 - Closed the Phase 3 generated-code planning loop by recording Phase 4 validation inputs in `planning/phase-3-closeout-phase-4-inputs.md`.
 - Opened Phase 3 PR #32 from `feature/p3-code-generation-prototype` back to `main`.
+- Merged Phase 3 PR #32, closed parent issue #14, and activated Phase 4 on `feature/p4-regression-validation`.
