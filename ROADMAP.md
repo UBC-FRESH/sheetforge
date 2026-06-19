@@ -29,10 +29,6 @@ Status: complete.
 
 GitHub parent issue: #9
 
-Active branch: `feature/p2-workbook-extraction-contracts`
-
-Open PR: #31
-
 Goal: define and test the minimum intermediate representation for workbook references, formulas, named ranges, dependencies, and diagnostics.
 
 - [x] P2.1 Define workbook IR prototype contract. Child issue: #10.
@@ -45,11 +41,15 @@ Goal: define and test the minimum intermediate representation for workbook refer
 - [x] P2.3 Record IR prototype findings and refine contract. Child issue: #12.
 - [x] P2.4 Close extraction-contract phase with Phase 3 inputs. Child issue: #13.
 
-Status: PR open.
+Merged PR: #31
+
+Status: complete.
 
 ## Phase 3: Prototype Python Code Generation
 
 GitHub parent issue: #14
+
+Active branch: `feature/p3-code-generation-prototype`
 
 Goal: generate readable Python from the controlled workbook IR without committing to durable package structure too early.
 
@@ -58,7 +58,7 @@ Goal: generate readable Python from the controlled workbook IR without committin
 - [ ] P3.3 Compare generated outputs against `formulas` results. Child issue: #17.
 - [ ] P3.4 Summarize code-generation readiness. Child issue: #18.
 
-Status: planned.
+Status: active.
 
 ## Phase 4: Regression Validation Against Workbooks
 
@@ -89,6 +89,6 @@ Status: planned.
 
 ## Current Next Steps
 
-1. Review and merge Phase 2 PR #31.
-2. Close parent issue #9 only after PR #31 has merged.
-3. Activate Phase 3 issue #14 and branch only after Phase 2 is closed, unless the maintainer explicitly approves parallel work.
+1. Work P3.1 in child issue #15 on branch `feature/p3-code-generation-prototype`.
+2. Define the generated-code prototype contract from `planning/phase-2-closeout-phase-3-inputs.md`.
+3. Keep issue #15, this roadmap, and `CHANGE_LOG.md` synchronized before moving to the ignored code-generation experiment.
