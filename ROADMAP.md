@@ -66,6 +66,8 @@ GitHub parent issue: #19
 
 Active branch: `feature/p4-regression-validation`
 
+Open PR: #33
+
 Goal: define and prototype the validation loop that compares generated Python behavior against source workbook outputs.
 
 - [x] P4.1 Define validation scenario and oracle contract. Child issue: #20.
@@ -73,7 +75,7 @@ Goal: define and prototype the validation loop that compares generated Python be
 - [x] P4.3 Define mismatch diagnostics and tolerance rules. Child issue: #22.
 - [x] P4.4 Summarize validation architecture and package inputs. Child issue: #23.
 
-Status: ready for PR.
+Status: PR open.
 
 ## Phase 5: Package, API, CLI, And CI Decisions
 
@@ -91,7 +93,6 @@ Status: planned.
 
 ## Current Next Steps
 
-1. Open a PR from `feature/p4-regression-validation` back to `main` for Phase 4.
-2. Merge the Phase 4 PR after review.
-3. Close parent issue #19 only after the Phase 4 PR has merged.
-4. Activate Phase 5 issue #24 and branch only after Phase 4 is closed, unless the maintainer explicitly approves parallel work.
+1. Review and merge Phase 4 PR #33.
+2. Close parent issue #19 only after PR #33 has merged.
+3. Activate Phase 5 issue #24 and branch only after Phase 4 is closed, unless the maintainer explicitly approves parallel work.

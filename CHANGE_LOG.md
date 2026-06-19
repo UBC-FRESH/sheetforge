@@ -25,3 +25,4 @@ This file records completed project work in chronological order.
 - Built an ignored validation prototype, verified the baseline scenario passes with no mismatches, and recorded findings in `planning/validation-prototype-findings.md`.
 - Defined validation mismatch diagnostics and tolerance rules in `planning/mismatch-diagnostics-tolerance-rules.md`.
 - Closed the Phase 4 validation planning loop by recording Phase 5 package/API/CLI inputs in `planning/phase-4-closeout-phase-5-inputs.md`.
+- Opened Phase 4 PR #33 from `feature/p4-regression-validation` back to `main`.
