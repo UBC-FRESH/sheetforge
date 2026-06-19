@@ -87,12 +87,28 @@ Goal: introduce durable project tooling only after extraction, code generation, 
 - [x] P5.2 Define public API and CLI boundaries. Child issue: #26.
 - [x] P5.3 Define fixture and regression-test strategy. Child issue: #27.
 - [x] P5.4 Define CI and documentation verification. Child issue: #28.
-- [ ] P5.5 Summarize implementation bootstrap plan. Child issue: #29.
+- [x] P5.5 Summarize implementation bootstrap plan. Child issue: #29.
 
-Status: active.
+Status: ready for PR.
+
+## Phase 6: Initial Package And Validation Core
+
+GitHub parent issue: #34
+
+Planned branch: `feature/p6-initial-package-validation-core`
+
+Goal: build the first durable code-bearing slice from the Phase 5 decisions: package skeleton, validation report core, synthetic fixtures, regression tests, and minimal default CI after tests exist.
+
+- [ ] P6.1 Add package and test skeleton. Child issue: #38.
+- [ ] P6.2 Add validation report core objects. Child issue: #37.
+- [ ] P6.3 Add synthetic fixture builder and expected outputs. Child issue: #35.
+- [ ] P6.4 Add baseline and mismatch regression tests. Child issue: #36.
+- [ ] P6.5 Add first default CI workflow. Child issue: #39.
+
+Status: planned backlog. Do not activate until Phase 5 PR has merged and parent issue #24 is closed.
 
 ## Current Next Steps
 
-1. Work P5.5 in child issue #29 on branch `feature/p5-package-api-cli-ci-decisions`.
-2. Summarize the implementation bootstrap plan from the Phase 5 package, API, fixture, CI, and documentation decisions.
-3. Keep issue #29, this roadmap, and `CHANGE_LOG.md` synchronized, then prepare the Phase 5 PR once child issues are complete.
+1. Close P5.5 child issue #29 after committing `planning/implementation-bootstrap-plan.md`.
+2. Open the Phase 5 PR from `feature/p5-package-api-cli-ci-decisions` back to `main`.
+3. After the PR merges, close parent issue #24 and activate Phase 6 from updated `main`.
