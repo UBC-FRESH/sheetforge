@@ -101,7 +101,7 @@ Active branch: `feature/p6-initial-package-validation-core`
 
 Goal: build the first durable code-bearing slice from the Phase 5 decisions: package skeleton, validation report core, synthetic fixtures, regression tests, and minimal default CI after tests exist.
 
-- [ ] P6.1 Add package and test skeleton. Child issue: #38.
+- [x] P6.1 Add package and test skeleton. Child issue: #38.
 - [ ] P6.2 Add validation report core objects. Child issue: #37.
 - [ ] P6.3 Add synthetic fixture builder and expected outputs. Child issue: #35.
 - [ ] P6.4 Add baseline and mismatch regression tests. Child issue: #36.
@@ -111,6 +111,6 @@ Status: active.
 
 ## Current Next Steps
 
-1. Work P6.1 in child issue #38 on branch `feature/p6-initial-package-validation-core`.
-2. Add the initial package and test skeleton from `planning/implementation-bootstrap-plan.md`.
-3. Keep issue #38, this roadmap, and `CHANGE_LOG.md` synchronized before moving to validation report objects.
+1. Work P6.2 in child issue #37 on branch `feature/p6-initial-package-validation-core`.
+2. Add validation report core objects using `planning/mismatch-diagnostics-tolerance-rules.md`.
+3. Keep issue #37, this roadmap, and `CHANGE_LOG.md` synchronized before moving to synthetic fixtures.
