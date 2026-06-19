@@ -6,9 +6,9 @@ The repository is intentionally lightweight at this stage. Do not add a package 
 
 ## Current Next Steps
 
-- Confirm the bootstrap skeleton files are tracked and `tmp/` remains ignored.
-- Start Phase 1 with a focused research note comparing workbook parsing, formula evaluation, dependency graph, code-generation, and validation options.
+- Review `planning/spreadsheet-tooling-research.md` and use it to define the first hands-on prototype.
 - Identify one or two representative non-private workbooks or synthetic fixtures that can drive early prototypes.
+- Prototype workbook extraction with `openpyxl` before adding durable package structure.
 
 ## Phase 0: Bootstrap Repo Contract
 
@@ -20,7 +20,7 @@ Tasks:
 - Keep private bootstrap notes and source workbooks out of tracked files.
 - Avoid choosing a Python stack before the first research phase.
 
-Status: active.
+Status: complete.
 
 ## Phase 1: Research Spreadsheet Tooling
 
@@ -36,7 +36,7 @@ Topics:
 
 Deliverable: a planning note that records candidate libraries, capabilities, limitations, risks, and a recommended first prototype path.
 
-Status: planned.
+Status: active.
 
 ## Phase 2: Define Workbook Extraction Contracts
 
