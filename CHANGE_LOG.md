@@ -26,3 +26,10 @@ This file records completed project work in chronological order.
 - Defined validation mismatch diagnostics and tolerance rules in `planning/mismatch-diagnostics-tolerance-rules.md`.
 - Closed the Phase 4 validation planning loop by recording Phase 5 package/API/CLI inputs in `planning/phase-4-closeout-phase-5-inputs.md`.
 - Opened Phase 4 PR #33 from `feature/p4-regression-validation` back to `main`.
+- Merged Phase 4 PR #33, closed parent issue #19, and activated Phase 5 on `feature/p5-package-api-cli-ci-decisions`.
+- Chose the initial package, dependency, and test stack in `planning/package-dependency-test-stack-decision.md`.
+- Defined initial Python API and deferred CLI boundaries in `planning/api-cli-boundary-decision.md`.
+- Defined the initial fixture and regression-test strategy in `planning/fixture-regression-test-strategy.md`.
+- Defined the first CI and documentation verification boundary in `planning/ci-docs-verification-decision.md`.
+- Summarized the Phase 5 implementation bootstrap plan in `planning/implementation-bootstrap-plan.md` and created the planned Phase 6 issue sequence.
+- Opened Phase 5 PR #40 from `feature/p5-package-api-cli-ci-decisions` back to `main`.

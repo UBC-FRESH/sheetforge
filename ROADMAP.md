@@ -64,10 +64,6 @@ Status: complete.
 
 GitHub parent issue: #19
 
-Active branch: `feature/p4-regression-validation`
-
-Open PR: #33
-
 Goal: define and prototype the validation loop that compares generated Python behavior against source workbook outputs.
 
 - [x] P4.1 Define validation scenario and oracle contract. Child issue: #20.
@@ -75,24 +71,46 @@ Goal: define and prototype the validation loop that compares generated Python be
 - [x] P4.3 Define mismatch diagnostics and tolerance rules. Child issue: #22.
 - [x] P4.4 Summarize validation architecture and package inputs. Child issue: #23.
 
-Status: PR open.
+Merged PR: #33
+
+Status: complete.
 
 ## Phase 5: Package, API, CLI, And CI Decisions
 
 GitHub parent issue: #24
 
+Active branch: `feature/p5-package-api-cli-ci-decisions`
+
+Open PR: #40
+
 Goal: introduce durable project tooling only after extraction, code generation, and validation prototypes clarify the required shape.
 
-- [ ] P5.1 Choose package, dependency, and test stack. Child issue: #25.
-- [ ] P5.2 Define public API and CLI boundaries. Child issue: #26.
-- [ ] P5.3 Define fixture and regression-test strategy. Child issue: #27.
-- [ ] P5.4 Define CI and documentation verification. Child issue: #28.
-- [ ] P5.5 Summarize implementation bootstrap plan. Child issue: #29.
+- [x] P5.1 Choose package, dependency, and test stack. Child issue: #25.
+- [x] P5.2 Define public API and CLI boundaries. Child issue: #26.
+- [x] P5.3 Define fixture and regression-test strategy. Child issue: #27.
+- [x] P5.4 Define CI and documentation verification. Child issue: #28.
+- [x] P5.5 Summarize implementation bootstrap plan. Child issue: #29.
 
-Status: planned.
+Status: ready for PR.
+
+## Phase 6: Initial Package And Validation Core
+
+GitHub parent issue: #34
+
+Planned branch: `feature/p6-initial-package-validation-core`
+
+Goal: build the first durable code-bearing slice from the Phase 5 decisions: package skeleton, validation report core, synthetic fixtures, regression tests, and minimal default CI after tests exist.
+
+- [ ] P6.1 Add package and test skeleton. Child issue: #38.
+- [ ] P6.2 Add validation report core objects. Child issue: #37.
+- [ ] P6.3 Add synthetic fixture builder and expected outputs. Child issue: #35.
+- [ ] P6.4 Add baseline and mismatch regression tests. Child issue: #36.
+- [ ] P6.5 Add first default CI workflow. Child issue: #39.
+
+Status: planned backlog. Do not activate until Phase 5 PR has merged and parent issue #24 is closed.
 
 ## Current Next Steps
 
-1. Review and merge Phase 4 PR #33.
-2. Close parent issue #19 only after PR #33 has merged.
-3. Activate Phase 5 issue #24 and branch only after Phase 4 is closed, unless the maintainer explicitly approves parallel work.
+1. Review and merge Phase 5 PR #40 from `feature/p5-package-api-cli-ci-decisions` back to `main`.
+2. After PR #40 merges, close parent issue #24.
+3. Activate Phase 6 from updated `main` on `feature/p6-initial-package-validation-core`.
