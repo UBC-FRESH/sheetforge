@@ -1,0 +1,34 @@
+tmp/
+
+# Python caches and build outputs
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Local environments
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Local spreadsheet/source workbook material
+*.xlsx
+*.xlsm
+*.xlsb
+*.xls
+*.ods
+~$*
+
+# Generated local outputs
+generated/
+outputs/
+reports/
