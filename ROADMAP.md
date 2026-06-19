@@ -81,6 +81,8 @@ GitHub parent issue: #24
 
 Active branch: `feature/p5-package-api-cli-ci-decisions`
 
+Open PR: #40
+
 Goal: introduce durable project tooling only after extraction, code generation, and validation prototypes clarify the required shape.
 
 - [x] P5.1 Choose package, dependency, and test stack. Child issue: #25.
@@ -109,6 +111,6 @@ Status: planned backlog. Do not activate until Phase 5 PR has merged and parent 
 
 ## Current Next Steps
 
-1. Close P5.5 child issue #29 after committing `planning/implementation-bootstrap-plan.md`.
-2. Open the Phase 5 PR from `feature/p5-package-api-cli-ci-decisions` back to `main`.
-3. After the PR merges, close parent issue #24 and activate Phase 6 from updated `main`.
+1. Review and merge Phase 5 PR #40 from `feature/p5-package-api-cli-ci-decisions` back to `main`.
+2. After PR #40 merges, close parent issue #24.
+3. Activate Phase 6 from updated `main` on `feature/p6-initial-package-validation-core`.
