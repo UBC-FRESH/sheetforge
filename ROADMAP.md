@@ -31,19 +31,21 @@ GitHub parent issue: #9
 
 Active branch: `feature/p2-workbook-extraction-contracts`
 
+Open PR: #31
+
 Goal: define and test the minimum intermediate representation for workbook references, formulas, named ranges, dependencies, and diagnostics.
 
 - [x] P2.1 Define workbook IR prototype contract. Child issue: #10.
-- [ ] P2.2 Emit IR JSON from the synthetic workbook. Child issue: #11.
-  - [ ] Create ignored prototype IR emitter under `tmp/`.
-  - [ ] Emit semantic named-range/reference edges.
-  - [ ] Emit execution cell-dependency edges.
-  - [ ] Emit diagnostics for missing cached formula values.
-  - [ ] Verify output against `planning/workbook-ir-contract.md` acceptance criteria.
-- [ ] P2.3 Record IR prototype findings and refine contract. Child issue: #12.
-- [ ] P2.4 Close extraction-contract phase with Phase 3 inputs. Child issue: #13.
+- [x] P2.2 Emit IR JSON from the synthetic workbook. Child issue: #11.
+  - [x] Create ignored prototype IR emitter under `tmp/`.
+  - [x] Emit semantic named-range/reference edges.
+  - [x] Emit execution cell-dependency edges.
+  - [x] Emit diagnostics for missing cached formula values.
+  - [x] Verify output against `planning/workbook-ir-contract.md` acceptance criteria.
+- [x] P2.3 Record IR prototype findings and refine contract. Child issue: #12.
+- [x] P2.4 Close extraction-contract phase with Phase 3 inputs. Child issue: #13.
 
-Status: active.
+Status: PR open.
 
 ## Phase 3: Prototype Python Code Generation
 
@@ -87,6 +89,6 @@ Status: planned.
 
 ## Current Next Steps
 
-1. Work P2.2 in child issue #11 on branch `feature/p2-workbook-extraction-contracts`.
-2. Keep the P2.2 issue checklist, this roadmap, and `CHANGE_LOG.md` synchronized as the IR emitter prototype progresses.
-3. Close #11 only after the ignored prototype output is verified and the roadmap/changelog reflect the result.
+1. Review and merge Phase 2 PR #31.
+2. Close parent issue #9 only after PR #31 has merged.
+3. Activate Phase 3 issue #14 and branch only after Phase 2 is closed, unless the maintainer explicitly approves parallel work.
