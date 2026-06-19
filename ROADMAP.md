@@ -81,7 +81,7 @@ GitHub parent issue: #24
 
 Active branch: `feature/p5-package-api-cli-ci-decisions`
 
-Open PR: #40
+Merged PR: #40
 
 Goal: introduce durable project tooling only after extraction, code generation, and validation prototypes clarify the required shape.
 
@@ -91,13 +91,13 @@ Goal: introduce durable project tooling only after extraction, code generation, 
 - [x] P5.4 Define CI and documentation verification. Child issue: #28.
 - [x] P5.5 Summarize implementation bootstrap plan. Child issue: #29.
 
-Status: ready for PR.
+Status: complete.
 
 ## Phase 6: Initial Package And Validation Core
 
 GitHub parent issue: #34
 
-Planned branch: `feature/p6-initial-package-validation-core`
+Active branch: `feature/p6-initial-package-validation-core`
 
 Goal: build the first durable code-bearing slice from the Phase 5 decisions: package skeleton, validation report core, synthetic fixtures, regression tests, and minimal default CI after tests exist.
 
@@ -107,10 +107,10 @@ Goal: build the first durable code-bearing slice from the Phase 5 decisions: pac
 - [ ] P6.4 Add baseline and mismatch regression tests. Child issue: #36.
 - [ ] P6.5 Add first default CI workflow. Child issue: #39.
 
-Status: planned backlog. Do not activate until Phase 5 PR has merged and parent issue #24 is closed.
+Status: active.
 
 ## Current Next Steps
 
-1. Review and merge Phase 5 PR #40 from `feature/p5-package-api-cli-ci-decisions` back to `main`.
-2. After PR #40 merges, close parent issue #24.
-3. Activate Phase 6 from updated `main` on `feature/p6-initial-package-validation-core`.
+1. Work P6.1 in child issue #38 on branch `feature/p6-initial-package-validation-core`.
+2. Add the initial package and test skeleton from `planning/implementation-bootstrap-plan.md`.
+3. Keep issue #38, this roadmap, and `CHANGE_LOG.md` synchronized before moving to validation report objects.

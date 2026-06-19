@@ -33,3 +33,4 @@ This file records completed project work in chronological order.
 - Defined the first CI and documentation verification boundary in `planning/ci-docs-verification-decision.md`.
 - Summarized the Phase 5 implementation bootstrap plan in `planning/implementation-bootstrap-plan.md` and created the planned Phase 6 issue sequence.
 - Opened Phase 5 PR #40 from `feature/p5-package-api-cli-ci-decisions` back to `main`.
+- Merged Phase 5 PR #40, closed parent issue #24, and activated Phase 6 on `feature/p6-initial-package-validation-core`.
