@@ -9,3 +9,4 @@ This file records completed project work in chronological order.
 - Documented that no Python package, CLI, dependency manager, test framework, or CI contract exists yet.
 - Added the first Phase 1 research note comparing workbook extraction, formula evaluation, dependency graph, code-generation, and Excel-backed validation options.
 - Ran the first ignored synthetic workbook prototype with `openpyxl`, `formulas`, and `networkx`, then recorded findings in `planning/first-prototype-findings.md`.
+- Defined the first prototype workbook IR contract in `planning/workbook-ir-contract.md`.

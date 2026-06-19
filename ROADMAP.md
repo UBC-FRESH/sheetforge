@@ -6,9 +6,9 @@ The repository is intentionally lightweight at this stage. Do not add a package 
 
 ## Current Next Steps
 
-- Review `planning/first-prototype-findings.md` and define the minimum tracked intermediate representation for workbook references, formulas, named ranges, and dependencies.
-- Decide whether named ranges should remain first-class dependency nodes or normalize immediately to destination cells.
-- Use the synthetic prototype findings to plan the first generated-code experiment without adding durable package structure yet.
+- Implement an ignored prototype that emits the minimum IR from `planning/workbook-ir-contract.md` for the synthetic workbook.
+- Confirm the IR includes semantic named-range edges and execution cell-dependency edges.
+- Use the IR prototype findings to decide whether to formalize extraction code or attempt a tiny generated-code experiment next.
 
 ## Phase 0: Bootstrap Repo Contract
 
@@ -36,7 +36,7 @@ Topics:
 
 Deliverable: planning notes that record candidate libraries, capabilities, limitations, risks, and first prototype findings.
 
-Status: active.
+Status: complete.
 
 ## Phase 2: Define Workbook Extraction Contracts
 
@@ -48,7 +48,7 @@ Expected focus:
 - Handling of cross-sheet references, external links, hidden sheets, circular references, volatile functions, array formulas, and unsupported Excel functions.
 - Provenance fields that trace generated behavior back to source workbook locations.
 
-Status: planned.
+Status: active.
 
 ## Phase 3: Prototype Python Code Generation
 
