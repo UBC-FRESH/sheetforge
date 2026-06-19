@@ -34,13 +34,13 @@ Active branch: `feature/p2-workbook-extraction-contracts`
 Goal: define and test the minimum intermediate representation for workbook references, formulas, named ranges, dependencies, and diagnostics.
 
 - [x] P2.1 Define workbook IR prototype contract. Child issue: #10.
-- [ ] P2.2 Emit IR JSON from the synthetic workbook. Child issue: #11.
-  - [ ] Create ignored prototype IR emitter under `tmp/`.
-  - [ ] Emit semantic named-range/reference edges.
-  - [ ] Emit execution cell-dependency edges.
-  - [ ] Emit diagnostics for missing cached formula values.
-  - [ ] Verify output against `planning/workbook-ir-contract.md` acceptance criteria.
-- [ ] P2.3 Record IR prototype findings and refine contract. Child issue: #12.
+- [x] P2.2 Emit IR JSON from the synthetic workbook. Child issue: #11.
+  - [x] Create ignored prototype IR emitter under `tmp/`.
+  - [x] Emit semantic named-range/reference edges.
+  - [x] Emit execution cell-dependency edges.
+  - [x] Emit diagnostics for missing cached formula values.
+  - [x] Verify output against `planning/workbook-ir-contract.md` acceptance criteria.
+- [x] P2.3 Record IR prototype findings and refine contract. Child issue: #12.
 - [ ] P2.4 Close extraction-contract phase with Phase 3 inputs. Child issue: #13.
 
 Status: active.
@@ -87,6 +87,6 @@ Status: planned.
 
 ## Current Next Steps
 
-1. Work P2.2 in child issue #11 on branch `feature/p2-workbook-extraction-contracts`.
-2. Keep the P2.2 issue checklist, this roadmap, and `CHANGE_LOG.md` synchronized as the IR emitter prototype progresses.
-3. Close #11 only after the ignored prototype output is verified and the roadmap/changelog reflect the result.
+1. Work P2.4 in child issue #13 on branch `feature/p2-workbook-extraction-contracts`.
+2. Summarize the Phase 3 inputs from `planning/workbook-ir-contract.md` and `planning/ir-prototype-findings.md`.
+3. Close Phase 2 only after #13 is complete and the roadmap/changelog/issue state are synchronized.
