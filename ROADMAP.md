@@ -49,10 +49,6 @@ Status: complete.
 
 GitHub parent issue: #14
 
-Active branch: `feature/p3-code-generation-prototype`
-
-Open PR: #32
-
 Goal: generate readable Python from the controlled workbook IR without committing to durable package structure too early.
 
 - [x] P3.1 Define generated-code prototype contract. Child issue: #15.
@@ -60,20 +56,26 @@ Goal: generate readable Python from the controlled workbook IR without committin
 - [x] P3.3 Compare generated outputs against `formulas` results. Child issue: #17.
 - [x] P3.4 Summarize code-generation readiness. Child issue: #18.
 
-Status: PR open.
+Merged PR: #32
+
+Status: complete.
 
 ## Phase 4: Regression Validation Against Workbooks
 
 GitHub parent issue: #19
 
+Active branch: `feature/p4-regression-validation`
+
+Open PR: #33
+
 Goal: define and prototype the validation loop that compares generated Python behavior against source workbook outputs.
 
-- [ ] P4.1 Define validation scenario and oracle contract. Child issue: #20.
-- [ ] P4.2 Build ignored validation prototype. Child issue: #21.
-- [ ] P4.3 Define mismatch diagnostics and tolerance rules. Child issue: #22.
-- [ ] P4.4 Summarize validation architecture and package inputs. Child issue: #23.
+- [x] P4.1 Define validation scenario and oracle contract. Child issue: #20.
+- [x] P4.2 Build ignored validation prototype. Child issue: #21.
+- [x] P4.3 Define mismatch diagnostics and tolerance rules. Child issue: #22.
+- [x] P4.4 Summarize validation architecture and package inputs. Child issue: #23.
 
-Status: planned.
+Status: PR open.
 
 ## Phase 5: Package, API, CLI, And CI Decisions
 
@@ -91,6 +93,6 @@ Status: planned.
 
 ## Current Next Steps
 
-1. Review and merge Phase 3 PR #32.
-2. Close parent issue #14 only after PR #32 has merged.
-3. Activate Phase 4 issue #19 and branch only after Phase 3 is closed, unless the maintainer explicitly approves parallel work.
+1. Review and merge Phase 4 PR #33.
+2. Close parent issue #19 only after PR #33 has merged.
+3. Activate Phase 5 issue #24 and branch only after Phase 4 is closed, unless the maintainer explicitly approves parallel work.

@@ -20,3 +20,9 @@ This file records completed project work in chronological order.
 - Compared the ignored generated model against `formulas`, confirmed both controlled outputs match, and recorded findings in `planning/codegen-comparison-findings.md`.
 - Closed the Phase 3 generated-code planning loop by recording Phase 4 validation inputs in `planning/phase-3-closeout-phase-4-inputs.md`.
 - Opened Phase 3 PR #32 from `feature/p3-code-generation-prototype` back to `main`.
+- Merged Phase 3 PR #32, closed parent issue #14, and activated Phase 4 on `feature/p4-regression-validation`.
+- Defined the Phase 4 validation scenario and oracle contract in `planning/validation-scenario-oracle-contract.md`.
+- Built an ignored validation prototype, verified the baseline scenario passes with no mismatches, and recorded findings in `planning/validation-prototype-findings.md`.
+- Defined validation mismatch diagnostics and tolerance rules in `planning/mismatch-diagnostics-tolerance-rules.md`.
+- Closed the Phase 4 validation planning loop by recording Phase 5 package/API/CLI inputs in `planning/phase-4-closeout-phase-5-inputs.md`.
+- Opened Phase 4 PR #33 from `feature/p4-regression-validation` back to `main`.
