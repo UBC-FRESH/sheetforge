@@ -38,6 +38,11 @@ This file records completed project work in chronological order.
 - Added standalone Python module generation from translated workbook logic, with provenance comments and generated-output tests using temporary files.
 - Closed the Phase 11 generated-model planning loop by recording Phase 12 oracle-backed validation inputs in `planning/phase-11-closeout-phase-12-inputs.md`.
 - Opened Phase 11 PR #83 from `feature/p11-generated-python-model-core` back to `main`.
+- Merged Phase 11 PR #83, closed parent issue #47, and activated Phase 12 on `feature/p12-oracle-backed-validation`.
+- Added oracle interface records and the optional `formulas` dependency boundary for oracle-backed validation.
+- Added a `formulas`-backed oracle for synthetic workbook outputs with JSON scalar normalization and unsupported-input diagnostics.
+- Added oracle-backed validation report assembly for generated synthetic model outputs and recorded Phase 13 private-workbook evaluation inputs.
+- Opened Phase 12 PR #84 from `feature/p12-oracle-backed-validation` back to `main`.
 
 ## 2026-06-19
 

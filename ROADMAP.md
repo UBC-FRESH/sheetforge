@@ -172,9 +172,7 @@ Status: complete.
 
 GitHub parent issue: #47
 
-Active branch: `feature/p11-generated-python-model-core`
-
-Open PR: #83
+Merged PR: #83
 
 Goal: generate small standalone Python modules from extracted and translated workbook logic.
 
@@ -182,21 +180,23 @@ Goal: generate small standalone Python modules from extracted and translated wor
 - [x] P11.2 Generate Python from translated workbook logic. Child issue: #64.
 - [x] P11.3 Test generated model outputs and closeout. Child issue: #63.
 
-Status: PR open.
+Status: complete.
 
 ## Phase 12: Oracle-Backed Validation
 
 GitHub parent issue: #54
 
-Planned branch: `feature/p12-oracle-backed-validation`
+Active branch: `feature/p12-oracle-backed-validation`
+
+Open PR: #84
 
 Goal: introduce optional source-workbook oracle execution, starting with a pure-Python `formulas`-backed lane before any Excel-backed validation.
 
-- [ ] P12.1 Define oracle interface and optional dependency boundary. Child issue: #70.
-- [ ] P12.2 Add `formulas`-backed oracle for synthetic workbook. Child issue: #69.
-- [ ] P12.3 Compare generated model against oracle outputs. Child issue: #68.
+- [x] P12.1 Define oracle interface and optional dependency boundary. Child issue: #70.
+- [x] P12.2 Add `formulas`-backed oracle for synthetic workbook. Child issue: #69.
+- [x] P12.3 Compare generated model against oracle outputs. Child issue: #68.
 
-Status: planned backlog.
+Status: implementation complete; PR pending.
 
 ## Phase 13: Real Workbook Evaluation Lane
 
@@ -242,6 +242,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Merge Phase 11 PR #83 after checks pass.
-2. Close parent issue #47 after PR #83 merges.
-3. Activate Phase 12 on `feature/p12-oracle-backed-validation`.
+1. Open the Phase 12 PR from `feature/p12-oracle-backed-validation` back to `main`.
+2. Verify the PR checks and merge when ready.
+3. Close parent issue #54 only after the PR has merged.

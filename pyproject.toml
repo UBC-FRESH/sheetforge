@@ -17,7 +17,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+oracle = [
+  "formulas"
+]
 test = [
+  "formulas",
   "pytest>=8"
 ]
 
