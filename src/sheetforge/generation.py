@@ -256,8 +256,17 @@ def _render_expression(node: FormulaExpressionNode | None) -> str:
         if node.reference is None:
             raise ValueError("cannot render reference expression without reference")
         return symbol_name_for_cell_ref(node.reference.normalized)
+    if node.kind == "unary":
+        (operand,) = node.operands
+        if node.operator == "-":
+            return f"(-{_render_expression(operand)})"
+        raise ValueError(f"unsupported unary operator: {node.operator}")
     if node.kind == "binary":
         left, right = node.operands
+        if node.operator == "^":
+            return f"({_render_expression(left)} ** {_render_expression(right)})"
+        if node.operator == "&":
+            return f"(str({_render_expression(left)}) + str({_render_expression(right)}))"
         return f"({_render_expression(left)} {node.operator} {_render_expression(right)})"
     if node.kind == "comparison":
         left, right = node.operands

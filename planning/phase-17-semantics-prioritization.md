@@ -122,6 +122,8 @@ Each P17.3 implementation pass must report:
 - generated subset size delta, when candidate selection can safely expand;
 - validation status for any expanded generated subset.
 
+Each P17.3 implementation pass must also update the tracked supported-semantics fixture harness under `tests/fixtures/supported_semantics/` so the full currently supported formula/operator/token surface is tested in a clean checkout. Private workbooks reveal the next blocker, but tracked synthetic fixtures preserve the support that has already been won.
+
 A pass counts as convergent only if at least one of these is true:
 
 - translated formula count increases;
@@ -214,6 +216,8 @@ P17.3 should start with expression-model changes that unlock many of the listed 
 - constrained `OFFSET` handling or a more specific unsupported diagnostic if safe support is not feasible in P17.
 
 Structured-reference evaluation, external workbook execution, and unconstrained volatile/reference-returning formulas remain blocked until their provenance and validation semantics are explicit.
+
+Pass 1 added boolean literals, unary minus, `^`, `&`, explicit `#REF!` diagnostics, and the tracked supported-semantics fixture harness. Its convergence results are recorded in `planning/phase-17-pass1-convergence.md`.
 
 P17.3 should end with a rerun of the sanitized private-workbook diagnostic pass. Its closeout should record:
 

@@ -5,7 +5,7 @@ from pathlib import Path
 from types import ModuleType
 
 from sheetforge.extraction import extract_workbook
-from sheetforge.formulas import translate_formula_cell
+from sheetforge.formulas import FormulaExpression, FormulaExpressionNode, translate_formula_cell
 from sheetforge.generation import (
     GeneratedModuleContract,
     GeneratedSymbol,
@@ -14,6 +14,7 @@ from sheetforge.generation import (
     symbol_name_for_cell_ref,
 )
 from sheetforge.graph import build_dependency_graph
+from sheetforge.references import normalize_reference
 from tests.fixtures.synthetic_model.build_workbook import build_workbook
 
 
@@ -67,6 +68,10 @@ def load_module(path: Path) -> ModuleType:
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def formula_expression(source_cell: str, raw_formula: str, root: FormulaExpressionNode) -> FormulaExpression:
+    return FormulaExpression(source_cell=source_cell, raw_formula=raw_formula, root=root)
 
 
 def test_generate_python_module_writes_standalone_synthetic_model(tmp_path: Path) -> None:
@@ -128,3 +133,65 @@ def test_generate_python_module_reports_missing_expression(tmp_path: Path) -> No
     assert result.source_code == ""
     assert result.diagnostics[0].code == "missing_formula_expression"
     assert result.diagnostics[0].location == "Summary!B3"
+
+
+def test_generate_python_module_renders_p17_operator_slice(tmp_path: Path) -> None:
+    contract = GeneratedModuleContract(
+        workbook_id="operators.xlsx",
+        module_name="operators",
+        input_refs=("Inputs!A1", "Inputs!A2"),
+        output_refs=("Calc!B1", "Calc!B2", "Calc!B3", "Calc!B4"),
+        symbols=(
+            GeneratedSymbol(cell_ref="Inputs!A1", symbol_name="inputs_a1", kind="input"),
+            GeneratedSymbol(cell_ref="Inputs!A2", symbol_name="inputs_a2", kind="input"),
+            GeneratedSymbol(cell_ref="Calc!B1", symbol_name="calc_b1", kind="output", raw_formula="=FALSE"),
+            GeneratedSymbol(cell_ref="Calc!B2", symbol_name="calc_b2", kind="output", raw_formula="=-A1"),
+            GeneratedSymbol(cell_ref="Calc!B3", symbol_name="calc_b3", kind="output", raw_formula="=A1^2"),
+            GeneratedSymbol(cell_ref="Calc!B4", symbol_name="calc_b4", kind="output", raw_formula='=A2&"y"'),
+        ),
+    )
+    expressions = {
+        "Calc!B1": formula_expression("Calc!B1", "=FALSE", FormulaExpressionNode.literal(False)),
+        "Calc!B2": formula_expression(
+            "Calc!B2",
+            "=-A1",
+            FormulaExpressionNode.unary("-", FormulaExpressionNode.reference_to(normalize_reference("Inputs!A1"))),
+        ),
+        "Calc!B3": formula_expression(
+            "Calc!B3",
+            "=A1^2",
+            FormulaExpressionNode.binary(
+                "^",
+                FormulaExpressionNode.reference_to(normalize_reference("Inputs!A1")),
+                FormulaExpressionNode.literal(2),
+            ),
+        ),
+        "Calc!B4": formula_expression(
+            "Calc!B4",
+            '=A2&"y"',
+            FormulaExpressionNode.binary(
+                "&",
+                FormulaExpressionNode.reference_to(normalize_reference("Inputs!A2")),
+                FormulaExpressionNode.literal("y"),
+            ),
+        ),
+    }
+    output_path = tmp_path / "generated_operators.py"
+
+    result = generate_python_module(
+        contract=contract,
+        expressions=expressions,
+        constants={"Inputs!A1": 3, "Inputs!A2": "x"},
+        output_path=output_path,
+    )
+    module = load_module(output_path)
+
+    assert result.generated is True
+    assert "**" in result.source_code
+    assert "str(" in result.source_code
+    assert module.calculate() == {
+        "Calc!B1": False,
+        "Calc!B2": -3,
+        "Calc!B3": 9,
+        "Calc!B4": "xy",
+    }

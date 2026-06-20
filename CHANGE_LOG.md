@@ -76,6 +76,7 @@ This file records completed project work in chronological order.
 - Expanded Phase 17 planning with the sanitized private-workbook formula-function, operator, and token scope needed for full sample-workbook import.
 - Codified the Phase 17 blocker-find-resolve-rerun loop for private-workbook formula semantics and validation evidence.
 - Added explicit Phase 17 convergence metrics, pass/fail rules, and implementation priority order for private-workbook import progress.
+- Added P17.3 pass-one support for boolean literals, unary minus, `^`, `&`, and `#REF!` diagnostics, plus a tracked supported-semantics fixture harness and sanitized convergence note.
 
 ## 2026-06-19
 

@@ -18,11 +18,11 @@ from sheetforge.references import normalize_reference
 
 
 JsonValue = str | int | float | bool | None | list[Any] | dict[str, Any]
-ExpressionKind = Literal["literal", "reference", "binary", "comparison", "function_call"]
+ExpressionKind = Literal["literal", "reference", "unary", "binary", "comparison", "function_call"]
 DiagnosticSeverity = Literal["info", "warning", "error"]
 FormulaReferenceIndex = dict[tuple[str, str], WorkbookReference]
 SUPPORTED_FUNCTIONS = frozenset({"ROUND", "IF"})
-SUPPORTED_OPERATORS = frozenset({"+", "-", "*", "/", ">", ">=", "<", "<=", "=", "<>", "(", ")", ","})
+SUPPORTED_OPERATORS = frozenset({"+", "-", "*", "/", "^", "&", ">", ">=", "<", "<=", "=", "<>", "(", ")", ","})
 
 
 @dataclass(frozen=True)
@@ -73,6 +73,14 @@ class FormulaExpressionNode:
     @classmethod
     def reference_to(cls, reference: WorkbookReference) -> "FormulaExpressionNode":
         return cls(kind="reference", reference=reference)
+
+    @classmethod
+    def unary(
+        cls,
+        operator: str,
+        operand: "FormulaExpressionNode",
+    ) -> "FormulaExpressionNode":
+        return cls(kind="unary", operator=operator, operands=(operand,))
 
     @classmethod
     def binary(
@@ -254,13 +262,20 @@ class _FormulaParser:
         return expression
 
     def _parse_comparison(self) -> FormulaExpressionNode:
-        left = self._parse_additive()
+        left = self._parse_concatenation()
         token = self._peek()
         if token is not None and token.value in {">", ">=", "<", "<=", "=", "<>"}:
             self._advance()
-            right = self._parse_additive()
+            right = self._parse_concatenation()
             return FormulaExpressionNode.comparison(token.value, left, right)
         return left
+
+    def _parse_concatenation(self) -> FormulaExpressionNode:
+        expression = self._parse_additive()
+        while (token := self._peek()) is not None and token.value == "&":
+            self._advance()
+            expression = FormulaExpressionNode.binary(token.value, expression, self._parse_additive())
+        return expression
 
     def _parse_additive(self) -> FormulaExpressionNode:
         expression = self._parse_multiplicative()
@@ -270,11 +285,28 @@ class _FormulaParser:
         return expression
 
     def _parse_multiplicative(self) -> FormulaExpressionNode:
-        expression = self._parse_primary()
+        expression = self._parse_exponent()
         while (token := self._peek()) is not None and token.value in {"*", "/"}:
             self._advance()
-            expression = FormulaExpressionNode.binary(token.value, expression, self._parse_primary())
+            expression = FormulaExpressionNode.binary(token.value, expression, self._parse_exponent())
         return expression
+
+    def _parse_exponent(self) -> FormulaExpressionNode:
+        expression = self._parse_unary()
+        while (token := self._peek()) is not None and token.value == "^":
+            self._advance()
+            expression = FormulaExpressionNode.binary(token.value, expression, self._parse_unary())
+        return expression
+
+    def _parse_unary(self) -> FormulaExpressionNode:
+        token = self._peek()
+        if token is not None and token.kind == "operator" and token.value in {"+", "-"}:
+            self._advance()
+            operand = self._parse_unary()
+            if token.value == "+":
+                return operand
+            return FormulaExpressionNode.unary(token.value, operand)
+        return self._parse_primary()
 
     def _parse_primary(self) -> FormulaExpressionNode:
         token = self._advance()
@@ -282,6 +314,8 @@ class _FormulaParser:
             return FormulaExpressionNode.literal(_number_value(token.value))
         if token.kind == "text":
             return FormulaExpressionNode.literal(token.value)
+        if token.kind == "logical":
+            return FormulaExpressionNode.literal(token.value == "TRUE")
         if token.kind == "reference":
             return FormulaExpressionNode.reference_to(self._resolved_reference(token.value))
         if token.kind == "identifier":
@@ -385,6 +419,15 @@ def _formula_tokens(raw_formula: str) -> tuple[_FormulaToken, ...]:
         if token.type == "OPERAND" and token.subtype == "TEXT":
             tokens.append(_FormulaToken("text", token.value.strip('"')))
             continue
+        if token.type == "OPERAND" and token.subtype == "LOGICAL":
+            tokens.append(_FormulaToken("logical", token.value.upper()))
+            continue
+        if token.type == "OPERAND" and token.subtype == "ERROR":
+            raise FormulaTranslationError(
+                "unsupported_error_reference",
+                "formula contains an unsupported error reference",
+                token.value,
+            )
         if token.type == "OPERAND" and token.subtype == "RANGE":
             tokens.append(_FormulaToken("reference", token.value))
             continue
