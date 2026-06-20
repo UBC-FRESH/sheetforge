@@ -27,47 +27,47 @@ The package root `sheetforge` exposes a curated convenience facade for those rec
 
 ## Command-Line Interface
 
-Install the package locally before using the console script:
+Bootstrap the repo-local virtual environment before using the console script:
 
 ```bash
-python -m pip install -e ".[test]"
+scripts/bootstrap_dev_env.sh
 ```
 
 The current CLI prints JSON to stdout and stays close to the Python APIs:
 
 ```bash
-sheetforge extract path/to/workbook.xlsx > tmp/extraction.json
-sheetforge graph path/to/workbook.xlsx > tmp/dependency-graph.json
-sheetforge generate --contract tmp/contract.json --expressions tmp/expressions.json --constants tmp/constants.json --output tmp/generated_model.py > tmp/generation-result.json
-sheetforge validate-report --scenario tests/fixtures/synthetic_model/baseline_scenario.json --generated-values tmp/generated-values.json --oracle-values tmp/oracle-values.json > tmp/validation-report.json
+sheetforge workbook extract path/to/workbook.xlsx > tmp/extraction.json
+sheetforge workbook graph path/to/workbook.xlsx > tmp/dependency-graph.json
+sheetforge model generate --contract tmp/contract.json --expressions tmp/expressions.json --constants tmp/constants.json --out tmp/generated_model.py > tmp/generation-result.json
+sheetforge validation report --scenario tests/fixtures/synthetic_model/baseline_scenario.json --generated-values tmp/generated-values.json --oracle-values tmp/oracle-values.json > tmp/validation-report.json
 ```
 
-These commands do not provide a one-step workbook converter. `generate` expects explicit generated-module and formula-expression JSON inputs, and `validate-report` compares already-observed generated/oracle values. See `planning/cli-json-workflows.md` for JSON examples and workflow boundaries.
+These commands do not provide a one-step workbook converter. `model generate` expects explicit generated-module and formula-expression JSON inputs, and `validation report` compares already-observed generated/oracle values. See `planning/cli-json-workflows.md` for JSON examples and workflow boundaries.
 
 ## Local Development
 
-Install the package with test dependencies:
+Bootstrap a repo-local virtual environment:
 
 ```bash
-python -m pip install -e ".[test]"
-```
-
-Install the lightweight quality-check extra when working on code changes:
-
-```bash
-python -m pip install -e ".[quality]"
+scripts/bootstrap_dev_env.sh
 ```
 
 Run lint checks:
 
 ```bash
-python -m ruff check .
+.venv/bin/python -m ruff check .
 ```
 
 Run tests:
 
 ```bash
-python -m pytest
+.venv/bin/python -m pytest
+```
+
+Build docs locally:
+
+```bash
+.venv/bin/sphinx-build -b html docs _build/html -W
 ```
 
 `sheetforge` is pre-release. The package metadata is sufficient for local editable installs and CI, but publishing metadata, release artifacts, and compatibility guarantees are intentionally deferred until the conversion workflow is more proven.
@@ -75,6 +75,7 @@ python -m pytest
 ## Repository Conventions
 
 - `AGENTS.md` is the working contract for AI coding agents.
+- `CONTRIBUTING.md` is the contributor onboarding and development workflow guide.
 - `ROADMAP.md` is the current plan and next-step tracker.
 - `CHANGE_LOG.md` is the append-only project narrative.
 - `planning/` contains focused design notes and research records that are too detailed for the roadmap.

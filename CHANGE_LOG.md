@@ -64,6 +64,12 @@ This file records completed project work in chronological order.
 - Revised the next roadmap horizon so Phase 16 prioritizes FRESH-style Typer/Rich CLI alignment and full Sphinx GitHub Pages documentation modeled on local `fhops` and `femic` repositories.
 - Merged Phase 15 PR #102 and closed parent issue #51.
 - Activated Phase 16 on `feature/p16-cli-docs-public-surface`.
+- Recorded Sheetforge-specific Phase 16 CLI and Sphinx documentation acceptance criteria from the local `fhops` and `femic` reference packages.
+- Refactored the CLI to a tight Typer/Rich command surface with grouped `workbook`, `model`, and `validation` workflows.
+- Added full Sphinx documentation with curated guide/reference pages and a GitHub Pages workflow that builds on pull requests and deploys on pushes to `main`.
+- Added repo-root `.venv` bootstrap tooling plus contributor and developer-onboarding documentation for repeatable local setup.
+- Verified the Phase 16 CLI/docs surface locally and recorded Phase 17 real-workbook formula-semantics inputs.
+- Opened Phase 16 PR #108 from `feature/p16-cli-docs-public-surface` back to `main` and verified PR checks for tests, quality, and docs build.
 
 ## 2026-06-19
 

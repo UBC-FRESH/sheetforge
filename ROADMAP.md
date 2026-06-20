@@ -246,10 +246,10 @@ Active branch: `feature/p16-cli-docs-public-surface`
 
 Goal: align Sheetforge's CLI feel, command organization, help text, and documentation depth with the other FRESH lab packages `fhops` and `femic`, including full Sphinx documentation published to GitHub Pages from the `main` branch.
 
-- [ ] P16.1 Audit `fhops`/`femic` CLI and docs conventions. Child issue: #92.
-- [ ] P16.2 Refactor CLI toward FRESH Typer/Rich conventions. Child issue: #90.
-- [ ] P16.3 Add full Sphinx docs and GitHub Pages workflow. Child issue: #93.
-- [ ] P16.4 Verify CLI/docs surface and closeout. Child issue: #91.
+- [x] P16.1 Audit `fhops`/`femic` CLI and docs conventions. Child issue: #92.
+- [x] P16.2 Refactor CLI toward FRESH Typer/Rich conventions. Child issue: #90.
+- [x] P16.3 Add full Sphinx docs and GitHub Pages workflow. Child issue: #93.
+- [x] P16.4 Verify CLI/docs surface and closeout. Child issue: #91.
 
 Status: active.
 
@@ -300,6 +300,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P16.1 in child issue #92 on branch `feature/p16-cli-docs-public-surface`.
-2. Turn the `fhops`/`femic` CLI and docs audit into Sheetforge-specific acceptance criteria.
-3. Keep issue #92, parent issue #89, this roadmap, and `CHANGE_LOG.md` synchronized before refactoring the CLI.
+1. Merge Phase 16 PR #108 from `feature/p16-cli-docs-public-surface` into `main`.
+2. Close parent issue #89 after merge.
+3. Activate Phase 17 on `feature/p17-real-workbook-formula-semantics`.
