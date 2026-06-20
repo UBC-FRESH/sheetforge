@@ -11,6 +11,7 @@ from sheetforge.generation import (
     GeneratedSymbol,
     GenerationResult,
     generate_python_module,
+    infer_generated_module_contract,
     symbol_name_for_cell_ref,
 )
 from sheetforge.graph import build_dependency_graph
@@ -93,6 +94,79 @@ def test_generate_python_module_writes_standalone_synthetic_model(tmp_path: Path
     assert "openpyxl" not in result.source_code
     module = load_module(output_path)
     assert module.calculate() == {"Summary!B2": 70.2, "Summary!B3": "ok"}
+
+
+def test_infer_generated_module_contract_for_synthetic_outputs(tmp_path: Path) -> None:
+    workbook = extract_workbook(build_workbook(tmp_path / "synthetic_model.xlsx"))
+    graph = build_dependency_graph(workbook)
+    formula_cells = {cell.cell_ref: cell for cell in workbook.cells if cell.formula is not None}
+    expressions = {
+        cell_ref: translate_formula_cell(cell, graph)
+        for cell_ref, cell in formula_cells.items()
+    }
+
+    result = infer_generated_module_contract(
+        workbook=workbook,
+        graph=graph,
+        expressions=expressions,
+        output_refs=("Summary!B2", "Summary!B3"),
+        module_name="synthetic_model",
+    )
+
+    assert result.inferred is True
+    assert result.diagnostics == ()
+    assert result.contract.input_refs == ("Inputs!B2", "Inputs!B3", "Inputs!B4")
+    assert result.constants == {"Inputs!B2": 100, "Inputs!B3": 0.08, "Inputs!B4": 0.65}
+    assert tuple(symbol.cell_ref for symbol in result.contract.symbols) == (
+        "Inputs!B2",
+        "Inputs!B3",
+        "Inputs!B4",
+        "Calc!B2",
+        "Calc!B3",
+        "Calc!B4",
+        "Summary!B2",
+        "Summary!B3",
+    )
+    assert [symbol.kind for symbol in result.contract.symbols] == [
+        "input",
+        "input",
+        "input",
+        "intermediate",
+        "intermediate",
+        "intermediate",
+        "output",
+        "output",
+    ]
+
+
+def test_inferred_generated_module_runs_synthetic_model(tmp_path: Path) -> None:
+    workbook = extract_workbook(build_workbook(tmp_path / "synthetic_model.xlsx"))
+    graph = build_dependency_graph(workbook)
+    formula_cells = {cell.cell_ref: cell for cell in workbook.cells if cell.formula is not None}
+    expressions = {
+        cell_ref: translate_formula_cell(cell, graph)
+        for cell_ref, cell in formula_cells.items()
+    }
+    inference = infer_generated_module_contract(
+        workbook=workbook,
+        graph=graph,
+        expressions=expressions,
+        output_refs=("Summary!B2", "Summary!B3"),
+        module_name="synthetic_model",
+    )
+    output_path = tmp_path / "generated_model.py"
+
+    generation = generate_python_module(
+        contract=inference.contract,
+        expressions=inference.expressions,
+        constants=inference.constants,
+        output_path=output_path,
+    )
+    module = load_module(output_path)
+
+    assert generation.generated is True
+    assert module.calculate() == {"Summary!B2": 70.2, "Summary!B3": "ok"}
+    assert module.calculate({"Inputs!B2": 10}) == {"Summary!B2": 7.02, "Summary!B3": "low"}
 
 
 def test_generate_python_module_uses_input_overrides(tmp_path: Path) -> None:

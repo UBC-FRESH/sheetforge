@@ -351,7 +351,7 @@ Goal: turn the clean 2020 FABLE extraction, graph, and translation evidence into
 Python benchmark model, then validate selected benchmark outputs and keep iterating on concrete blockers
 until generated-model equivalence is either proven or sharply scoped.
 
-- [ ] P21.1 Infer generated-model contracts from dependency graphs and selected outputs. Child issue: #122.
+- [x] P21.1 Infer generated-model contracts from dependency graphs and selected outputs. Child issue: #122.
 - [ ] P21.2 Materialize the 2020 FABLE generated model with topologically ordered symbols. Child issue: #121.
 - [ ] P21.3 Validate selected 2020 FABLE outputs against cached or oracle values. Child issue: #120.
 - [ ] P21.4 Rerun the blocker-find-resolve-continue loop until the benchmark result converges. Child issue: #119.
@@ -360,7 +360,7 @@ Status: active.
 
 ## Current Next Steps
 
-1. Work P21.1 in child issue #122 on branch `feature/p21-full-benchmark-model-validation`.
-2. Define selected-output-to-contract inference inputs.
-3. Traverse dependency graph dependencies needed for selected outputs.
-4. Preserve explicit input boundaries and provenance with synthetic tests before benchmark use.
+1. Work P21.2 in child issue #121 on branch `feature/p21-full-benchmark-model-validation`.
+2. Topologically order generated symbols for the selected benchmark scope.
+3. Emit the 2020 FABLE generated model to ignored local artifacts.
+4. Run materialization in verbose mode with a tail-able log and record generation diagnostics.

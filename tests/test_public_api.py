@@ -14,6 +14,8 @@ def test_root_facade_exports_primary_entrypoints() -> None:
     assert "GeneratedExecutionResult" in sheetforge.__all__
     assert "evaluate_generated_model" in sheetforge.__all__
     assert "ValidationEvaluationResult" in sheetforge.__all__
+    assert "infer_generated_module_contract" in sheetforge.__all__
+    assert "GeneratedContractInferenceResult" in sheetforge.__all__
 
 
 def test_root_facade_does_not_export_internal_helpers() -> None:

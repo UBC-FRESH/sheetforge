@@ -37,6 +37,22 @@ Acceptance criteria:
 - preserve workbook provenance for generated symbols;
 - add synthetic tests before applying the workflow to the 2020 FABLE benchmark.
 
+Status: complete.
+
+Result:
+
+- added `GeneratedContractInferenceResult`;
+- added `infer_generated_module_contract`;
+- inferred generated-model contracts from a workbook record, dependency graph, translated expressions,
+  selected output refs, module name, and optional explicit input refs;
+- walked execution dependency edges recursively so formula dependencies are ordered before dependent formula
+  cells;
+- classified missing cells, circular dependencies, diagnostic dependency edges, and non-cell dependency
+  sources as generation diagnostics;
+- preserved constants for inferred input cells and raw formula provenance for generated symbols;
+- added synthetic tests proving the inferred contract generates and executes the same controlled model that
+  was previously hand-declared.
+
 ### P21.2 Materialize The 2020 FABLE Generated Model
 
 Goal: emit an ignored generated Python model for the selected 2020 FABLE benchmark scope.

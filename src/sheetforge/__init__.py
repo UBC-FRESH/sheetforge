@@ -41,11 +41,13 @@ from sheetforge.formulas import (
 )
 from sheetforge.formulas_oracle import FormulasWorkbookOracle
 from sheetforge.generation import (
+    GeneratedContractInferenceResult,
     GeneratedModuleContract,
     GeneratedSymbol,
     GenerationDiagnostic,
     GenerationResult,
     generate_python_module,
+    infer_generated_module_contract,
 )
 from sheetforge.graph import (
     DependencyEdge,
@@ -101,6 +103,7 @@ __all__ = [
     "FormulasWorkbookOracle",
     "GeneratedModuleContract",
     "GeneratedExecutionResult",
+    "GeneratedContractInferenceResult",
     "GeneratedSymbol",
     "GenerationSummary",
     "GenerationDiagnostic",
@@ -137,6 +140,7 @@ __all__ = [
     "evaluate_generated_model",
     "extract_workbook",
     "generate_python_module",
+    "infer_generated_module_contract",
     "load_validation_scenario",
     "normalize_cell_reference",
     "normalize_reference",

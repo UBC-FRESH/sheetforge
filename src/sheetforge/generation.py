@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
 from openpyxl.utils.cell import get_column_letter, range_boundaries
 
+from sheetforge.extraction import WorkbookRecord
 from sheetforge.formulas import FormulaExpression, FormulaExpressionNode
+from sheetforge.graph import DependencyGraph
 
 
 JsonValue = str | int | float | bool | None | list[Any] | dict[str, Any]
@@ -140,6 +142,29 @@ class GenerationResult:
         }
 
 
+@dataclass(frozen=True)
+class GeneratedContractInferenceResult:
+    """Generated-model contract inference result for selected workbook outputs."""
+
+    contract: GeneratedModuleContract
+    expressions: dict[str, FormulaExpression] = field(default_factory=dict)
+    constants: dict[str, JsonValue] = field(default_factory=dict)
+    diagnostics: tuple[GenerationDiagnostic, ...] = field(default_factory=tuple)
+
+    @property
+    def inferred(self) -> bool:
+        return not any(diagnostic.severity == "error" for diagnostic in self.diagnostics)
+
+    def to_dict(self) -> dict[str, JsonValue]:
+        return {
+            "contract": self.contract.to_dict(),
+            "expressions": {cell_ref: expression.to_dict() for cell_ref, expression in self.expressions.items()},
+            "constants": self.constants,
+            "diagnostics": [diagnostic.to_dict() for diagnostic in self.diagnostics],
+            "inferred": self.inferred,
+        }
+
+
 def symbol_name_for_cell_ref(cell_ref: str) -> str:
     """Build a stable Python identifier from a canonical workbook cell ref."""
 
@@ -149,6 +174,141 @@ def symbol_name_for_cell_ref(cell_ref: str) -> str:
     if symbol[0].isdigit():
         return f"cell_{symbol}"
     return symbol
+
+
+def infer_generated_module_contract(
+    *,
+    workbook: WorkbookRecord,
+    graph: DependencyGraph,
+    expressions: Mapping[str, FormulaExpression],
+    output_refs: Sequence[str],
+    module_name: str,
+    input_refs: Sequence[str] = (),
+) -> GeneratedContractInferenceResult:
+    """Infer a generated module contract by walking dependencies for selected outputs."""
+
+    explicit_inputs = set(input_refs)
+    selected_outputs = tuple(output_refs)
+    cell_by_ref = {cell.cell_ref: cell for cell in workbook.cells}
+    dependencies_by_target: dict[str, list[str]] = {}
+    diagnostics: list[GenerationDiagnostic] = []
+
+    for edge in graph.execution_edges:
+        if edge.diagnostic_code is not None:
+            diagnostics.append(
+                GenerationDiagnostic(
+                    code="unsupported_dependency_edge",
+                    message="dependency edge has a diagnostic and cannot be inferred silently",
+                    severity="error",
+                    location=edge.target.normalized,
+                    raw_value=edge.diagnostic_code,
+                )
+            )
+            continue
+        if edge.source.kind != "cell":
+            diagnostics.append(
+                GenerationDiagnostic(
+                    code="unsupported_dependency_source",
+                    message="dependency source is not a concrete cell reference",
+                    severity="error",
+                    location=edge.target.normalized,
+                    raw_value=edge.source.normalized,
+                )
+            )
+            continue
+        dependencies_by_target.setdefault(edge.target.normalized, []).append(edge.source.normalized)
+
+    input_order: list[str] = []
+    formula_order: list[str] = []
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(cell_ref: str) -> None:
+        if cell_ref in visited:
+            return
+        if cell_ref in visiting:
+            diagnostics.append(
+                GenerationDiagnostic(
+                    code="circular_dependency",
+                    message="selected output dependency walk encountered a cycle",
+                    severity="error",
+                    location=cell_ref,
+                )
+            )
+            return
+
+        cell = cell_by_ref.get(cell_ref)
+        if cell is None:
+            diagnostics.append(
+                GenerationDiagnostic(
+                    code="missing_dependency_cell",
+                    message="selected output depends on a cell that was not extracted",
+                    severity="error",
+                    location=cell_ref,
+                )
+            )
+            return
+
+        if cell_ref in explicit_inputs or cell.formula is None:
+            if cell_ref not in input_order:
+                input_order.append(cell_ref)
+            visited.add(cell_ref)
+            return
+
+        visiting.add(cell_ref)
+        for dependency_ref in dependencies_by_target.get(cell_ref, []):
+            visit(dependency_ref)
+        visiting.remove(cell_ref)
+
+        if cell_ref not in formula_order:
+            formula_order.append(cell_ref)
+        visited.add(cell_ref)
+
+    for output_ref in selected_outputs:
+        visit(output_ref)
+
+    selected_expressions: dict[str, FormulaExpression] = {}
+    for cell_ref in formula_order:
+        expression = expressions.get(cell_ref)
+        if expression is None:
+            diagnostics.append(
+                GenerationDiagnostic(
+                    code="missing_formula_expression",
+                    message="inferred generated symbol has no translated formula expression",
+                    severity="error",
+                    location=cell_ref,
+                )
+            )
+            continue
+        selected_expressions[cell_ref] = expression
+
+    constants = {cell_ref: cell_by_ref[cell_ref].raw_value for cell_ref in input_order if cell_ref in cell_by_ref}
+    output_set = set(selected_outputs)
+    symbols = tuple(
+        GeneratedSymbol(cell_ref=cell_ref, symbol_name=symbol_name_for_cell_ref(cell_ref), kind="input")
+        for cell_ref in input_order
+    ) + tuple(
+        GeneratedSymbol(
+            cell_ref=cell_ref,
+            symbol_name=symbol_name_for_cell_ref(cell_ref),
+            kind="output" if cell_ref in output_set else "intermediate",
+            raw_formula=cell_by_ref[cell_ref].formula.raw_formula if cell_by_ref[cell_ref].formula else None,
+        )
+        for cell_ref in formula_order
+    )
+    contract = GeneratedModuleContract(
+        workbook_id=workbook.workbook_id,
+        module_name=module_name,
+        input_refs=tuple(input_order),
+        output_refs=selected_outputs,
+        symbols=symbols,
+    )
+    return GeneratedContractInferenceResult(
+        contract=contract,
+        expressions=selected_expressions,
+        constants=constants,
+        diagnostics=tuple(diagnostics),
+    )
 
 
 def generate_python_module(
