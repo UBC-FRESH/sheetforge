@@ -24,6 +24,8 @@ This file records completed project work in chronological order.
 - Merged Phase 8 PR #80, closed parent issue #50, and activated Phase 9 on `feature/p9-dependency-graph-core`.
 - Added a canonical workbook reference model and normalization helpers for cells, ranges, named ranges, external references, and unresolved references.
 - Added dependency graph records and graph building from extracted formula references, including named-range resolution and semantic/execution edges.
+- Added dependency graph diagnostics coverage for ranges, external references, and simple circular dependencies.
+- Closed the Phase 9 dependency-graph planning loop by recording Phase 10 formula translation inputs in `planning/phase-9-closeout-phase-10-inputs.md`.
 
 ## 2026-06-19
 

@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from openpyxl.utils.cell import range_boundaries
+
 from sheetforge.extraction import CellRecord, WorkbookRecord
 from sheetforge.references import WorkbookReference, normalize_reference
 
@@ -53,6 +55,7 @@ class DependencyGraph:
 
     workbook_id: str
     edges: tuple[DependencyEdge, ...] = field(default_factory=tuple)
+    diagnostics: tuple[str, ...] = field(default_factory=tuple)
 
     @property
     def semantic_edges(self) -> tuple[DependencyEdge, ...]:
@@ -67,12 +70,14 @@ class DependencyGraph:
         return cls(
             workbook_id=data["workbook_id"],
             edges=tuple(DependencyEdge.from_dict(edge) for edge in data.get("edges", [])),
+            diagnostics=tuple(data.get("diagnostics", [])),
         )
 
     def to_dict(self) -> dict[str, JsonValue]:
         return {
             "workbook_id": self.workbook_id,
             "edges": [edge.to_dict() for edge in self.edges],
+            "diagnostics": list(self.diagnostics),
         }
 
 
@@ -81,6 +86,7 @@ def build_dependency_graph(workbook: WorkbookRecord) -> DependencyGraph:
 
     named_ranges = _named_range_destinations(workbook)
     edges: list[DependencyEdge] = []
+    diagnostics: list[str] = []
 
     for cell in workbook.cells:
         if cell.formula is None:
@@ -101,7 +107,9 @@ def build_dependency_graph(workbook: WorkbookRecord) -> DependencyGraph:
             )
             edges.extend(_execution_edges_for(source, target, raw_reference, named_ranges))
 
-    return DependencyGraph(workbook_id=workbook.workbook_id, edges=tuple(edges))
+    diagnostics.extend(_diagnostic_codes(edges))
+    diagnostics.extend(_circular_dependency_codes(edges))
+    return DependencyGraph(workbook_id=workbook.workbook_id, edges=tuple(edges), diagnostics=tuple(dict.fromkeys(diagnostics)))
 
 
 def _named_range_destinations(workbook: WorkbookRecord) -> dict[str, tuple[WorkbookReference, ...]]:
@@ -138,6 +146,18 @@ def _execution_edges_for(
             ),
         )
 
+    if source.kind == "range":
+        return tuple(
+            DependencyEdge(
+                source=range_cell,
+                target=target,
+                edge_kind="execution",
+                raw_reference=raw_reference,
+                resolved_from=source,
+            )
+            for range_cell in _expand_range_reference(source)
+        )
+
     if source.kind == "named_range" and source.name in named_ranges:
         return tuple(
             DependencyEdge(
@@ -159,3 +179,38 @@ def _execution_edges_for(
             diagnostic_code=source.diagnostic_code or f"unsupported_{source.kind}_dependency",
         ),
     )
+
+
+def _expand_range_reference(source: WorkbookReference) -> tuple[WorkbookReference, ...]:
+    if source.sheet is None or source.start_cell is None or source.end_cell is None:
+        return ()
+
+    min_col, min_row, max_col, max_row = range_boundaries(f"{source.start_cell}:{source.end_cell}")
+    return tuple(
+        normalize_reference(f"{source.sheet}!{_column_name(column)}{row}")
+        for row in range(min_row, max_row + 1)
+        for column in range(min_col, max_col + 1)
+    )
+
+
+def _diagnostic_codes(edges: list[DependencyEdge]) -> tuple[str, ...]:
+    return tuple(edge.diagnostic_code for edge in edges if edge.diagnostic_code is not None)
+
+
+def _circular_dependency_codes(edges: list[DependencyEdge]) -> tuple[str, ...]:
+    execution_pairs = {
+        (edge.source.normalized, edge.target.normalized)
+        for edge in edges
+        if edge.edge_kind == "execution" and edge.source.kind == "cell" and edge.target.kind == "cell"
+    }
+    if any((target, source) in execution_pairs for source, target in execution_pairs):
+        return ("circular_dependency",)
+    return ()
+
+
+def _column_name(index: int) -> str:
+    name = ""
+    while index:
+        index, remainder = divmod(index - 1, 26)
+        name = chr(65 + remainder) + name
+    return name
