@@ -122,9 +122,9 @@ Goal: turn the Phase 6 validation report records and synthetic fixture JSON into
 - [x] P7.1 Add validation scenario objects and loader. Child issue: #46.
 - [x] P7.2 Add scalar comparison helpers. Child issue: #45.
 - [x] P7.3 Build validation reports from observed values. Child issue: #44.
-- [ ] P7.4 Summarize validation-core readiness. Child issue: #43.
+- [x] P7.4 Summarize validation-core readiness. Child issue: #43.
 
-Status: active.
+Status: ready for PR.
 
 ## Phase 8: Workbook Extraction Core
 
@@ -240,6 +240,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P7.4 in child issue #43 on branch `feature/p7-validation-scenario-comparison-core`.
-2. Summarize what the validation scenario, scalar comparison, and report-builder core now support.
-3. Identify the next inputs needed for workbook extraction or oracle-backed validation before preparing the Phase 7 PR.
+1. Open the Phase 7 PR from `feature/p7-validation-scenario-comparison-core` to `main`.
+2. Merge the Phase 7 PR after checks pass.
+3. Close parent issue #42 after the PR merges, then activate Phase 8 on `feature/p8-workbook-extraction-core`.
