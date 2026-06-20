@@ -822,7 +822,7 @@ def _named_range_blocker_category(code: str) -> BlockerCategory:
 
 def _named_range_blocker_disposition(code: str) -> BlockerDisposition:
     if code == "named_range_source_error":
-        return "blocked_by_design"
+        return "out_of_scope"
     if "unresolved" in code:
         return "next_target"
     return "deferred"
@@ -830,7 +830,7 @@ def _named_range_blocker_disposition(code: str) -> BlockerDisposition:
 
 def _named_range_next_action(code: str) -> str:
     if code == "named_range_source_error":
-        return "Report source workbook defined-name errors; do not silently generate normal behavior."
+        return "Ignore stale source workbook defined-name errors unless referenced by formulas or validation rules."
     if "unresolved" in code:
         return "Resolve named-range semantics or document why the range is out of conversion scope."
     return "Classify this named-range diagnostic before claiming conversion readiness."

@@ -137,4 +137,4 @@ def test_build_conversion_plan_classifies_named_range_source_errors(tmp_path: Pa
 
     assert plan.diagnostic_summary.named_ranges == {"named_range_source_error": 1}
     assert blockers_by_code["named_range_source_error"].category == "source_workbook_defect"
-    assert blockers_by_code["named_range_source_error"].disposition == "blocked_by_design"
+    assert blockers_by_code["named_range_source_error"].disposition == "out_of_scope"

@@ -53,11 +53,15 @@ Result:
 - preserved range dependencies in graph/index behavior so formula translation sees the range, not only
   the first expanded cell;
 - classified the remaining named-range diagnostic as `named_range_source_error`, a source workbook
-  `#REF!` defined-name defect that Sheetforge should not silently normalize.
+  `#REF!` defined-name defect;
+- verified the `ProductList` defined-name defect is not referenced by worksheet formulas, data
+  validations, or any other raw XLSX XML package entry outside the defined-name declaration itself;
+- marked that stale defined-name defect as out of scope for conversion blocker resolution.
 
 P19.1 rerun evidence:
 
 - 2020 named-range diagnostics changed from `unresolved_named_range: 6` to `named_range_source_error: 1`;
+- the remaining `named_range_source_error` is stale workbook metadata, not an active calculation blocker;
 - formula cells remained 296,976;
 - translated formula cells remained 296,976;
 - translation diagnostics remained empty;
