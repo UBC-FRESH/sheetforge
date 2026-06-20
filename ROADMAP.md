@@ -278,7 +278,7 @@ Status: complete pending PR.
 
 GitHub parent issue: #87
 
-Active branch: `feature/p18-conversion-planning-pipeline`
+Merged PR: #110
 
 Goal: turn extraction, graphing, translation, generation, and validation pieces into an explicit conversion plan workflow without pretending every workbook can be fully converted.
 
@@ -288,22 +288,24 @@ Goal: turn extraction, graphing, translation, generation, and validation pieces 
 - [x] P18.3 Add conversion planning CLI. Child issue: #100.
 - [x] P18.4 Test conversion planning workflow and closeout. Child issue: #98.
 
-Status: complete pending PR.
+Status: complete.
 
 ## Phase 19: Residual Blocker Resolution For Full Benchmark Import
 
 GitHub parent issue: #103
 
-Planned branch: `feature/p19-residual-blocker-resolution`
+Active branch: `feature/p19-residual-blocker-resolution`
+
+Open PR: #111
 
 Goal: resolve or explicitly scope the residual blockers exposed by the 2020 FABLE conversion plan before treating validation automation as meaningful evidence.
 
-- [ ] P19.1 Resolve or scope unresolved named ranges. Child issue: #107.
-- [ ] P19.2 Define circular dependency semantics and policy. Child issue: #105.
-- [ ] P19.3 Resolve deferred workbook dependency and volatile/cache blockers. Child issue: #106.
-- [ ] P19.4 Rerun 2020 benchmark to convergence and closeout. Child issue: #104.
+- [x] P19.1 Resolve or scope unresolved named ranges. Child issue: #107.
+- [x] P19.2 Define circular dependency semantics and policy. Child issue: #105.
+- [x] P19.3 Resolve deferred workbook dependency and volatile/cache blockers. Child issue: #106.
+- [x] P19.4 Rerun 2020 benchmark to convergence and closeout. Child issue: #104.
 
-Status: planned backlog.
+Status: complete pending PR.
 
 ## Phase 20: Automated Validation And Evaluation Reports
 
@@ -322,7 +324,7 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Open the Phase 18 PR from `feature/p18-conversion-planning-pipeline` back to `main`.
-2. Verify PR checks.
-3. Activate Phase 19 as the residual-blocker resolution phase before validation automation.
-4. Use `planning/phase-18-closeout-phase-19-inputs.md` and `planning/phase-19-residual-blocker-resolution-plan.md` as the Phase 19 starting notes.
+1. Open and review the Phase 19 PR from `feature/p19-residual-blocker-resolution` back to `main`.
+2. Merge the Phase 19 PR after checks pass.
+3. Close parent issue #103 after merge.
+4. Activate Phase 20 only after Phase 19 is merged back to `main`.

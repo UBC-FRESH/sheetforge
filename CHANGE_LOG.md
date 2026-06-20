@@ -96,6 +96,11 @@ This file records completed project work in chronological order.
 - Expanded conversion-plan residual-blocker classification across extraction, named ranges, formula extraction, graphing, validation, and generation diagnostics.
 - Closed Phase 18 with synthetic and 2020 FABLE conversion-plan workflow evidence and recorded Phase 19 validation automation inputs.
 - Re-scoped Phase 19 around residual blocker resolution for the 2020 FABLE benchmark and moved broad validation/evaluation automation to Phase 20.
+- Resolved P19.1 named-range blockers by supporting table-column structured-reference defined names and classifying remaining `#REF!` defined-name diagnostics as source workbook defects.
+- Marked the unreferenced `ProductList` defined-name `#REF!` defect as stale workbook metadata rather than an active conversion blocker.
+- Resolved the P19.2 circular dependency blocker by aligning dependency-graph execution edges with constrained static `OFFSET` semantics; the 2020 FABLE conversion plan now reports empty graph diagnostics and 296,976 of 296,976 formulas translated.
+- Resolved P19.3 residual policy classification so supported structured-reference and volatile-function extraction diagnostics are treated as provenance, while external dependencies and missing cached values have explicit deferred validation/conversion owners.
+- Closed Phase 19 with a final verbose 2020 FABLE conversion-plan rerun showing empty graph and translation diagnostics, 296,976 of 296,976 formulas translated, and all remaining residual blockers resolved, out of scope, or assigned to Phase 20 validation/generation owners.
 
 ## 2026-06-19
 

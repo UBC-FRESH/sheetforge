@@ -2,6 +2,7 @@ from pathlib import Path
 
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table
+from openpyxl.workbook.defined_name import DefinedName
 
 from sheetforge.extraction import CellRecord, extract_workbook
 from sheetforge.formulas import build_formula_reference_index, translate_formula_cell
@@ -43,6 +44,32 @@ def test_translate_formula_uses_reference_index(tmp_path: Path) -> None:
     assert expression.root is not None
     assert expression.root.operands[0].reference is not None
     assert expression.root.operands[0].reference.normalized == "Inputs!B2"
+
+
+def test_translate_named_range_backed_by_table_column_as_range(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "named-range-table-column.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet.append(["Amount"])
+    sheet.append([10])
+    sheet.append([20])
+    sheet["C1"] = "=SUM(TableAmounts)"
+    sheet.add_table(Table(displayName="InputTable", ref="A1:A3"))
+    source.defined_names.add(DefinedName("TableAmounts", attr_text="InputTable[[#Data],[Amount]]"))
+    source.save(workbook_path)
+    workbook = extract_workbook(workbook_path)
+    graph = build_dependency_graph(workbook)
+    reference_index = build_formula_reference_index(graph)
+    formula_cell = next(cell for cell in workbook.cells if cell.cell_ref == "Data!C1")
+
+    expression = translate_formula_cell(formula_cell, graph, reference_index=reference_index)
+
+    assert expression.translated is True
+    assert expression.root is not None
+    assert expression.root.kind == "function_call"
+    assert expression.root.operands[0].reference is not None
+    assert expression.root.operands[0].reference.normalized == "Data!A2:A3"
 
 
 def test_translate_sheet_relative_arithmetic_formula(tmp_path: Path) -> None:

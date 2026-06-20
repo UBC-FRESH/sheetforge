@@ -13,7 +13,7 @@ from openpyxl.formula.tokenizer import Tokenizer
 from openpyxl.utils.cell import get_column_letter, range_boundaries
 
 from sheetforge.extraction import CellRecord
-from sheetforge.graph import DependencyGraph
+from sheetforge.graph import DependencyEdge, DependencyGraph
 from sheetforge.references import WorkbookReference
 from sheetforge.references import normalize_reference
 
@@ -242,8 +242,14 @@ def build_formula_reference_index(graph: DependencyGraph) -> FormulaReferenceInd
 
     index: FormulaReferenceIndex = {}
     for edge in graph.execution_edges:
-        index.setdefault((edge.target.normalized, edge.raw_reference), edge.source)
+        index.setdefault((edge.target.normalized, edge.raw_reference), _expression_reference_from_edge(edge))
     return index
+
+
+def _expression_reference_from_edge(edge: DependencyEdge) -> WorkbookReference:
+    if edge.resolved_from is not None and edge.resolved_from.kind in {"cell", "range"}:
+        return edge.resolved_from
+    return edge.source
 
 
 @dataclass(frozen=True)
@@ -392,13 +398,14 @@ class _FormulaParser:
 
         for edge in self.graph.execution_edges:
             if edge.target.normalized == self.cell.cell_ref and edge.raw_reference == raw_reference:
-                if edge.source.kind == "structured":
+                source = _expression_reference_from_edge(edge)
+                if source.kind == "structured":
                     raise FormulaTranslationError(
                         "unsupported_structured_reference",
                         "structured references are not supported",
                         raw_reference,
                     )
-                return edge.source
+                return source
 
         if semantic_reference.kind == "structured":
             raise FormulaTranslationError(

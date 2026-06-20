@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-from openpyxl.utils.cell import range_boundaries
+from openpyxl.utils.cell import get_column_letter, range_boundaries
 
 from sheetforge.extraction import CellRecord, TableRecord, WorkbookRecord
 from sheetforge.references import WorkbookReference, normalize_reference
@@ -97,7 +97,14 @@ def build_dependency_graph(workbook: WorkbookRecord) -> DependencyGraph:
         current_sheet = target.sheet
         for raw_reference in cell.formula.raw_references:
             source = normalize_reference(raw_reference, current_sheet=current_sheet)
-            execution_edges = _execution_edges_for(source, target, raw_reference, named_ranges, tables)
+            execution_edges = _execution_edges_for(
+                source,
+                target,
+                raw_reference,
+                named_ranges,
+                tables,
+                raw_formula=cell.formula.raw_formula,
+            )
             diagnostic_code = source.diagnostic_code
             if source.kind == "structured" and all(edge.diagnostic_code is None for edge in execution_edges):
                 diagnostic_code = None
@@ -122,7 +129,7 @@ def _named_range_destinations(workbook: WorkbookRecord) -> dict[str, tuple[Workb
         named_range.name: tuple(
             reference
             for destination in named_range.destinations
-            if (reference := normalize_reference(destination)).kind == "cell"
+            if (reference := normalize_reference(destination)).kind in {"cell", "range"}
         )
         for named_range in workbook.named_ranges
     }
@@ -141,7 +148,26 @@ def _execution_edges_for(
     raw_reference: str,
     named_ranges: dict[str, tuple[WorkbookReference, ...]],
     tables: dict[str, TableRecord],
+    *,
+    raw_formula: str,
 ) -> tuple[DependencyEdge, ...]:
+    if static_offset_reference := _static_offset_reference(
+        raw_formula=raw_formula,
+        raw_reference=raw_reference,
+        source=source,
+        target=target,
+        tables=tables,
+    ):
+        return (
+            DependencyEdge(
+                source=static_offset_reference.shifted,
+                target=target,
+                edge_kind="execution",
+                raw_reference=raw_reference,
+                resolved_from=static_offset_reference.base,
+            ),
+        )
+
     if source.kind == "cell":
         return (
             DependencyEdge(
@@ -165,16 +191,30 @@ def _execution_edges_for(
         )
 
     if source.kind == "named_range" and source.name in named_ranges:
-        return tuple(
-            DependencyEdge(
-                source=destination,
-                target=target,
-                edge_kind="execution",
-                raw_reference=raw_reference,
-                resolved_from=source,
+        edges: list[DependencyEdge] = []
+        for destination in named_ranges[source.name]:
+            if destination.kind == "range":
+                edges.extend(
+                    DependencyEdge(
+                        source=range_cell,
+                        target=target,
+                        edge_kind="execution",
+                        raw_reference=raw_reference,
+                        resolved_from=destination,
+                    )
+                    for range_cell in _expand_range_reference(destination)
+                )
+                continue
+            edges.append(
+                DependencyEdge(
+                    source=destination,
+                    target=target,
+                    edge_kind="execution",
+                    raw_reference=raw_reference,
+                    resolved_from=source,
+                )
             )
-            for destination in named_ranges[source.name]
-        )
+        return tuple(edges)
 
     if source.kind == "structured":
         resolved = _resolve_structured_reference(source, target, tables)
@@ -198,6 +238,150 @@ def _execution_edges_for(
             diagnostic_code=source.diagnostic_code or f"unsupported_{source.kind}_dependency",
         ),
     )
+
+
+@dataclass(frozen=True)
+class _StaticOffsetReference:
+    base: WorkbookReference
+    shifted: WorkbookReference
+
+
+def _static_offset_reference(
+    *,
+    raw_formula: str,
+    raw_reference: str,
+    source: WorkbookReference,
+    target: WorkbookReference,
+    tables: dict[str, TableRecord],
+) -> _StaticOffsetReference | None:
+    for arguments in _offset_argument_lists(raw_formula):
+        if len(arguments) != 3:
+            continue
+        base_argument, row_argument, column_argument = arguments
+        if base_argument != raw_reference:
+            continue
+        row_offset = _static_integer_argument(row_argument)
+        column_offset = _static_integer_argument(column_argument)
+        if row_offset is None or column_offset is None:
+            continue
+        base = _static_offset_base(source, target, tables)
+        if base is None:
+            continue
+        shifted = _shift_cell_reference(base, row_offset=row_offset, column_offset=column_offset)
+        if shifted is not None:
+            return _StaticOffsetReference(base=base, shifted=shifted)
+    return None
+
+
+def _offset_argument_lists(raw_formula: str) -> tuple[tuple[str, ...], ...]:
+    formula = raw_formula.removeprefix("=")
+    argument_lists: list[tuple[str, ...]] = []
+    search_from = 0
+    while True:
+        offset_index = formula.upper().find("OFFSET(", search_from)
+        if offset_index == -1:
+            return tuple(argument_lists)
+        args_start = offset_index + len("OFFSET(")
+        args_end = _matching_parenthesis(formula, args_start - 1)
+        if args_end is None:
+            search_from = args_start
+            continue
+        argument_lists.append(_split_formula_arguments(formula[args_start:args_end]))
+        search_from = args_end + 1
+
+
+def _matching_parenthesis(formula: str, open_index: int) -> int | None:
+    depth = 0
+    bracket_depth = 0
+    in_string = False
+    index = open_index
+    while index < len(formula):
+        character = formula[index]
+        if character == '"':
+            in_string = not in_string
+        elif not in_string:
+            if character == "[":
+                bracket_depth += 1
+            elif character == "]" and bracket_depth:
+                bracket_depth -= 1
+            elif bracket_depth == 0 and character == "(":
+                depth += 1
+            elif bracket_depth == 0 and character == ")":
+                depth -= 1
+                if depth == 0:
+                    return index
+        index += 1
+    return None
+
+
+def _split_formula_arguments(arguments: str) -> tuple[str, ...]:
+    parts: list[str] = []
+    current: list[str] = []
+    paren_depth = 0
+    bracket_depth = 0
+    in_string = False
+    for character in arguments:
+        if character == '"':
+            in_string = not in_string
+            current.append(character)
+            continue
+        if not in_string:
+            if character == "[":
+                bracket_depth += 1
+            elif character == "]" and bracket_depth:
+                bracket_depth -= 1
+            elif bracket_depth == 0 and character == "(":
+                paren_depth += 1
+            elif bracket_depth == 0 and character == ")" and paren_depth:
+                paren_depth -= 1
+            elif bracket_depth == 0 and paren_depth == 0 and character == ",":
+                parts.append("".join(current).strip())
+                current = []
+                continue
+        current.append(character)
+    parts.append("".join(current).strip())
+    return tuple(parts)
+
+
+def _static_integer_argument(argument: str) -> int | None:
+    try:
+        return int(argument)
+    except ValueError:
+        return None
+
+
+def _static_offset_base(
+    source: WorkbookReference,
+    target: WorkbookReference,
+    tables: dict[str, TableRecord],
+) -> WorkbookReference | None:
+    if source.kind == "cell":
+        return source
+    if source.kind == "structured":
+        resolved = _resolve_structured_reference(source, target, tables)
+        return resolved if resolved is not None and resolved.kind == "cell" else None
+    return None
+
+
+def _shift_cell_reference(
+    reference: WorkbookReference,
+    *,
+    row_offset: int,
+    column_offset: int,
+) -> WorkbookReference | None:
+    if reference.sheet is None or reference.start_cell is None:
+        return None
+    try:
+        min_col, min_row, max_col, max_row = range_boundaries(reference.start_cell)
+    except ValueError:
+        return None
+    if min_col != max_col or min_row != max_row:
+        return None
+    shifted_column = min_col + column_offset
+    shifted_row = min_row + row_offset
+    if shifted_column < 1 or shifted_row < 1:
+        return None
+    return normalize_reference(f"{reference.sheet}!{get_column_letter(shifted_column)}{shifted_row}")
 
 
 def _resolve_structured_reference(
