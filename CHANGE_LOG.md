@@ -36,6 +36,7 @@ This file records completed project work in chronological order.
 - Merged Phase 10 PR #82, closed parent issue #48, and activated Phase 11 on `feature/p11-generated-python-model-core`.
 - Added generated Python module contract records, generation result records, generated symbol provenance, and cell-reference symbol naming.
 - Added standalone Python module generation from translated workbook logic, with provenance comments and generated-output tests using temporary files.
+- Closed the Phase 11 generated-model planning loop by recording Phase 12 oracle-backed validation inputs in `planning/phase-11-closeout-phase-12-inputs.md`.
 
 ## 2026-06-19
 
