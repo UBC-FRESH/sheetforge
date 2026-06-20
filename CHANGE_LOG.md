@@ -18,6 +18,7 @@ This file records completed project work in chronological order.
 - Opened Phase 7 PR #79 from `feature/p7-validation-scenario-comparison-core` back to `main`.
 - Merged Phase 7 PR #79, closed parent issue #42, and activated Phase 8 on `feature/p8-workbook-extraction-core`.
 - Added extraction record objects for workbooks, sheets, cells, formulas, named ranges, and extraction diagnostics.
+- Added `openpyxl` workbook extraction for sheets, non-empty cells, formulas, named ranges, and initial extraction diagnostics.
 
 ## 2026-06-19
 

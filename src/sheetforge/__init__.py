@@ -7,6 +7,7 @@ from sheetforge.extraction import (
     NamedRangeRecord,
     SheetRecord,
     WorkbookRecord,
+    extract_workbook,
 )
 from sheetforge.validation import (
     ComparisonResult,
@@ -44,5 +45,6 @@ __all__ = [
     "__version__",
     "build_validation_report",
     "compare_scalar_output",
+    "extract_workbook",
     "load_validation_scenario",
 ]

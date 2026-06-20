@@ -135,7 +135,7 @@ Active branch: `feature/p8-workbook-extraction-core`
 Goal: move the proven `openpyxl` extraction concepts into package code for workbook, worksheet, cell, formula, named-range, and diagnostic records.
 
 - [x] P8.1 Add extraction record objects. Child issue: #58.
-- [ ] P8.2 Implement `openpyxl` workbook extraction. Child issue: #57.
+- [x] P8.2 Implement `openpyxl` workbook extraction. Child issue: #57.
 - [ ] P8.3 Add extraction tests and closeout. Child issue: #56.
 
 Status: active.
@@ -240,6 +240,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P8.2 in child issue #57 on branch `feature/p8-workbook-extraction-core`.
-2. Implement `openpyxl` workbook extraction into the P8.1 record objects.
-3. Keep issue #57, parent issue #50, this roadmap, and `CHANGE_LOG.md` synchronized before Phase 8 closeout.
+1. Work P8.3 in child issue #56 on branch `feature/p8-workbook-extraction-core`.
+2. Summarize extraction-core readiness and identify Phase 9 dependency graph inputs.
+3. Keep issue #56, parent issue #50, this roadmap, and `CHANGE_LOG.md` synchronized before opening the Phase 8 PR.
