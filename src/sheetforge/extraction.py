@@ -272,7 +272,10 @@ def _workbook_diagnostics(workbook: Any) -> tuple[ExtractionDiagnostic, ...]:
 
 def _extract_named_range(name: str, defined_name: Any) -> NamedRangeRecord:
     diagnostics: tuple[ExtractionDiagnostic, ...] = ()
-    destinations = tuple(_cell_ref(sheet_name, coordinate) for sheet_name, coordinate in defined_name.destinations)
+    try:
+        destinations = tuple(_cell_ref(sheet_name, coordinate) for sheet_name, coordinate in defined_name.destinations)
+    except Exception:
+        destinations = ()
     status: NamedRangeStatus = "resolved" if destinations else "unresolved"
     if not destinations:
         diagnostics = (

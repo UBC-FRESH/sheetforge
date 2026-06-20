@@ -46,6 +46,7 @@ This file records completed project work in chronological order.
 - Merged Phase 12 PR #84 and closed parent issue #54.
 - Activated Phase 13 on `feature/p13-real-workbook-evaluation-lane`.
 - Defined the private workbook evaluation protocol for ignored local inputs, sanitized tracked notes, local commands, and stop conditions.
+- Ran the first private workbook evaluation locally under ignored `tmp/`, added a generic unresolved defined-name extraction fix, and recorded package extraction runtime as the first private-workbook blocker.
 
 ## 2026-06-19
 
