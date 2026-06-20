@@ -299,7 +299,7 @@ Active branch: `feature/p19-residual-blocker-resolution`
 Goal: resolve or explicitly scope the residual blockers exposed by the 2020 FABLE conversion plan before treating validation automation as meaningful evidence.
 
 - [x] P19.1 Resolve or scope unresolved named ranges. Child issue: #107.
-- [ ] P19.2 Define circular dependency semantics and policy. Child issue: #105.
+- [x] P19.2 Define circular dependency semantics and policy. Child issue: #105.
 - [ ] P19.3 Resolve deferred workbook dependency and volatile/cache blockers. Child issue: #106.
 - [ ] P19.4 Rerun 2020 benchmark to convergence and closeout. Child issue: #104.
 
@@ -322,7 +322,7 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P19.2 in child issue #105 on branch `feature/p19-residual-blocker-resolution`.
-2. Inspect the 2020 circular dependency diagnostic.
-3. Decide whether to support iterative calculation, preserve a blocking diagnostic, or exclude the cycle from generated scope.
-4. Rerun the 2020 conversion plan and show circular dependency status is resolved, scoped, or explicitly retained.
+1. Work P19.3 in child issue #106 on branch `feature/p19-residual-blocker-resolution`.
+2. Resolve or explicitly scope the remaining external-link, volatile-function, structured-reference-provenance, and missing-cached-value blockers.
+3. Update conversion-plan classification so supported structured-reference extraction provenance does not look like an unresolved conversion blocker.
+4. Rerun the 2020 conversion plan with verbose logging and confirm every remaining blocker has an owner, disposition, and next action.

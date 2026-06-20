@@ -111,6 +111,46 @@ def test_dependency_graph_resolves_current_row_structured_reference(tmp_path: Pa
     ]
 
 
+def test_dependency_graph_resolves_static_offset_structured_reference(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "static-offset-structured-reference.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet.append(["Amount", "Result"])
+    sheet.append([10, None])
+    sheet.append([20, "=OFFSET(InputTable[[#This Row],[Amount]],-1,0)"])
+    sheet.add_table(Table(displayName="InputTable", ref="A1:B3"))
+    source.save(workbook_path)
+
+    graph = build_dependency_graph(extract_workbook(workbook_path))
+    execution_edges = [edge for edge in graph.execution_edges if edge.target.normalized == "Data!B3"]
+
+    assert graph.diagnostics == ()
+    assert [(edge.source.normalized, edge.resolved_from.normalized) for edge in execution_edges if edge.resolved_from] == [
+        ("Data!A2", "Data!A3")
+    ]
+
+
+def test_dependency_graph_does_not_report_false_cycle_for_previous_row_offset(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "previous-row-offset-cycle.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet.append(["Carry", "Result"])
+    sheet.append([10, None])
+    sheet.append(["=B3", "=OFFSET(InputTable[[#This Row],[Carry]],-1,0)"])
+    sheet.add_table(Table(displayName="InputTable", ref="A1:B3"))
+    source.save(workbook_path)
+
+    graph = build_dependency_graph(extract_workbook(workbook_path))
+
+    assert "circular_dependency" not in graph.diagnostics
+    assert [(edge.source.normalized, edge.target.normalized, edge.resolved_from.normalized if edge.resolved_from else None) for edge in graph.execution_edges] == [
+        ("Data!B3", "Data!A3", None),
+        ("Data!A2", "Data!B3", "Data!A3"),
+    ]
+
+
 def test_dependency_graph_resolves_column_structured_reference_as_range(tmp_path: Path) -> None:
     workbook_path = tmp_path / "column-structured-reference.xlsx"
     source = Workbook()

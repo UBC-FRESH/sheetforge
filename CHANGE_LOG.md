@@ -98,6 +98,7 @@ This file records completed project work in chronological order.
 - Re-scoped Phase 19 around residual blocker resolution for the 2020 FABLE benchmark and moved broad validation/evaluation automation to Phase 20.
 - Resolved P19.1 named-range blockers by supporting table-column structured-reference defined names and classifying remaining `#REF!` defined-name diagnostics as source workbook defects.
 - Marked the unreferenced `ProductList` defined-name `#REF!` defect as stale workbook metadata rather than an active conversion blocker.
+- Resolved the P19.2 circular dependency blocker by aligning dependency-graph execution edges with constrained static `OFFSET` semantics; the 2020 FABLE conversion plan now reports empty graph diagnostics and 296,976 of 296,976 formulas translated.
 
 ## 2026-06-19
 

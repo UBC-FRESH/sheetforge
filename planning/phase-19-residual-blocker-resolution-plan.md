@@ -90,6 +90,43 @@ Acceptance criteria:
 - rerun the 2020 conversion plan and show circular dependency status is resolved, scoped, or retained as
   a deliberate blocker.
 
+Status: complete.
+
+Result:
+
+- inspected the 2020 circular dependency diagnostic with verbose local logging;
+- found that the reported two-cell cycles were not evidence of a workbook iterative-calculation model;
+- traced the cycle shape to formulas that use constrained static `OFFSET(...,-1,0)` references against
+  current-row table structured references;
+- determined that formula translation already resolves those cases as previous-row concrete cell
+  references, while the dependency graph was still using the raw current-row base reference as the
+  execution dependency;
+- updated graph execution semantics so constrained static three-argument `OFFSET` calls record the
+  shifted execution source cell and preserve the concrete base cell for formula translation;
+- kept simple direct circular references as graph diagnostics;
+- added synthetic regression coverage proving previous-row `OFFSET` patterns do not produce false
+  circular dependency diagnostics;
+- reran the 2020 FABLE primary benchmark conversion plan with verbose progress logging.
+
+P19.2 rerun evidence:
+
+- graph diagnostics changed from `circular_dependency: 1` to empty;
+- formula cells remained 296,976;
+- translated formula cells remained 296,976;
+- untranslated formula cells remained 0;
+- translation diagnostics remained empty;
+- conversion-plan workflow is now blocked only by generation/validation not being run and the remaining
+  P19.3 policy/provenance blockers.
+
+Local ignored evidence:
+
+```text
+tmp/logs/p19-circular-inspection.log
+tmp/logs/p19-static-offset-targeted-tests.log
+tmp/logs/p19-static-offset-2020-conversion-plan.log
+tmp/conversion-plans/p19-static-offset-fable-2020.json
+```
+
 ### P19.3 Resolve Deferred Workbook Dependency And Volatile/Cache Blockers
 
 Goal: give each deferred blocker an implementation or policy owner.
