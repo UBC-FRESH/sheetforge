@@ -15,6 +15,7 @@ from sheetforge.formulas import (
     FormulaTranslationDiagnostic,
     translate_formula_cell,
 )
+from sheetforge.formulas_oracle import FormulasWorkbookOracle
 from sheetforge.generation import (
     GeneratedModuleContract,
     GeneratedSymbol,
@@ -70,6 +71,7 @@ __all__ = [
     "FormulaExpressionNode",
     "FormulaRecord",
     "FormulaTranslationDiagnostic",
+    "FormulasWorkbookOracle",
     "GeneratedModuleContract",
     "GeneratedSymbol",
     "GenerationDiagnostic",

@@ -40,6 +40,7 @@ This file records completed project work in chronological order.
 - Opened Phase 11 PR #83 from `feature/p11-generated-python-model-core` back to `main`.
 - Merged Phase 11 PR #83, closed parent issue #47, and activated Phase 12 on `feature/p12-oracle-backed-validation`.
 - Added oracle interface records and the optional `formulas` dependency boundary for oracle-backed validation.
+- Added a `formulas`-backed oracle for synthetic workbook outputs with JSON scalar normalization and unsupported-input diagnostics.
 
 ## 2026-06-19
 

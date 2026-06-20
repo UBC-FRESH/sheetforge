@@ -21,6 +21,7 @@ oracle = [
   "formulas"
 ]
 test = [
+  "formulas",
   "pytest>=8"
 ]
 
