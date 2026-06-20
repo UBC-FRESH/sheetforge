@@ -132,13 +132,15 @@ GitHub parent issue: #50
 
 Active branch: `feature/p8-workbook-extraction-core`
 
+Open PR: #80
+
 Goal: move the proven `openpyxl` extraction concepts into package code for workbook, worksheet, cell, formula, named-range, and diagnostic records.
 
 - [x] P8.1 Add extraction record objects. Child issue: #58.
 - [x] P8.2 Implement `openpyxl` workbook extraction. Child issue: #57.
 - [x] P8.3 Add extraction tests and closeout. Child issue: #56.
 
-Status: ready for PR.
+Status: PR open.
 
 ## Phase 9: Dependency Graph Core
 
@@ -240,6 +242,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Open the Phase 8 PR from `feature/p8-workbook-extraction-core` to `main`.
-2. Merge the Phase 8 PR after checks pass.
-3. Close parent issue #50 after the PR merges, then activate Phase 9 on `feature/p9-dependency-graph-core`.
+1. Merge Phase 8 PR #80 after checks pass.
+2. Close parent issue #50 after PR #80 merges.
+3. Activate Phase 9 on `feature/p9-dependency-graph-core`.
