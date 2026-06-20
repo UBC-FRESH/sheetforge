@@ -9,6 +9,7 @@ This file records completed project work in chronological order.
 - Added baseline and intentional numeric mismatch regression tests using the synthetic fixture assets and validation report core.
 - Added the first default GitHub Actions workflow for editable install and `python -m pytest`.
 - Opened Phase 6 PR #41 from `feature/p6-initial-package-validation-core` back to `main`.
+- Merged Phase 6 PR #41, closed parent issue #34, and activated Phase 7 on `feature/p7-validation-scenario-comparison-core`.
 
 ## 2026-06-19
 

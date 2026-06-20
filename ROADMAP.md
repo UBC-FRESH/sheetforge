@@ -99,7 +99,7 @@ GitHub parent issue: #34
 
 Active branch: `feature/p6-initial-package-validation-core`
 
-Open PR: #41
+Merged PR: #41
 
 Goal: build the first durable code-bearing slice from the Phase 5 decisions: package skeleton, validation report core, synthetic fixtures, regression tests, and minimal default CI after tests exist.
 
@@ -109,10 +109,25 @@ Goal: build the first durable code-bearing slice from the Phase 5 decisions: pac
 - [x] P6.4 Add baseline and mismatch regression tests. Child issue: #36.
 - [x] P6.5 Add first default CI workflow. Child issue: #39.
 
-Status: ready for PR.
+Status: complete.
+
+## Phase 7: Validation Scenario And Comparison Core
+
+GitHub parent issue: #42
+
+Active branch: `feature/p7-validation-scenario-comparison-core`
+
+Goal: turn the Phase 6 validation report records and synthetic fixture JSON into reusable scenario loading and scalar comparison helpers. This phase should not add workbook extraction, code generation, Excel-backed validation, CLI, or broad oracle execution.
+
+- [ ] P7.1 Add validation scenario objects and loader. Child issue: #46.
+- [ ] P7.2 Add scalar comparison helpers. Child issue: #45.
+- [ ] P7.3 Build validation reports from observed values. Child issue: #44.
+- [ ] P7.4 Summarize validation-core readiness. Child issue: #43.
+
+Status: active.
 
 ## Current Next Steps
 
-1. Review and merge Phase 6 PR #41 from `feature/p6-initial-package-validation-core` back to `main`.
-2. After PR #41 merges, close parent issue #34.
-3. Plan the next implementation phase from the Phase 6 results.
+1. Work P7.1 in child issue #46 on branch `feature/p7-validation-scenario-comparison-core`.
+2. Add validation scenario objects and a JSON loader using the tracked synthetic scenario fixture.
+3. Keep issue #46, this roadmap, and `CHANGE_LOG.md` synchronized before moving to scalar comparison helpers.
