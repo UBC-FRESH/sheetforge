@@ -141,6 +141,44 @@ def test_extract_workbook_reads_table_metadata(tmp_path: Path) -> None:
     ]
 
 
+def test_extract_workbook_resolves_structured_defined_name_to_table_column_range(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "structured-defined-name.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet.append(["Product", "Amount"])
+    sheet.append(["A", 10])
+    sheet.append(["B", 20])
+    sheet.add_table(Table(displayName="InputTable", ref="A1:B3"))
+    source.defined_names.add(DefinedName("ProductList", attr_text="InputTable[[#Data],[Product]]"))
+    source.save(workbook_path)
+
+    workbook = extract_workbook(workbook_path)
+    named_range = workbook.named_ranges[0]
+
+    assert named_range.name == "ProductList"
+    assert named_range.destinations == ("Data!A2:A3",)
+    assert named_range.status == "resolved"
+    assert named_range.diagnostics == ()
+
+
+def test_extract_workbook_classifies_ref_defined_name_as_source_error(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "ref-defined-name.xlsx"
+    source = Workbook()
+    source.active.title = "Inputs"
+    source.active["A1"] = 1
+    source.defined_names.add(DefinedName("BrokenName", attr_text="#REF!"))
+    source.save(workbook_path)
+
+    workbook = extract_workbook(workbook_path)
+    named_range = workbook.named_ranges[0]
+
+    assert named_range.name == "BrokenName"
+    assert named_range.destinations == ()
+    assert named_range.status == "unresolved"
+    assert named_range.diagnostics[0].code == "named_range_source_error"
+
+
 def test_extract_workbook_reports_unresolved_non_range_defined_name(tmp_path: Path) -> None:
     workbook_path = tmp_path / "defined-name-formula.xlsx"
     source = Workbook()

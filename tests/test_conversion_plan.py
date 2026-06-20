@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from openpyxl import Workbook
+from openpyxl.workbook.defined_name import DefinedName
 
 from sheetforge.conversion import ConversionPlan, build_conversion_plan
 from sheetforge.extraction import extract_workbook
@@ -112,3 +113,28 @@ def test_build_conversion_plan_classifies_translation_blockers(tmp_path: Path) -
     assert blockers_by_code["unsupported_function"].category == "unsupported_formula_semantics"
     assert blockers_by_code["unsupported_function"].disposition == "next_target"
     assert plan.recommendations[0].action == "Implement support or a sharper diagnostic for this translation blocker."
+
+
+def test_build_conversion_plan_classifies_named_range_source_errors(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "named-range-source-error.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Calc"
+    sheet["A1"] = 1
+    source.defined_names.add(DefinedName("BrokenName", attr_text="#REF!"))
+    source.save(workbook_path)
+    workbook = extract_workbook(workbook_path)
+    graph = build_dependency_graph(workbook)
+
+    plan = build_conversion_plan(
+        plan_id="named-range-source-error-plan",
+        workbook=workbook,
+        graph=graph,
+        expressions={},
+        benchmark_role="synthetic_fixture",
+    )
+    blockers_by_code = {blocker.diagnostic_code: blocker for blocker in plan.residual_blockers}
+
+    assert plan.diagnostic_summary.named_ranges == {"named_range_source_error": 1}
+    assert blockers_by_code["named_range_source_error"].category == "source_workbook_defect"
+    assert blockers_by_code["named_range_source_error"].disposition == "blocked_by_design"

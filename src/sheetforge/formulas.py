@@ -242,7 +242,8 @@ def build_formula_reference_index(graph: DependencyGraph) -> FormulaReferenceInd
 
     index: FormulaReferenceIndex = {}
     for edge in graph.execution_edges:
-        index.setdefault((edge.target.normalized, edge.raw_reference), edge.source)
+        reference = edge.resolved_from if edge.resolved_from is not None and edge.resolved_from.kind == "range" else edge.source
+        index.setdefault((edge.target.normalized, edge.raw_reference), reference)
     return index
 
 

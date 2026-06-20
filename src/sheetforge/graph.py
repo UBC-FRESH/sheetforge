@@ -122,7 +122,7 @@ def _named_range_destinations(workbook: WorkbookRecord) -> dict[str, tuple[Workb
         named_range.name: tuple(
             reference
             for destination in named_range.destinations
-            if (reference := normalize_reference(destination)).kind == "cell"
+            if (reference := normalize_reference(destination)).kind in {"cell", "range"}
         )
         for named_range in workbook.named_ranges
     }
@@ -165,16 +165,30 @@ def _execution_edges_for(
         )
 
     if source.kind == "named_range" and source.name in named_ranges:
-        return tuple(
-            DependencyEdge(
-                source=destination,
-                target=target,
-                edge_kind="execution",
-                raw_reference=raw_reference,
-                resolved_from=source,
+        edges: list[DependencyEdge] = []
+        for destination in named_ranges[source.name]:
+            if destination.kind == "range":
+                edges.extend(
+                    DependencyEdge(
+                        source=range_cell,
+                        target=target,
+                        edge_kind="execution",
+                        raw_reference=raw_reference,
+                        resolved_from=destination,
+                    )
+                    for range_cell in _expand_range_reference(destination)
+                )
+                continue
+            edges.append(
+                DependencyEdge(
+                    source=destination,
+                    target=target,
+                    edge_kind="execution",
+                    raw_reference=raw_reference,
+                    resolved_from=source,
+                )
             )
-            for destination in named_ranges[source.name]
-        )
+        return tuple(edges)
 
     if source.kind == "structured":
         resolved = _resolve_structured_reference(source, target, tables)

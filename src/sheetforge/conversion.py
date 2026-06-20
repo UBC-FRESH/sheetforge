@@ -813,18 +813,24 @@ def _extraction_next_action(code: str) -> str:
 
 
 def _named_range_blocker_category(code: str) -> BlockerCategory:
+    if code == "named_range_source_error":
+        return "source_workbook_defect"
     if "named_range" in code or "defined_name" in code:
         return "unsupported_reference_semantics"
     return "unknown"
 
 
 def _named_range_blocker_disposition(code: str) -> BlockerDisposition:
+    if code == "named_range_source_error":
+        return "blocked_by_design"
     if "unresolved" in code:
         return "next_target"
     return "deferred"
 
 
 def _named_range_next_action(code: str) -> str:
+    if code == "named_range_source_error":
+        return "Report source workbook defined-name errors; do not silently generate normal behavior."
     if "unresolved" in code:
         return "Resolve named-range semantics or document why the range is out of conversion scope."
     return "Classify this named-range diagnostic before claiming conversion readiness."

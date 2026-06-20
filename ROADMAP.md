@@ -278,7 +278,7 @@ Status: complete pending PR.
 
 GitHub parent issue: #87
 
-Active branch: `feature/p18-conversion-planning-pipeline`
+Merged PR: #110
 
 Goal: turn extraction, graphing, translation, generation, and validation pieces into an explicit conversion plan workflow without pretending every workbook can be fully converted.
 
@@ -288,22 +288,22 @@ Goal: turn extraction, graphing, translation, generation, and validation pieces 
 - [x] P18.3 Add conversion planning CLI. Child issue: #100.
 - [x] P18.4 Test conversion planning workflow and closeout. Child issue: #98.
 
-Status: complete pending PR.
+Status: complete.
 
 ## Phase 19: Residual Blocker Resolution For Full Benchmark Import
 
 GitHub parent issue: #103
 
-Planned branch: `feature/p19-residual-blocker-resolution`
+Active branch: `feature/p19-residual-blocker-resolution`
 
 Goal: resolve or explicitly scope the residual blockers exposed by the 2020 FABLE conversion plan before treating validation automation as meaningful evidence.
 
-- [ ] P19.1 Resolve or scope unresolved named ranges. Child issue: #107.
+- [x] P19.1 Resolve or scope unresolved named ranges. Child issue: #107.
 - [ ] P19.2 Define circular dependency semantics and policy. Child issue: #105.
 - [ ] P19.3 Resolve deferred workbook dependency and volatile/cache blockers. Child issue: #106.
 - [ ] P19.4 Rerun 2020 benchmark to convergence and closeout. Child issue: #104.
 
-Status: planned backlog.
+Status: active.
 
 ## Phase 20: Automated Validation And Evaluation Reports
 
@@ -322,7 +322,7 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Open the Phase 18 PR from `feature/p18-conversion-planning-pipeline` back to `main`.
-2. Verify PR checks.
-3. Activate Phase 19 as the residual-blocker resolution phase before validation automation.
-4. Use `planning/phase-18-closeout-phase-19-inputs.md` and `planning/phase-19-residual-blocker-resolution-plan.md` as the Phase 19 starting notes.
+1. Work P19.2 in child issue #105 on branch `feature/p19-residual-blocker-resolution`.
+2. Inspect the 2020 circular dependency diagnostic.
+3. Decide whether to support iterative calculation, preserve a blocking diagnostic, or exclude the cycle from generated scope.
+4. Rerun the 2020 conversion plan and show circular dependency status is resolved, scoped, or explicitly retained.

@@ -269,12 +269,14 @@ def extract_workbook(path: str | Path, progress: Callable[[str], None] | None = 
         for index, worksheet in enumerate(workbook.worksheets)
     )
     _progress(progress, f"sheets extracted count={len(sheets)}")
-    _progress(progress, "named ranges start")
-    named_ranges = tuple(_extract_named_range(name, defined_name) for name, defined_name in workbook.defined_names.items())
-    _progress(progress, f"named ranges done count={len(named_ranges)}")
     _progress(progress, "tables start")
     tables = tuple(table for worksheet in workbook.worksheets for table in _extract_tables(worksheet))
     _progress(progress, f"tables done count={len(tables)}")
+    _progress(progress, "named ranges start")
+    named_ranges = tuple(
+        _extract_named_range(name, defined_name, tables=tables) for name, defined_name in workbook.defined_names.items()
+    )
+    _progress(progress, f"named ranges done count={len(named_ranges)}")
 
     cell_records: list[CellRecord] = []
     for index, worksheet in enumerate(workbook.worksheets, start=1):
@@ -330,18 +332,28 @@ def _workbook_diagnostics(workbook: Any) -> tuple[ExtractionDiagnostic, ...]:
     return tuple(diagnostics)
 
 
-def _extract_named_range(name: str, defined_name: Any) -> NamedRangeRecord:
+def _extract_named_range(name: str, defined_name: Any, *, tables: tuple[TableRecord, ...] = ()) -> NamedRangeRecord:
     diagnostics: tuple[ExtractionDiagnostic, ...] = ()
     try:
         destinations = tuple(_cell_ref(sheet_name, coordinate) for sheet_name, coordinate in defined_name.destinations)
     except Exception:
         destinations = ()
+    if not destinations:
+        structured_destination = _structured_defined_name_destination(str(defined_name.attr_text), tables)
+        if structured_destination is not None:
+            destinations = (structured_destination,)
     status: NamedRangeStatus = "resolved" if destinations else "unresolved"
     if not destinations:
+        code = "named_range_source_error" if str(defined_name.attr_text).upper() == "#REF!" else "unresolved_named_range"
+        message = (
+            "named range definition contains a source workbook error"
+            if code == "named_range_source_error"
+            else "named range destinations could not be resolved"
+        )
         diagnostics = (
             ExtractionDiagnostic(
-                code="unresolved_named_range",
-                message="named range destinations could not be resolved",
+                code=code,
+                message=message,
                 severity="warning",
                 location=name,
                 raw_value=defined_name.attr_text,
@@ -384,6 +396,66 @@ def _extract_tables(worksheet: Any) -> tuple[TableRecord, ...]:
             )
         )
     return tuple(records)
+
+
+def _structured_defined_name_destination(definition: str, tables: tuple[TableRecord, ...]) -> str | None:
+    parsed = _parse_structured_defined_name(definition)
+    if parsed is None:
+        return None
+
+    table = next((candidate for candidate in tables if candidate.name == parsed.table_name), None)
+    if table is None:
+        return None
+
+    try:
+        min_col, min_row, max_col, max_row = range_boundaries(table.ref)
+    except ValueError:
+        return None
+
+    try:
+        column_offset = table.columns.index(parsed.column)
+    except ValueError:
+        return None
+
+    column_name = get_column_letter(min_col + column_offset)
+    start_row = min_row if parsed.include_headers else min_row + 1
+    end_row = max_row
+    if start_row > end_row:
+        return None
+    return f"{table.sheet}!{column_name}{start_row}:{column_name}{end_row}"
+
+
+@dataclass(frozen=True)
+class _StructuredDefinedName:
+    table_name: str
+    column: str
+    include_headers: bool = False
+
+
+def _parse_structured_defined_name(definition: str) -> _StructuredDefinedName | None:
+    if not _is_structured_reference(definition):
+        return None
+
+    table_name = definition.split("[", 1)[0]
+    if not table_name:
+        return None
+
+    bracketed_parts = _bracketed_parts(definition)
+    column = next(
+        (
+            _clean_structured_selector(part)
+            for part in reversed(bracketed_parts)
+            if not part.startswith("#")
+        ),
+        None,
+    )
+    if column is None:
+        return None
+    return _StructuredDefinedName(
+        table_name=table_name,
+        column=column,
+        include_headers=any(part in {"#All", "#Headers"} for part in bracketed_parts),
+    )
 
 
 def _extract_sheet_cells(
@@ -557,3 +629,34 @@ def _is_external_reference(reference: str) -> bool:
 
 def _is_structured_reference(reference: str) -> bool:
     return "[" in reference and "]" in reference and not _is_external_reference(reference)
+
+
+def _bracketed_parts(reference: str) -> tuple[str, ...]:
+    parts: list[str] = []
+    current: list[str] = []
+    depth = 0
+    for character in reference:
+        if character == "[":
+            if depth > 0:
+                current.append(character)
+            depth += 1
+            continue
+        if character == "]":
+            depth -= 1
+            if depth == 0:
+                part = "".join(current)
+                current = []
+                if part.startswith("[") and part.endswith("]"):
+                    parts.extend(_bracketed_parts(part))
+                elif part:
+                    parts.append(part)
+                continue
+            current.append(character)
+            continue
+        if depth > 0:
+            current.append(character)
+    return tuple(parts)
+
+
+def _clean_structured_selector(selector: str) -> str:
+    return selector.removeprefix("@").replace("''", "'")

@@ -3,6 +3,7 @@ from pathlib import Path
 
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table
+from openpyxl.workbook.defined_name import DefinedName
 
 from sheetforge.extraction import extract_workbook
 from sheetforge.graph import DependencyGraph, build_dependency_graph
@@ -154,6 +155,29 @@ def test_dependency_graph_resolves_whole_table_structured_references_as_ranges(t
     ]
     assert [(edge.source.kind, edge.source.normalized, edge.resolved_from.normalized) for edge in all_edges if edge.resolved_from] == [
         ("range", "Data!A1:B3", "InputTable[#All]")
+    ]
+
+
+def test_dependency_graph_expands_named_range_backed_by_table_column(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "named-range-table-column.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet.append(["Amount"])
+    sheet.append([10])
+    sheet.append([20])
+    sheet["C1"] = "=SUM(TableAmounts)"
+    sheet.add_table(Table(displayName="InputTable", ref="A1:A3"))
+    source.defined_names.add(DefinedName("TableAmounts", attr_text="InputTable[[#Data],[Amount]]"))
+    source.save(workbook_path)
+
+    graph = build_dependency_graph(extract_workbook(workbook_path))
+    execution_edges = [edge for edge in graph.execution_edges if edge.target.normalized == "Data!C1"]
+
+    assert graph.diagnostics == ()
+    assert [(edge.source.normalized, edge.resolved_from.normalized) for edge in execution_edges if edge.resolved_from] == [
+        ("Data!A2", "Data!A2:A3"),
+        ("Data!A3", "Data!A2:A3"),
     ]
 
 

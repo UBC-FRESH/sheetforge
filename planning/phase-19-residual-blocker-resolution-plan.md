@@ -42,6 +42,36 @@ Acceptance criteria:
 - otherwise classify each unresolved name as out-of-scope or source/workbook dependency with provenance;
 - rerun the 2020 conversion plan and show no unclassified named-range blockers.
 
+Status: complete.
+
+Result:
+
+- inspected the 6 unresolved named-range diagnostics from the 2020 benchmark;
+- identified 5 table-column structured-reference defined names that openpyxl did not expose through
+  `defined_name.destinations`;
+- added generic extraction support that resolves those table-column defined names to concrete cell ranges;
+- preserved range dependencies in graph/index behavior so formula translation sees the range, not only
+  the first expanded cell;
+- classified the remaining named-range diagnostic as `named_range_source_error`, a source workbook
+  `#REF!` defined-name defect that Sheetforge should not silently normalize.
+
+P19.1 rerun evidence:
+
+- 2020 named-range diagnostics changed from `unresolved_named_range: 6` to `named_range_source_error: 1`;
+- formula cells remained 296,976;
+- translated formula cells remained 296,976;
+- translation diagnostics remained empty;
+- no unclassified named-range blockers remain.
+
+Local ignored evidence:
+
+```text
+tmp/logs/p19-named-range-inspection.log
+tmp/logs/p19-named-range-targeted-verification.log
+tmp/logs/p19-named-range-2020-rerun.log
+tmp/conversion-plans/p19-named-range-fable-2020.json
+```
+
 ### P19.2 Define Circular Dependency Semantics And Policy
 
 Goal: stop treating circularity as a vague graph warning.
