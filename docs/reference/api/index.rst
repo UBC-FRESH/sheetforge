@@ -34,6 +34,18 @@ Generation
 .. automodule:: sheetforge.generation
    :members:
 
+Generated Model Execution
+-------------------------
+
+.. automodule:: sheetforge.execution
+   :members:
+
+Evaluation Orchestration
+------------------------
+
+.. automodule:: sheetforge.evaluation
+   :members:
+
 Conversion Planning
 -------------------
 

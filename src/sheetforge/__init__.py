@@ -10,6 +10,15 @@ from sheetforge.extraction import (
     WorkbookRecord,
     extract_workbook,
 )
+from sheetforge.execution import (
+    ExecutionDiagnostic,
+    GeneratedExecutionResult,
+    execute_generated_model,
+)
+from sheetforge.evaluation import (
+    ValidationEvaluationResult,
+    evaluate_generated_model,
+)
 from sheetforge.conversion import (
     ConversionPlan,
     ConversionSource,
@@ -84,12 +93,14 @@ __all__ = [
     "Diagnostic",
     "DiagnosticSummary",
     "ExtractionDiagnostic",
+    "ExecutionDiagnostic",
     "FormulaExpression",
     "FormulaExpressionNode",
     "FormulaRecord",
     "FormulaTranslationDiagnostic",
     "FormulasWorkbookOracle",
     "GeneratedModuleContract",
+    "GeneratedExecutionResult",
     "GeneratedSymbol",
     "GenerationSummary",
     "GenerationDiagnostic",
@@ -108,6 +119,7 @@ __all__ = [
     "SheetRecord",
     "TableRecord",
     "ValidationReport",
+    "ValidationEvaluationResult",
     "ValidationScenario",
     "ValidationSummary",
     "WorkbookOracle",
@@ -121,6 +133,8 @@ __all__ = [
     "build_oracle_validation_report",
     "build_validation_report",
     "compare_scalar_output",
+    "execute_generated_model",
+    "evaluate_generated_model",
     "extract_workbook",
     "generate_python_module",
     "load_validation_scenario",

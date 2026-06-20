@@ -315,16 +315,50 @@ Active branch: `feature/p20-automated-validation-reports`
 
 Goal: after residual blockers have concrete resolution or scope decisions, make generated-model execution, oracle execution where available, cached-value comparisons, and benchmark evaluation reports repeatable through APIs and CLI commands.
 
-- [ ] P20.1 Add generated model execution API. Child issue: #113.
-- [ ] P20.2 Orchestrate oracle and cached-value validation. Child issue: #114.
-- [ ] P20.3 Add evaluation report CLI and JSON outputs. Child issue: #115.
-- [ ] P20.4 Run repeatable evaluation and closeout. Child issue: #116.
+- [x] P20.1 Add generated model execution API. Child issue: #113.
+- [x] P20.2 Orchestrate oracle and cached-value validation. Child issue: #114.
+- [x] P20.3 Add evaluation report CLI and JSON outputs. Child issue: #115.
+- [x] P20.4 Run repeatable evaluation and closeout. Child issue: #116.
 
-Status: active.
+Status: complete pending PR merge.
+
+Closeout evidence:
+
+- Synthetic generated-model evaluation passed end to end through the CLI with generated outputs
+  `Summary!B2 = 70.2` and `Summary!B3 = "ok"` and no cached-validation mismatches.
+- The 2020 FABLE benchmark rerun completed extraction, dependency graphing, and formula translation:
+  54 sheets, 395,482 extracted cells, 296,976 formula cells, 296,976 translated formulas,
+  3,543,800 dependency edges, no graph diagnostics, and no translation diagnostics.
+- Full 2020 workbook equivalence is not proven yet because Sheetforge does not yet infer and
+  materialize a full generated-model contract with topologically ordered symbols and selected
+  validation outputs for that workbook.
+
+Ignored local evidence:
+
+- `tmp/p20-synthetic-evaluation/summary.json`
+- `tmp/p20-fable-2020-evaluation/closeout-summary.json`
+- `tmp/logs/p20-synthetic-evaluation.log`
+- `tmp/logs/p20-fable-2020-evaluation.log`
+- `tmp/logs/p20-fable-2020-evaluation-closeout.log`
+
+## Phase 21: Full Benchmark Model Materialization And Validation
+
+GitHub parent issue: to create after Phase 20 merge.
+
+Goal: turn the clean 2020 FABLE extraction, graph, and translation evidence into an executable generated
+Python benchmark model, then validate selected benchmark outputs and keep iterating on concrete blockers
+until generated-model equivalence is either proven or sharply scoped.
+
+- [ ] P21.1 Infer generated-model contracts from dependency graphs and selected outputs.
+- [ ] P21.2 Materialize the 2020 FABLE generated model with topologically ordered symbols.
+- [ ] P21.3 Validate selected 2020 FABLE outputs against cached or oracle values.
+- [ ] P21.4 Rerun the blocker-find-resolve-continue loop until the benchmark result converges.
+
+Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P20.1 in child issue #113 on branch `feature/p20-automated-validation-reports`.
-2. Define a small generated-model execution API for explicit contracts and output refs.
-3. Keep execution isolated from workbook extraction and return JSON-serializable output values and diagnostics.
-4. Add synthetic tests before using benchmark workbooks.
+1. Finish Phase 20 closeout on branch `feature/p20-automated-validation-reports`.
+2. Close child issue #116 after docs, verification, and commit are complete.
+3. Open and merge the Phase 20 PR back to `main`.
+4. Activate Phase 21 with GitHub parent and child issues before implementation.
