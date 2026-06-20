@@ -7,6 +7,7 @@ model comparisons themselves.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -411,3 +412,30 @@ class ValidationReport:
             "mismatches": [comparison.to_dict() for comparison in self.mismatches],
             "diagnostics": [diagnostic.to_dict() for diagnostic in self.diagnostics],
         }
+
+
+def build_validation_report(
+    *,
+    scenario: ValidationScenario,
+    generated_values: Mapping[str, JsonValue],
+    oracle_values: Mapping[str, JsonValue],
+) -> ValidationReport:
+    """Build a report from scenario outputs and already-observed values."""
+
+    comparisons = tuple(
+        compare_scalar_output(
+            scenario_id=scenario.scenario_id,
+            output=output,
+            generated=generated_values.get(output.cell_ref, MISSING_VALUE),
+            oracle=oracle_values.get(output.cell_ref, MISSING_VALUE),
+            oracle_backend=scenario.oracle.backend,
+            default_numeric_tolerance=scenario.comparison.default_numeric_tolerance,
+        )
+        for output in scenario.outputs
+    )
+
+    return ValidationReport(
+        scenario_id=scenario.scenario_id,
+        oracle_backend=scenario.oracle.backend,
+        comparisons=comparisons,
+    )

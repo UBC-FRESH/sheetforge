@@ -13,6 +13,7 @@ This file records completed project work in chronological order.
 - Expanded the roadmap and GitHub issue backlog through Phase 15, with the long-term sequence recorded in `planning/long-term-roadmap.md`.
 - Added validation scenario objects and a JSON loader for fixture-backed validation scenario files.
 - Added scalar comparison helpers for numeric tolerance, exact text, missing outputs, and unsupported output diagnostics.
+- Added a validation report builder that compares scenario outputs from observed generated and oracle value mappings.
 
 ## 2026-06-19
 

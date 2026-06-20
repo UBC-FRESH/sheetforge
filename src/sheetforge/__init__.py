@@ -10,6 +10,7 @@ from sheetforge.validation import (
     ScenarioOutput,
     ValidationReport,
     ValidationScenario,
+    build_validation_report,
     compare_scalar_output,
     load_validation_scenario,
 )
@@ -27,6 +28,7 @@ __all__ = [
     "ValidationReport",
     "ValidationScenario",
     "__version__",
+    "build_validation_report",
     "compare_scalar_output",
     "load_validation_scenario",
 ]

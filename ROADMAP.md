@@ -121,7 +121,7 @@ Goal: turn the Phase 6 validation report records and synthetic fixture JSON into
 
 - [x] P7.1 Add validation scenario objects and loader. Child issue: #46.
 - [x] P7.2 Add scalar comparison helpers. Child issue: #45.
-- [ ] P7.3 Build validation reports from observed values. Child issue: #44.
+- [x] P7.3 Build validation reports from observed values. Child issue: #44.
 - [ ] P7.4 Summarize validation-core readiness. Child issue: #43.
 
 Status: active.
@@ -240,6 +240,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P7.3 in child issue #44 on branch `feature/p7-validation-scenario-comparison-core`.
-2. Build validation reports from scenario outputs and generated/oracle observed value mappings.
-3. Keep issue #44, this roadmap, and `CHANGE_LOG.md` synchronized before summarizing validation-core readiness.
+1. Work P7.4 in child issue #43 on branch `feature/p7-validation-scenario-comparison-core`.
+2. Summarize what the validation scenario, scalar comparison, and report-builder core now support.
+3. Identify the next inputs needed for workbook extraction or oracle-backed validation before preparing the Phase 7 PR.
