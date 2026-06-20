@@ -190,7 +190,7 @@ Active branch: `feature/p12-oracle-backed-validation`
 
 Goal: introduce optional source-workbook oracle execution, starting with a pure-Python `formulas`-backed lane before any Excel-backed validation.
 
-- [ ] P12.1 Define oracle interface and optional dependency boundary. Child issue: #70.
+- [x] P12.1 Define oracle interface and optional dependency boundary. Child issue: #70.
 - [ ] P12.2 Add `formulas`-backed oracle for synthetic workbook. Child issue: #69.
 - [ ] P12.3 Compare generated model against oracle outputs. Child issue: #68.
 
@@ -240,6 +240,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P12.1 in child issue #70 on branch `feature/p12-oracle-backed-validation`.
-2. Define the oracle interface and optional dependency boundary for `formulas`.
-3. Keep issue #70, parent issue #54, this roadmap, and `CHANGE_LOG.md` synchronized before implementing the `formulas` oracle.
+1. Work P12.2 in child issue #69 on branch `feature/p12-oracle-backed-validation`.
+2. Add a `formulas`-backed oracle for the synthetic workbook using the P12.1 interface.
+3. Keep issue #69, parent issue #54, this roadmap, and `CHANGE_LOG.md` synchronized before comparing generated model outputs against oracle outputs.

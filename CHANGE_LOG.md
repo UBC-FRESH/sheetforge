@@ -39,6 +39,7 @@ This file records completed project work in chronological order.
 - Closed the Phase 11 generated-model planning loop by recording Phase 12 oracle-backed validation inputs in `planning/phase-11-closeout-phase-12-inputs.md`.
 - Opened Phase 11 PR #83 from `feature/p11-generated-python-model-core` back to `main`.
 - Merged Phase 11 PR #83, closed parent issue #47, and activated Phase 12 on `feature/p12-oracle-backed-validation`.
+- Added oracle interface records and the optional `formulas` dependency boundary for oracle-backed validation.
 
 ## 2026-06-19
 
