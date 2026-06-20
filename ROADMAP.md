@@ -146,13 +146,15 @@ GitHub parent issue: #49
 
 Active branch: `feature/p9-dependency-graph-core`
 
+Open PR: #81
+
 Goal: build normalized reference and dependency graph behavior on top of extracted workbook records.
 
 - [x] P9.1 Add canonical reference model. Child issue: #55.
 - [x] P9.2 Resolve named ranges and dependency edges. Child issue: #62.
 - [x] P9.3 Add graph diagnostics and readiness note. Child issue: #60.
 
-Status: ready for PR.
+Status: PR open.
 
 ## Phase 10: Formula Translation Core
 
@@ -240,6 +242,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Open the Phase 9 PR from `feature/p9-dependency-graph-core` to `main`.
-2. Merge the Phase 9 PR after checks pass.
-3. Close parent issue #49 after the PR merges, then activate Phase 10 on `feature/p10-formula-translation-core`.
+1. Merge Phase 9 PR #81 after checks pass.
+2. Close parent issue #49 after PR #81 merges.
+3. Activate Phase 10 on `feature/p10-formula-translation-core`.

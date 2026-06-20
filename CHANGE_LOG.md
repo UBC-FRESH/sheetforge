@@ -26,6 +26,7 @@ This file records completed project work in chronological order.
 - Added dependency graph records and graph building from extracted formula references, including named-range resolution and semantic/execution edges.
 - Added dependency graph diagnostics coverage for ranges, external references, and simple circular dependencies.
 - Closed the Phase 9 dependency-graph planning loop by recording Phase 10 formula translation inputs in `planning/phase-9-closeout-phase-10-inputs.md`.
+- Opened Phase 9 PR #81 from `feature/p9-dependency-graph-core` back to `main`.
 
 ## 2026-06-19
 
