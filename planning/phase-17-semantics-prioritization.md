@@ -73,6 +73,32 @@ The current P17 goal is broad enough to cover every unsupported function and ope
 
 These counts are first-failure diagnostics, not a complete proof that the listed items are the only required semantics. The translator stops when it hits the first unsupported construct in a formula, so implementing high-count items may reveal additional unsupported functions, operators, token forms, or reference forms in later passes.
 
+## Iterative Blocker Loop
+
+Phase 17 should explicitly use a blocker-find-resolve-continue loop for the private sample workbook. This is the operating model for P17.3 and P17.4, not an incidental debugging tactic.
+
+Each semantics expansion slice should follow this sequence:
+
+1. Run the private-workbook diagnostic pass under ignored `tmp/`.
+2. Record sanitized first-failure counts for unsupported functions, operators, token forms, reference forms, and validation blockers.
+3. Select the highest-impact next blocker set that can be implemented with clear synthetic tests and explicit generation behavior.
+4. Implement that support or, when support is not safe yet, implement a sharper diagnostic.
+5. Rerun focused synthetic tests and the full package verification path.
+6. Rerun the private-workbook diagnostic pass.
+7. Compare translated formula count, unsupported diagnostic counts, generated subset size, and validation status against the previous run.
+8. Record only sanitized findings in tracked planning notes.
+9. Repeat until remaining blockers are either resolved or explicitly deferred as structural decisions.
+
+This loop matters because first-failure diagnostics hide downstream blockers. A formula that currently stops at `SUMIFS` may reveal an unsupported operator, token, reference form, or nested function only after `SUMIFS` support is added.
+
+The loop should stop only when one of these conditions is true:
+
+- the selected private-workbook import scope translates and validates against accepted workbook evidence;
+- remaining blockers require a larger design phase, such as table semantics, external workbook execution, volatile calculation policy, or validation-oracle architecture;
+- the maintainer explicitly narrows the target import scope.
+
+Translation progress is necessary but not sufficient. A slice is not "good to go" for workbook import unless generated outputs can also be validated against cached workbook values, `formulas`, Excel-backed validation, or a documented hybrid oracle.
+
 ## Full Private Sample Import Scope
 
 To fully import the current private sample workbook, P17 needs more than adding scalar Excel functions. The intended P17 scope is:
@@ -82,7 +108,8 @@ To fully import the current private sample workbook, P17 needs more than adding 
 - support the listed operators and boolean literals;
 - add explicit diagnostics for `#REF!`, unsupported structured/table semantics, unresolved named ranges, external references, volatile/reference-returning behavior, and missing cached values;
 - keep generation blocked for formulas whose dependencies or semantics remain unsupported;
-- rerun sanitized private diagnostics after each expansion slice to discover second-order blockers.
+- rerun sanitized private diagnostics after each expansion slice to discover second-order blockers;
+- compare each rerun against the previous diagnostic pass so progress and newly exposed blockers are explicit.
 
 This scope is intentionally wide enough to pursue full private-sample import, but P17 should still land it in slices. The project should not claim full workbook equivalence until generated outputs are validated against cached workbook values, `formulas`, Excel-backed validation, or an explicitly documented hybrid oracle.
 
@@ -138,3 +165,11 @@ P17.3 should start with expression-model changes that unlock many of the listed 
 - constrained `OFFSET` handling or a more specific unsupported diagnostic if safe support is not feasible in P17.
 
 Structured-reference evaluation, external workbook execution, and unconstrained volatile/reference-returning formulas remain blocked until their provenance and validation semantics are explicit.
+
+P17.3 should end with a rerun of the sanitized private-workbook diagnostic pass. Its closeout should record:
+
+- translated formula count before and after the slice;
+- remaining first-failure diagnostic counts;
+- newly exposed blocker categories;
+- whether the generated subset can grow;
+- whether cached-value validation, `formulas`, Excel-backed validation, or hybrid validation is available for the expanded subset.
