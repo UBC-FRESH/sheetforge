@@ -16,6 +16,9 @@ dependencies = [
   "openpyxl>=3.1"
 ]
 
+[project.scripts]
+sheetforge = "sheetforge.cli:main"
+
 [project.optional-dependencies]
 oracle = [
   "formulas"

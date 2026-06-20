@@ -214,15 +214,17 @@ Status: complete.
 
 GitHub parent issue: #53
 
-Planned branch: `feature/p14-cli-api-stabilization`
+Active branch: `feature/p14-cli-api-stabilization`
+
+Open PR: #86
 
 Goal: stabilize the Python API and add thin CLI wrappers only after the internal flow is coherent.
 
-- [ ] P14.1 Review and stabilize Python API boundaries. Child issue: #73.
-- [ ] P14.2 Add thin CLI command groups. Child issue: #71.
-- [ ] P14.3 Document CLI and JSON workflows. Child issue: #78.
+- [x] P14.1 Review and stabilize Python API boundaries. Child issue: #73.
+- [x] P14.2 Add thin CLI command groups. Child issue: #71.
+- [x] P14.3 Document CLI and JSON workflows. Child issue: #78.
 
-Status: planned backlog.
+Status: active.
 
 ## Phase 15: Hardening And Release Prep
 
@@ -240,6 +242,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Activate Phase 14 in parent issue #53.
-2. Create `feature/p14-cli-api-stabilization` from current `main`.
-3. Work P14.1 in child issue #73 before adding CLI commands.
+1. Verify Phase 14 PR #86 checks.
+2. Merge PR #86 once clean.
+3. Close parent issue #53 after the Phase 14 PR is merged.

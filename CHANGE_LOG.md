@@ -51,6 +51,11 @@ This file records completed project work in chronological order.
 - Recorded sanitized `eval-001` findings, including generated-subset validation results and the structured-reference blocker for the pure-Python oracle.
 - Opened Phase 13 PR #85 from `feature/p13-real-workbook-evaluation-lane` back to `main`.
 - Merged Phase 13 PR #85 and closed parent issue #52.
+- Activated Phase 14 on `feature/p14-cli-api-stabilization`.
+- Reviewed Python API boundaries, documented stable/provisional entrypoints, and narrowed the package-root facade to primary workflow records and functions.
+- Added thin JSON CLI command groups for extraction, dependency graph building, generated Python module creation, and validation report assembly.
+- Documented the CLI JSON workflows, command expectations, and stabilization decisions.
+- Opened Phase 14 PR #86 from `feature/p14-cli-api-stabilization` back to `main`.
 
 ## 2026-06-19
 
