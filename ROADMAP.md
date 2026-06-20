@@ -263,13 +263,13 @@ Goal: expand formula and reference semantics based on real workbook evidence, es
 
 - [x] P17.1 Prioritize real-workbook unsupported semantics. Child issue: #97.
 - [x] P17.2 Add structured-reference extraction records. Child issue: #95.
-- [ ] P17.3 Expand formula translation subset. Child issue: #96.
+- [x] P17.3 Expand formula translation subset. Child issue: #96.
   - [x] Pass 1: boolean literals, unary minus, `^`, `&`, and explicit `#REF!` diagnostics.
   - [x] Pass 2: scalar/range functions, supported table structured references, and unresolved structured-reference fast-fail behavior.
   - [x] Pass 3: criteria functions `SUMIF`, `SUMIFS`, `COUNTIF`, and `COUNTIFS`.
   - [x] Pass 4: lookup function `VLOOKUP` plus table-array structured references.
   - [x] Pass 5: constrained cross-table current-row structured references.
-  - [ ] Pass 6 decision: constrained `OFFSET` support or P17.4 closeout with `OFFSET` deferred.
+  - [x] Pass 6: constrained static `OFFSET` support.
 - [ ] P17.4 Validate expanded semantics and closeout. Child issue: #94.
 
 Status: active.
@@ -306,7 +306,7 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Continue P17.3 in child issue #96 on branch `feature/p17-real-workbook-formula-semantics`.
-2. Decide whether the remaining private-workbook `OFFSET` blocker can receive constrained, provenance-safe support in P17.
-3. If `OFFSET` is deferred, move to P17.4 closeout with explicit residual blockers: 220 `OFFSET` formulas, 306 explicit error-reference formulas, and the `formulas` oracle calculation failure.
-4. Keep issue #96, parent issue #88, this roadmap, and `CHANGE_LOG.md` synchronized before Phase 17 closeout validation.
+1. Move to P17.4 in child issue #94 on branch `feature/p17-real-workbook-formula-semantics`.
+2. Rerun the full verification path and summarize final P17 private-workbook diagnostics.
+3. Treat the 306 explicit error-reference formulas as sharp residual blockers rather than supported generated behavior.
+4. Record the `formulas` oracle calculation failure as a validation-oracle limitation and prepare Phase 18 conversion-planning inputs.

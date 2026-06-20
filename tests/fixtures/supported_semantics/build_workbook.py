@@ -47,6 +47,7 @@ EXPECTED_OUTPUTS = {
     "TableData!B3": 20,
     "CrossTarget!B2": 100,
     "CrossTarget!B3": 200,
+    "OffsetData!B3": 100,
 }
 
 
@@ -64,6 +65,7 @@ def build_workbook(path: str | Path) -> Path:
     criteria_data = workbook.create_sheet("CriteriaData")
     cross_source = workbook.create_sheet("CrossSource")
     cross_target = workbook.create_sheet("CrossTarget")
+    offset_data = workbook.create_sheet("OffsetData")
 
     inputs["A1"] = "Input"
     inputs["B1"] = "Value"
@@ -144,6 +146,11 @@ def build_workbook(path: str | Path) -> Path:
     cross_target.append(["first", "=CrossSourceTable[[#This Row],[Amount]]"])
     cross_target.append(["second", "=CrossSourceTable[[#This Row],[Amount]]"])
     cross_target.add_table(Table(displayName="CrossTargetTable", ref="A1:B3"))
+
+    offset_data.append(["Amount", "Previous"])
+    offset_data.append([100, None])
+    offset_data.append([200, "=OFFSET(OffsetTable[[#This Row],[Amount]],-1,0)"])
+    offset_data.add_table(Table(displayName="OffsetTable", ref="A1:B3"))
 
     workbook.save(workbook_path)
     return workbook_path

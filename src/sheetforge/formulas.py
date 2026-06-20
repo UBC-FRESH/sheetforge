@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from openpyxl.formula.tokenizer import Tokenizer
+from openpyxl.utils.cell import get_column_letter, range_boundaries
 
 from sheetforge.extraction import CellRecord
 from sheetforge.graph import DependencyGraph
@@ -33,6 +34,7 @@ SUPPORTED_FUNCTIONS = frozenset(
         "MAX",
         "MIN",
         "OR",
+        "OFFSET",
         "ROUND",
         "SUM",
         "SUMIF",
@@ -366,6 +368,8 @@ class _FormulaParser:
                 self._advance()
                 continue
             self._expect(")")
+            if function_name == "OFFSET":
+                return _static_offset_reference(arguments)
             return FormulaExpressionNode.function_call(function_name, tuple(arguments))
 
     def _resolved_reference(self, raw_reference: str) -> WorkbookReference:
@@ -472,6 +476,80 @@ def _number_value(raw_value: str) -> int | float:
     if value.is_integer():
         return int(value)
     return value
+
+
+def _static_offset_reference(arguments: list[FormulaExpressionNode]) -> FormulaExpressionNode:
+    if len(arguments) != 3:
+        raise FormulaTranslationError(
+            "unsupported_offset_shape",
+            "only static three-argument OFFSET references are supported",
+            "OFFSET",
+        )
+
+    base, rows, columns = arguments
+    if base.kind != "reference" or base.reference is None or base.reference.kind != "cell":
+        raise FormulaTranslationError(
+            "unsupported_offset_reference",
+            "OFFSET base reference must resolve to one concrete cell",
+            "OFFSET",
+        )
+    row_offset = _literal_integer(rows)
+    column_offset = _literal_integer(columns)
+    if row_offset is None or column_offset is None:
+        raise FormulaTranslationError(
+            "unsupported_offset_argument",
+            "OFFSET row and column offsets must be static integers",
+            "OFFSET",
+        )
+    reference = _shift_cell_reference(base.reference, row_offset=row_offset, column_offset=column_offset)
+    return FormulaExpressionNode.reference_to(reference)
+
+
+def _literal_integer(node: FormulaExpressionNode) -> int | None:
+    if node.kind == "literal" and isinstance(node.value, int):
+        return node.value
+    if node.kind == "unary" and node.operator == "-":
+        (operand,) = node.operands
+        value = _literal_integer(operand)
+        return None if value is None else -value
+    return None
+
+
+def _shift_cell_reference(
+    reference: WorkbookReference,
+    *,
+    row_offset: int,
+    column_offset: int,
+) -> WorkbookReference:
+    if reference.sheet is None or reference.start_cell is None:
+        raise FormulaTranslationError(
+            "unsupported_offset_reference",
+            "OFFSET base reference must include a sheet and cell coordinate",
+            "OFFSET",
+        )
+    try:
+        min_col, min_row, max_col, max_row = range_boundaries(reference.start_cell)
+    except ValueError as error:
+        raise FormulaTranslationError(
+            "unsupported_offset_reference",
+            "OFFSET base reference must include a valid cell coordinate",
+            "OFFSET",
+        ) from error
+    if min_col != max_col or min_row != max_row:
+        raise FormulaTranslationError(
+            "unsupported_offset_reference",
+            "OFFSET base reference must resolve to one concrete cell",
+            "OFFSET",
+        )
+    shifted_column = min_col + column_offset
+    shifted_row = min_row + row_offset
+    if shifted_column < 1 or shifted_row < 1:
+        raise FormulaTranslationError(
+            "unsupported_offset_reference",
+            "OFFSET resolved outside the worksheet grid",
+            "OFFSET",
+        )
+    return normalize_reference(f"{reference.sheet}!{get_column_letter(shifted_column)}{shifted_row}")
 
 
 def _sheet_name(cell_ref: str) -> str:

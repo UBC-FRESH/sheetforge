@@ -276,3 +276,45 @@ def test_translate_ref_error_reports_sharp_diagnostic(tmp_path: Path) -> None:
     assert expression.translated is False
     assert expression.diagnostics[0].code == "unsupported_error_reference"
     assert expression.diagnostics[0].raw_value == "#REF!"
+
+
+def test_translate_static_offset_to_concrete_reference(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "static-offset.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet.append(["Amount", "Result"])
+    sheet.append([10, None])
+    sheet.append([20, "=OFFSET(InputTable[[#This Row],[Amount]],-1,0)"])
+    sheet.add_table(Table(displayName="InputTable", ref="A1:B3"))
+    source.save(workbook_path)
+    workbook = extract_workbook(workbook_path)
+    graph = build_dependency_graph(workbook)
+    formula_cell = next(cell for cell in workbook.cells if cell.cell_ref == "Data!B3")
+
+    expression = translate_formula_cell(formula_cell, graph, reference_index=build_formula_reference_index(graph))
+
+    assert expression.translated is True
+    assert expression.root is not None
+    assert expression.root.kind == "reference"
+    assert expression.root.reference is not None
+    assert expression.root.reference.normalized == "Data!A2"
+
+
+def test_translate_dynamic_offset_shape_reports_sharp_diagnostic(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "dynamic-offset.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Calc"
+    sheet["A1"] = 10
+    sheet["B1"] = "=OFFSET(A1,0,0,2,1)"
+    source.save(workbook_path)
+    workbook = extract_workbook(workbook_path)
+    graph = build_dependency_graph(workbook)
+    formula_cell = next(cell for cell in workbook.cells if cell.cell_ref == "Calc!B1")
+
+    expression = translate_formula_cell(formula_cell, graph)
+
+    assert expression.translated is False
+    assert expression.diagnostics[0].code == "unsupported_offset_shape"
+    assert expression.diagnostics[0].raw_value == "OFFSET"
