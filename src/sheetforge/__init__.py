@@ -1,5 +1,13 @@
 """Sheetforge package skeleton."""
 
+from sheetforge.extraction import (
+    CellRecord,
+    ExtractionDiagnostic,
+    FormulaRecord,
+    NamedRangeRecord,
+    SheetRecord,
+    WorkbookRecord,
+)
 from sheetforge.validation import (
     ComparisonResult,
     ComparisonRules,
@@ -18,15 +26,21 @@ from sheetforge.validation import (
 __version__ = "0.0.0"
 
 __all__ = [
+    "CellRecord",
     "ComparisonResult",
     "ComparisonRules",
     "Diagnostic",
+    "ExtractionDiagnostic",
+    "FormulaRecord",
     "MISSING_VALUE",
+    "NamedRangeRecord",
     "OracleConfig",
     "ScenarioInput",
     "ScenarioOutput",
+    "SheetRecord",
     "ValidationReport",
     "ValidationScenario",
+    "WorkbookRecord",
     "__version__",
     "build_validation_report",
     "compare_scalar_output",
