@@ -85,6 +85,38 @@ Phase 17 did not prove full private-workbook equivalence. The generated subset s
 
 Phase 18 should shift from adding formula semantics to building a conversion plan workflow.
 
+After Phase 17 closeout, local cross-version inspection showed that the original private workbook used for convergence contains explicit broken references in formula text, while the later private workbook versions do not. The primary private benchmark should therefore shift to the clean later workbook version rather than spending conversion-planning effort on source-workbook repair.
+
+Private benchmark policy:
+
+- use the 2020 workbook as the primary private convergence benchmark;
+- use the 2021 workbook as a later stress benchmark once 2020 is stable;
+- keep the 2019 workbook as a broken-reference regression case that proves Sheetforge reports explicit source `#REF!` formulas sharply and does not silently generate normal behavior for them.
+
+The 2020 baseline run used explicit local workbook selection and very-verbose logging under ignored `tmp/`.
+
+Sanitized 2020 baseline diagnostics:
+
+- formula cells: 296,976;
+- translated formula cells: 296,319;
+- untranslated formula cells: 657;
+- unsupported-function first failures: 657;
+- identified unsupported function: `_XLFN.IFNA`;
+- unsupported structured-reference first failures: 0;
+- explicit unsupported error references: 0;
+- generated direct-output candidates: 10;
+- selected generated outputs: 10;
+- selected input dependencies: 10;
+- cached generated validation: 10 outputs, 0 mismatches;
+- `formulas` oracle validation: blocked by oracle calculation failure;
+- graph diagnostics: 1 circular dependency;
+- unresolved named ranges: 6;
+- missing cached formula values: 15,235;
+- volatile-function extraction diagnostics: 474;
+- unsupported external links: 1.
+
+This makes `_XLFN.IFNA` the next formula-semantics ratchet target if Phase 18 conversion planning chooses to continue formula coverage. The compatibility prefix should be normalized deliberately; Sheetforge should support the semantics as `IFNA`, while preserving a diagnostic/provenance trail that the source workbook used Excel's `_xlfn` compatibility form.
+
 The conversion plan should report:
 
 - total formula, translated formula, and untranslated formula counts;
@@ -95,11 +127,19 @@ The conversion plan should report:
 - source-workbook diagnostics that affect conversion risk;
 - oracle availability and reason when no full oracle is available.
 
-For this private workbook, the first conversion-plan acceptance target should be a sanitized report that says:
+For the 2019 broken-reference regression workbook, a conversion-plan acceptance target should say:
 
 - formula translation coverage is 215,422 of 215,728 formulas;
 - all observed unsupported function and structured-reference first-failure categories are resolved;
 - 306 explicit error-reference formulas remain blocked by design;
+- cached generated validation passes for the selected direct-output subset;
+- full oracle validation is unavailable through the current pure-Python backend.
+
+For the 2020 primary benchmark workbook, the first conversion-plan acceptance target should say:
+
+- formula translation coverage is 296,319 of 296,976 formulas;
+- the only current translation first-failure category is `_XLFN.IFNA`;
+- no explicit error-reference formulas are present in the translation blocker set;
 - cached generated validation passes for the selected direct-output subset;
 - full oracle validation is unavailable through the current pure-Python backend.
 

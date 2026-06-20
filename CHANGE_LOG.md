@@ -83,6 +83,7 @@ This file records completed project work in chronological order.
 - Added P17.3 pass-five support for constrained cross-table current-row structured references; the sanitized private pass increased translated formulas to 215,202, cleared structured-reference first failures, and left `OFFSET`, explicit error references, and oracle calculation failure as residual blockers.
 - Added P17.3 pass-six support for constrained static `OFFSET` translation; the sanitized private pass increased translated formulas to 215,422, cleared unsupported-function first failures, and left explicit error references plus oracle calculation failure as residual blockers for closeout.
 - Closed Phase 17 with sanitized final diagnostics, classified explicit error references and oracle calculation failure as residual blockers, and recorded Phase 18 conversion-planning inputs.
+- Shifted the primary private benchmark direction to the 2020 workbook after cross-version inspection showed the 2019 workbook contains explicit broken references; the 2020 baseline translated 296,319 of 296,976 formulas and exposed `_XLFN.IFNA` as the next formula-semantics blocker.
 
 ## 2026-06-19
 
