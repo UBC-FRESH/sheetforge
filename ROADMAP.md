@@ -174,13 +174,15 @@ GitHub parent issue: #47
 
 Active branch: `feature/p11-generated-python-model-core`
 
+Open PR: #83
+
 Goal: generate small standalone Python modules from extracted and translated workbook logic.
 
 - [x] P11.1 Define generated module contract. Child issue: #65.
 - [x] P11.2 Generate Python from translated workbook logic. Child issue: #64.
 - [x] P11.3 Test generated model outputs and closeout. Child issue: #63.
 
-Status: ready for PR.
+Status: PR open.
 
 ## Phase 12: Oracle-Backed Validation
 
@@ -240,6 +242,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Open the Phase 11 PR from `feature/p11-generated-python-model-core` to `main`.
-2. Merge the Phase 11 PR after checks pass.
-3. Close parent issue #47 after the PR merges, then activate Phase 12 on `feature/p12-oracle-backed-validation`.
+1. Merge Phase 11 PR #83 after checks pass.
+2. Close parent issue #47 after PR #83 merges.
+3. Activate Phase 12 on `feature/p12-oracle-backed-validation`.
