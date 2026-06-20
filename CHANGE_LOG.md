@@ -16,6 +16,7 @@ This file records completed project work in chronological order.
 - Added a validation report builder that compares scenario outputs from observed generated and oracle value mappings.
 - Closed the Phase 7 validation-core planning loop by recording Phase 8 extraction inputs in `planning/phase-7-closeout-phase-8-inputs.md`.
 - Opened Phase 7 PR #79 from `feature/p7-validation-scenario-comparison-core` back to `main`.
+- Merged Phase 7 PR #79, closed parent issue #42, and activated Phase 8 on `feature/p8-workbook-extraction-core`.
 
 ## 2026-06-19
 
