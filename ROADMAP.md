@@ -103,7 +103,7 @@ Goal: build the first durable code-bearing slice from the Phase 5 decisions: pac
 
 - [x] P6.1 Add package and test skeleton. Child issue: #38.
 - [x] P6.2 Add validation report core objects. Child issue: #37.
-- [ ] P6.3 Add synthetic fixture builder and expected outputs. Child issue: #35.
+- [x] P6.3 Add synthetic fixture builder and expected outputs. Child issue: #35.
 - [ ] P6.4 Add baseline and mismatch regression tests. Child issue: #36.
 - [ ] P6.5 Add first default CI workflow. Child issue: #39.
 
@@ -111,6 +111,6 @@ Status: active.
 
 ## Current Next Steps
 
-1. Work P6.3 in child issue #35 on branch `feature/p6-initial-package-validation-core`.
-2. Add the synthetic fixture builder and expected outputs using `planning/fixture-regression-test-strategy.md`.
-3. Keep issue #35, this roadmap, and `CHANGE_LOG.md` synchronized before moving to regression tests.
+1. Work P6.4 in child issue #36 on branch `feature/p6-initial-package-validation-core`.
+2. Add baseline and mismatch regression tests using the synthetic fixture assets and validation report core.
+3. Keep issue #36, this roadmap, and `CHANGE_LOG.md` synchronized before moving to the first default CI workflow.
