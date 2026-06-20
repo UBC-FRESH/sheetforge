@@ -49,6 +49,7 @@ This file records completed project work in chronological order.
 - Ran the first private workbook evaluation locally under ignored `tmp/`, added a generic unresolved defined-name extraction fix, and recorded package extraction runtime as the first private-workbook blocker.
 - Extended private-workbook evaluation support with sparse populated-cell extraction, verbose extraction progress hooks, indexed formula-reference lookup, and generated-subset validation against cached workbook outputs.
 - Recorded sanitized `eval-001` findings, including generated-subset validation results and the structured-reference blocker for the pure-Python oracle.
+- Opened Phase 13 PR #85 from `feature/p13-real-workbook-evaluation-lane` back to `main`.
 
 ## 2026-06-19
 

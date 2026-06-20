@@ -202,6 +202,8 @@ GitHub parent issue: #52
 
 Active branch: `feature/p13-real-workbook-evaluation-lane`
 
+Open PR: #85
+
 Goal: use private workbooks under ignored `tmp/` to evaluate the pipeline and record sanitized findings without committing source workbooks or private outputs.
 
 - [x] P13.1 Define private workbook evaluation protocol. Child issue: #67.
