@@ -20,6 +20,7 @@ from sheetforge.generation import (
     GeneratedSymbol,
     GenerationDiagnostic,
     GenerationResult,
+    generate_python_module,
     symbol_name_for_cell_ref,
 )
 from sheetforge.graph import (
@@ -80,6 +81,7 @@ __all__ = [
     "build_validation_report",
     "compare_scalar_output",
     "extract_workbook",
+    "generate_python_module",
     "load_validation_scenario",
     "normalize_cell_reference",
     "normalize_reference",

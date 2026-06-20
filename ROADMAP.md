@@ -177,7 +177,7 @@ Active branch: `feature/p11-generated-python-model-core`
 Goal: generate small standalone Python modules from extracted and translated workbook logic.
 
 - [x] P11.1 Define generated module contract. Child issue: #65.
-- [ ] P11.2 Generate Python from translated workbook logic. Child issue: #64.
+- [x] P11.2 Generate Python from translated workbook logic. Child issue: #64.
 - [ ] P11.3 Test generated model outputs and closeout. Child issue: #63.
 
 Status: active.
@@ -240,6 +240,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P11.2 in child issue #64 on branch `feature/p11-generated-python-model-core`.
-2. Generate standalone Python from translated workbook logic for the synthetic model.
-3. Keep issue #64, parent issue #47, this roadmap, and `CHANGE_LOG.md` synchronized before generated-output closeout.
+1. Work P11.3 in child issue #63 on branch `feature/p11-generated-python-model-core`.
+2. Summarize generated-model readiness and record oracle-validation inputs.
+3. Keep issue #63, parent issue #47, this roadmap, and `CHANGE_LOG.md` synchronized before opening the Phase 11 PR.
