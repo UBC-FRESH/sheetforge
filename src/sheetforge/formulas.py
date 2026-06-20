@@ -21,6 +21,7 @@ JsonValue = str | int | float | bool | None | list[Any] | dict[str, Any]
 ExpressionKind = Literal["literal", "reference", "binary", "comparison", "function_call"]
 DiagnosticSeverity = Literal["info", "warning", "error"]
 SUPPORTED_FUNCTIONS = frozenset({"ROUND", "IF"})
+SUPPORTED_OPERATORS = frozenset({"+", "-", "*", "/", ">", ">=", "<", "<=", "=", "<>", "(", ")", ","})
 
 
 @dataclass(frozen=True)
@@ -344,6 +345,8 @@ def _formula_tokens(raw_formula: str) -> tuple[_FormulaToken, ...]:
             tokens.append(_FormulaToken("reference", token.value))
             continue
         if token.type.startswith("OPERATOR"):
+            if token.value not in SUPPORTED_OPERATORS:
+                raise FormulaTranslationError("unsupported_operator", "formula operator is not supported", token.value)
             tokens.append(_FormulaToken("operator", token.value))
             continue
         raise FormulaTranslationError("unsupported_formula_token", "unsupported formula token", token.value)

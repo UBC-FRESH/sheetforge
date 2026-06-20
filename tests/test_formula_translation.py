@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from openpyxl import Workbook
+
 from sheetforge.extraction import CellRecord, extract_workbook
 from sheetforge.formulas import translate_formula_cell
 from sheetforge.graph import build_dependency_graph
@@ -82,3 +84,43 @@ def test_translate_if_formula(tmp_path: Path) -> None:
     assert expression.root.operands[0].operands[1].value == 50
     assert expression.root.operands[1].value == "ok"
     assert expression.root.operands[2].value == "low"
+
+
+def test_translate_unsupported_function_reports_error(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "unsupported_function.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Calc"
+    sheet["A1"] = "needle"
+    sheet["B1"] = "=XLOOKUP(A1,A:A,B:B)"
+    source.save(workbook_path)
+    workbook = extract_workbook(workbook_path)
+    graph = build_dependency_graph(workbook)
+    formula_cell = next(cell for cell in workbook.cells if cell.cell_ref == "Calc!B1")
+
+    expression = translate_formula_cell(formula_cell, graph)
+
+    assert expression.translated is False
+    assert expression.diagnostics[0].code == "unsupported_function"
+    assert expression.diagnostics[0].severity == "error"
+    assert expression.diagnostics[0].raw_value == "XLOOKUP"
+
+
+def test_translate_unsupported_operator_reports_error(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "unsupported_operator.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Calc"
+    sheet["A1"] = 2
+    sheet["B1"] = "=A1^2"
+    source.save(workbook_path)
+    workbook = extract_workbook(workbook_path)
+    graph = build_dependency_graph(workbook)
+    formula_cell = next(cell for cell in workbook.cells if cell.cell_ref == "Calc!B1")
+
+    expression = translate_formula_cell(formula_cell, graph)
+
+    assert expression.translated is False
+    assert expression.diagnostics[0].code == "unsupported_operator"
+    assert expression.diagnostics[0].severity == "error"
+    assert expression.diagnostics[0].raw_value == "^"
