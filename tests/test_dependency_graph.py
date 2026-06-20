@@ -70,6 +70,25 @@ def test_dependency_graph_reports_external_reference(tmp_path: Path) -> None:
     assert graph.execution_edges[0].source.kind == "external"
 
 
+def test_dependency_graph_reports_structured_reference(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "structured-reference.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet["A1"] = "Amount"
+    sheet["A2"] = 10
+    sheet["B1"] = "=Table1[Amount]"
+    source.save(workbook_path)
+
+    graph = build_dependency_graph(extract_workbook(workbook_path))
+
+    assert graph.diagnostics == ("unsupported_structured_reference",)
+    assert graph.semantic_edges[0].source.kind == "structured"
+    assert graph.semantic_edges[0].diagnostic_code == "unsupported_structured_reference"
+    assert graph.execution_edges[0].source.kind == "structured"
+    assert graph.execution_edges[0].diagnostic_code == "unsupported_structured_reference"
+
+
 def test_dependency_graph_expands_range_execution_edges(tmp_path: Path) -> None:
     workbook_path = tmp_path / "range.xlsx"
     source = Workbook()

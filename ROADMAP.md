@@ -262,7 +262,7 @@ Active branch: `feature/p17-real-workbook-formula-semantics`
 Goal: expand formula and reference semantics based on real workbook evidence, especially structured references, unsupported functions, parser token forms, operators, external references, volatile functions, named ranges, and cached-value gaps.
 
 - [x] P17.1 Prioritize real-workbook unsupported semantics. Child issue: #97.
-- [ ] P17.2 Add structured-reference extraction records. Child issue: #95.
+- [x] P17.2 Add structured-reference extraction records. Child issue: #95.
 - [ ] P17.3 Expand formula translation subset. Child issue: #96.
 - [ ] P17.4 Validate expanded semantics and closeout. Child issue: #94.
 
@@ -300,6 +300,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P17.2 in child issue #95 on branch `feature/p17-real-workbook-formula-semantics`.
-2. Add structured-reference extraction records and diagnostics without claiming full table-reference evaluation.
-3. Keep issue #95, parent issue #88, this roadmap, and `CHANGE_LOG.md` synchronized before expanding formula translation.
+1. Work P17.3 in child issue #96 on branch `feature/p17-real-workbook-formula-semantics`.
+2. Expand the formula translation subset only where synthetic coverage and structured diagnostics support it.
+3. Keep issue #96, parent issue #88, this roadmap, and `CHANGE_LOG.md` synchronized before Phase 17 closeout validation.

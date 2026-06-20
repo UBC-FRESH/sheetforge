@@ -96,6 +96,27 @@ def test_extract_workbook_reports_volatile_formula(tmp_path: Path) -> None:
     }
 
 
+def test_extract_workbook_reports_structured_reference_formula(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "structured-reference.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet["A1"] = "Amount"
+    sheet["A2"] = 10
+    sheet["B1"] = "=Table1[Amount]"
+    source.save(workbook_path)
+
+    workbook = extract_workbook(workbook_path)
+    cell = next(cell for cell in workbook.cells if cell.cell_ref == "Data!B1")
+
+    assert cell.formula is not None
+    assert cell.formula.raw_references == ("Table1[Amount]",)
+    assert {diagnostic.code for diagnostic in cell.formula.diagnostics} == {
+        "missing_cached_formula_value",
+        "unsupported_structured_reference",
+    }
+
+
 def test_extract_workbook_reports_unresolved_non_range_defined_name(tmp_path: Path) -> None:
     workbook_path = tmp_path / "defined-name-formula.xlsx"
     source = Workbook()

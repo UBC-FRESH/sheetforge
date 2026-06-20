@@ -136,3 +136,24 @@ def test_translate_unsupported_operator_reports_error(tmp_path: Path) -> None:
     assert expression.diagnostics[0].code == "unsupported_operator"
     assert expression.diagnostics[0].severity == "error"
     assert expression.diagnostics[0].raw_value == "^"
+
+
+def test_translate_structured_reference_reports_error(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "structured-reference.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Data"
+    sheet["A1"] = "Amount"
+    sheet["A2"] = 10
+    sheet["B1"] = "=Table1[Amount]"
+    source.save(workbook_path)
+    workbook = extract_workbook(workbook_path)
+    graph = build_dependency_graph(workbook)
+    formula_cell = next(cell for cell in workbook.cells if cell.cell_ref == "Data!B1")
+
+    expression = translate_formula_cell(formula_cell, graph)
+
+    assert expression.translated is False
+    assert expression.diagnostics[0].code == "unsupported_structured_reference"
+    assert expression.diagnostics[0].severity == "error"
+    assert expression.diagnostics[0].raw_value == "Table1[Amount]"

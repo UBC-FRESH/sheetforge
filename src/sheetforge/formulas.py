@@ -324,9 +324,21 @@ class _FormulaParser:
 
         for edge in self.graph.execution_edges:
             if edge.target.normalized == self.cell.cell_ref and edge.raw_reference == raw_reference:
+                if edge.source.kind == "structured":
+                    raise FormulaTranslationError(
+                        "unsupported_structured_reference",
+                        "structured references are not supported",
+                        raw_reference,
+                    )
                 return edge.source
 
         semantic_reference = normalize_reference(raw_reference, current_sheet=_sheet_name(self.cell.cell_ref))
+        if semantic_reference.kind == "structured":
+            raise FormulaTranslationError(
+                "unsupported_structured_reference",
+                "structured references are not supported",
+                raw_reference,
+            )
         if semantic_reference.kind == "named_range":
             raise FormulaTranslationError("unresolved_named_range", "named range could not be resolved", raw_reference)
         return semantic_reference

@@ -455,11 +455,23 @@ def _formula_diagnostics(
             )
 
     for reference in raw_references:
-        if "[" in reference or "]" in reference:
+        if _is_external_reference(reference):
             diagnostics.append(
                 ExtractionDiagnostic(
                     code="unsupported_external_link",
                     message="formula references an external workbook",
+                    severity="warning",
+                    location=cell_ref,
+                    raw_value=reference,
+                )
+            )
+            continue
+
+        if _is_structured_reference(reference):
+            diagnostics.append(
+                ExtractionDiagnostic(
+                    code="unsupported_structured_reference",
+                    message="formula uses an Excel structured reference",
                     severity="warning",
                     location=cell_ref,
                     raw_value=reference,
@@ -479,3 +491,11 @@ def _json_value(value: Any) -> JsonValue:
     if isinstance(value, datetime | date | time):
         return value.isoformat()
     return str(value)
+
+
+def _is_external_reference(reference: str) -> bool:
+    return "[" in reference and "]" in reference and "." in reference.split("]", 1)[0]
+
+
+def _is_structured_reference(reference: str) -> bool:
+    return "[" in reference and "]" in reference and not _is_external_reference(reference)
