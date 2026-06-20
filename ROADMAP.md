@@ -130,9 +130,7 @@ Status: complete.
 
 GitHub parent issue: #50
 
-Active branch: `feature/p8-workbook-extraction-core`
-
-Open PR: #80
+Merged PR: #80
 
 Goal: move the proven `openpyxl` extraction concepts into package code for workbook, worksheet, cell, formula, named-range, and diagnostic records.
 
@@ -140,13 +138,13 @@ Goal: move the proven `openpyxl` extraction concepts into package code for workb
 - [x] P8.2 Implement `openpyxl` workbook extraction. Child issue: #57.
 - [x] P8.3 Add extraction tests and closeout. Child issue: #56.
 
-Status: PR open.
+Status: complete.
 
 ## Phase 9: Dependency Graph Core
 
 GitHub parent issue: #49
 
-Planned branch: `feature/p9-dependency-graph-core`
+Active branch: `feature/p9-dependency-graph-core`
 
 Goal: build normalized reference and dependency graph behavior on top of extracted workbook records.
 
@@ -154,7 +152,7 @@ Goal: build normalized reference and dependency graph behavior on top of extract
 - [ ] P9.2 Resolve named ranges and dependency edges. Child issue: #62.
 - [ ] P9.3 Add graph diagnostics and readiness note. Child issue: #60.
 
-Status: planned backlog.
+Status: active.
 
 ## Phase 10: Formula Translation Core
 
@@ -242,6 +240,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Merge Phase 8 PR #80 after checks pass.
-2. Close parent issue #50 after PR #80 merges.
-3. Activate Phase 9 on `feature/p9-dependency-graph-core`.
+1. Work P9.1 in child issue #55 on branch `feature/p9-dependency-graph-core`.
+2. Add the canonical reference model for workbook, sheet, cell, range, named range, unresolved reference, and external reference cases.
+3. Keep issue #55, parent issue #49, this roadmap, and `CHANGE_LOG.md` synchronized before resolving dependency edges.
