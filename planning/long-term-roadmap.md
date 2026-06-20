@@ -22,6 +22,10 @@ scenario/report core
   -> private workbook evaluation
   -> API/CLI stabilization
   -> hardening and release prep
+  -> CLI/docs public surface alignment
+  -> real workbook semantics expansion
+  -> conversion planning
+  -> automated validation reports
 ```
 
 Each phase should produce package-backed behavior, tests, and documentation before the next phase relies on it.
@@ -143,6 +147,65 @@ Candidate work:
 - next roadmap horizon after unsupported workbook semantics are better understood.
 
 Avoid tooling churn without demonstrated pain.
+
+## Phase 16: CLI And Documentation Public Surface
+
+Goal: bring Sheetforge's public CLI and docs surface into the same family as the other FRESH lab software packages.
+
+Reference models:
+
+- `fhops`: Typer/Rich CLI with grouped command surfaces, explicit output paths, curated Sphinx guide/reference/API pages, warning-clean docs builds, and a practical workflow tone.
+- `femic`: Typer/Rich CLI, Sphinx docs with guides/sample-models/reference sections, and a GitHub Pages workflow that builds on pull requests and deploys on pushes to `main`.
+
+Expected outputs:
+
+- CLI conventions audit against local `~/projects/fhops` and `~/projects/femic` checkouts;
+- Sheetforge CLI refactor plan and implementation using the same Typer/Rich feel where it is justified;
+- full Sphinx docs skeleton with curated guide, CLI reference, API reference, workflow, limitations, and private-data handling pages;
+- GitHub Actions docs workflow that runs `sphinx-build -b html docs _build/html -W` and deploys to GitHub Pages on `main`;
+- README links and local docs build instructions.
+
+The CLI should still call Python APIs rather than reimplementing core logic. The docs should be honest about partial conversion and unsupported spreadsheet semantics.
+
+## Phase 17: Real Workbook Formula Semantics
+
+Goal: expand formula and reference semantics based on real workbook evidence.
+
+Expected focus:
+
+- structured table-reference formulas;
+- unsupported functions from private evaluation findings;
+- parser token forms and operators that currently produce diagnostics;
+- external references, volatile functions, unresolved named ranges, and cached-value gaps;
+- synthetic coverage for newly supported semantics without committing private workbook data.
+
+Phase 17 should improve explicit support or explicit diagnostics. It should not claim full workbook equivalence.
+
+## Phase 18: Conversion Planning And Pipeline Orchestration
+
+Goal: define a conversion plan workflow that explains what can be converted, what cannot be converted, and how generated outputs should be validated.
+
+Expected outputs:
+
+- conversion plan JSON contract;
+- API that composes extraction, graphing, translation, generation diagnostics, and validation targets;
+- CLI command for plan/report output;
+- tests that prove partial-conversion behavior is explicit.
+
+The conversion plan should make unsupported cells visible rather than hiding them behind a broad `convert` command.
+
+## Phase 19: Automated Validation And Evaluation Reports
+
+Goal: make generated-model execution, oracle execution where available, cached-value comparisons, and private evaluation reports repeatable.
+
+Expected outputs:
+
+- generated model execution API;
+- oracle/cached-value validation orchestration;
+- evaluation report CLI and JSON outputs;
+- sanitized private-evaluation summary workflow.
+
+Excel-backed validation remains optional and should not enter default CI unless it has a controlled, documented environment.
 
 ## Planning Discipline
 

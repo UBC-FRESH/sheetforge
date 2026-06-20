@@ -232,14 +232,74 @@ Active branch: `feature/p15-hardening-release-prep`
 
 Goal: add hardening, documentation, release, and quality tooling only where evidence shows it will pay for itself.
 
-- [ ] P15.1 Decide hardening tooling from evidence. Child issue: #77.
-- [ ] P15.2 Add release and documentation metadata if needed. Child issue: #76.
-- [ ] P15.3 Summarize release readiness and next roadmap. Child issue: #75.
+- [x] P15.1 Decide hardening tooling from evidence. Child issue: #77.
+- [x] P15.2 Add release and documentation metadata if needed. Child issue: #76.
+- [x] P15.3 Summarize release readiness and next roadmap. Child issue: #75.
 
 Status: active.
 
+## Phase 16: CLI And Documentation Public Surface
+
+GitHub parent issue: #89
+
+Planned branch: `feature/p16-cli-docs-public-surface`
+
+Goal: align Sheetforge's CLI feel, command organization, help text, and documentation depth with the other FRESH lab packages `fhops` and `femic`, including full Sphinx documentation published to GitHub Pages from the `main` branch.
+
+- [ ] P16.1 Audit `fhops`/`femic` CLI and docs conventions. Child issue: #92.
+- [ ] P16.2 Refactor CLI toward FRESH Typer/Rich conventions. Child issue: #90.
+- [ ] P16.3 Add full Sphinx docs and GitHub Pages workflow. Child issue: #93.
+- [ ] P16.4 Verify CLI/docs surface and closeout. Child issue: #91.
+
+Status: planned backlog.
+
+## Phase 17: Real Workbook Formula Semantics
+
+GitHub parent issue: #88
+
+Planned branch: `feature/p17-real-workbook-formula-semantics`
+
+Goal: expand formula and reference semantics based on real workbook evidence, especially structured references, unsupported functions, parser token forms, operators, external references, volatile functions, named ranges, and cached-value gaps.
+
+- [ ] P17.1 Prioritize real-workbook unsupported semantics. Child issue: #97.
+- [ ] P17.2 Add structured-reference extraction records. Child issue: #95.
+- [ ] P17.3 Expand formula translation subset. Child issue: #96.
+- [ ] P17.4 Validate expanded semantics and closeout. Child issue: #94.
+
+Status: planned backlog.
+
+## Phase 18: Conversion Planning And Pipeline Orchestration
+
+GitHub parent issue: #87
+
+Planned branch: `feature/p18-conversion-planning-pipeline`
+
+Goal: turn extraction, graphing, translation, generation, and validation pieces into an explicit conversion plan workflow without pretending every workbook can be fully converted.
+
+- [ ] P18.1 Define conversion plan JSON contract. Child issue: #101.
+- [ ] P18.2 Build conversion plan API. Child issue: #99.
+- [ ] P18.3 Add conversion planning CLI. Child issue: #100.
+- [ ] P18.4 Test conversion planning workflow and closeout. Child issue: #98.
+
+Status: planned backlog.
+
+## Phase 19: Automated Validation And Evaluation Reports
+
+GitHub parent issue: #103
+
+Planned branch: `feature/p19-automated-validation-reports`
+
+Goal: make generated-model execution, oracle execution where available, cached-value comparisons, and private evaluation reports repeatable through APIs and CLI commands.
+
+- [ ] P19.1 Add generated model execution API. Child issue: #107.
+- [ ] P19.2 Orchestrate oracle and cached-value validation. Child issue: #105.
+- [ ] P19.3 Add evaluation report CLI and JSON outputs. Child issue: #106.
+- [ ] P19.4 Run repeatable evaluation and closeout. Child issue: #104.
+
+Status: planned backlog.
+
 ## Current Next Steps
 
-1. Work P15.1 in child issue #77 on branch `feature/p15-hardening-release-prep`.
-2. Decide which hardening tooling is justified by current evidence.
-3. Keep issue #77, parent issue #51, this roadmap, and `CHANGE_LOG.md` synchronized before adding release/documentation metadata.
+1. Open the Phase 15 PR from `feature/p15-hardening-release-prep` back to `main`.
+2. Verify the PR checks and merge once clean.
+3. Close parent issue #51 after the Phase 15 PR is merged.

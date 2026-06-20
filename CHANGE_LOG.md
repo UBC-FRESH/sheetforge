@@ -58,6 +58,10 @@ This file records completed project work in chronological order.
 - Opened Phase 14 PR #86 from `feature/p14-cli-api-stabilization` back to `main`.
 - Merged Phase 14 PR #86 and closed parent issue #53.
 - Activated Phase 15 on `feature/p15-hardening-release-prep`.
+- Decided the Phase 15 hardening tooling boundary: keep `pytest`, add at most a lightweight lint lane next, and defer formatter, type checker, coverage threshold, and pre-commit hooks.
+- Added a minimal Ruff quality extra, CI quality job, local quality-check documentation, and release metadata deferral note.
+- Summarized release readiness, unsupported workbook semantics, and the next roadmap horizon through Phases 16-19 with mirrored GitHub issues.
+- Revised the next roadmap horizon so Phase 16 prioritizes FRESH-style Typer/Rich CLI alignment and full Sphinx GitHub Pages documentation modeled on local `fhops` and `femic` repositories.
 
 ## 2026-06-19
 
