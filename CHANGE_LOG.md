@@ -45,6 +45,7 @@ This file records completed project work in chronological order.
 - Opened Phase 12 PR #84 from `feature/p12-oracle-backed-validation` back to `main`.
 - Merged Phase 12 PR #84 and closed parent issue #54.
 - Activated Phase 13 on `feature/p13-real-workbook-evaluation-lane`.
+- Defined the private workbook evaluation protocol for ignored local inputs, sanitized tracked notes, local commands, and stop conditions.
 
 ## 2026-06-19
 

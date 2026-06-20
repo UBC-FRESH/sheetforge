@@ -204,7 +204,7 @@ Active branch: `feature/p13-real-workbook-evaluation-lane`
 
 Goal: use private workbooks under ignored `tmp/` to evaluate the pipeline and record sanitized findings without committing source workbooks or private outputs.
 
-- [ ] P13.1 Define private workbook evaluation protocol. Child issue: #67.
+- [x] P13.1 Define private workbook evaluation protocol. Child issue: #67.
 - [ ] P13.2 Run first private workbook evaluation locally. Child issue: #74.
 - [ ] P13.3 Record sanitized findings and unsupported features. Child issue: #72.
 
@@ -240,6 +240,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P13.1 in child issue #67 on branch `feature/p13-real-workbook-evaluation-lane`.
-2. Define the private workbook evaluation protocol before running any private workbook evaluation.
-3. Keep issue #67, parent issue #52, this roadmap, and `CHANGE_LOG.md` synchronized before touching private workbook inputs.
+1. Work P13.2 in child issue #74 on branch `feature/p13-real-workbook-evaluation-lane`.
+2. Run the first private workbook evaluation locally under ignored `tmp/` using `planning/private-workbook-evaluation-protocol.md`.
+3. Keep issue #74, parent issue #52, this roadmap, and `CHANGE_LOG.md` synchronized before recording sanitized findings.
