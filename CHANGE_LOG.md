@@ -12,6 +12,7 @@ This file records completed project work in chronological order.
 - Merged Phase 6 PR #41, closed parent issue #34, and activated Phase 7 on `feature/p7-validation-scenario-comparison-core`.
 - Expanded the roadmap and GitHub issue backlog through Phase 15, with the long-term sequence recorded in `planning/long-term-roadmap.md`.
 - Added validation scenario objects and a JSON loader for fixture-backed validation scenario files.
+- Added scalar comparison helpers for numeric tolerance, exact text, missing outputs, and unsupported output diagnostics.
 
 ## 2026-06-19
 

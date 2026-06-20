@@ -4,11 +4,13 @@ from sheetforge.validation import (
     ComparisonResult,
     ComparisonRules,
     Diagnostic,
+    MISSING_VALUE,
     OracleConfig,
     ScenarioInput,
     ScenarioOutput,
     ValidationReport,
     ValidationScenario,
+    compare_scalar_output,
     load_validation_scenario,
 )
 
@@ -18,11 +20,13 @@ __all__ = [
     "ComparisonResult",
     "ComparisonRules",
     "Diagnostic",
+    "MISSING_VALUE",
     "OracleConfig",
     "ScenarioInput",
     "ScenarioOutput",
     "ValidationReport",
     "ValidationScenario",
     "__version__",
+    "compare_scalar_output",
     "load_validation_scenario",
 ]

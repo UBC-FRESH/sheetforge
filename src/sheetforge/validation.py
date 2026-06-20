@@ -20,6 +20,13 @@ TextComparisonMode = Literal["exact"]
 BooleanComparisonMode = Literal["exact"]
 
 
+class _MissingValue:
+    pass
+
+
+MISSING_VALUE = _MissingValue()
+
+
 @dataclass(frozen=True)
 class OracleConfig:
     """Oracle backend configuration from a validation scenario."""
@@ -211,6 +218,169 @@ class ComparisonResult:
             "message": self.message,
             "oracle_backend": self.oracle_backend,
         }
+
+
+def compare_scalar_output(
+    *,
+    scenario_id: str,
+    output: ScenarioOutput,
+    generated: JsonValue | _MissingValue,
+    oracle: JsonValue | _MissingValue,
+    oracle_backend: str,
+    default_numeric_tolerance: float = 1e-9,
+) -> ComparisonResult:
+    """Compare one observed generated value against one oracle value."""
+
+    if generated is MISSING_VALUE and oracle is MISSING_VALUE:
+        return ComparisonResult(
+            scenario_id=scenario_id,
+            cell_ref=output.cell_ref,
+            kind=output.kind,
+            generated=None,
+            oracle=None,
+            matches=False,
+            tolerance=_tolerance_for(output, default_numeric_tolerance),
+            difference=None,
+            diagnostic_code="missing_generated_and_oracle_output",
+            message="generated and oracle outputs are missing",
+            oracle_backend=oracle_backend,
+        )
+    if generated is MISSING_VALUE:
+        return ComparisonResult(
+            scenario_id=scenario_id,
+            cell_ref=output.cell_ref,
+            kind=output.kind,
+            generated=None,
+            oracle=oracle,
+            matches=False,
+            tolerance=_tolerance_for(output, default_numeric_tolerance),
+            difference=None,
+            diagnostic_code="missing_generated_output",
+            message="generated output is missing",
+            oracle_backend=oracle_backend,
+        )
+    if oracle is MISSING_VALUE:
+        return ComparisonResult(
+            scenario_id=scenario_id,
+            cell_ref=output.cell_ref,
+            kind=output.kind,
+            generated=generated,
+            oracle=None,
+            matches=False,
+            tolerance=_tolerance_for(output, default_numeric_tolerance),
+            difference=None,
+            diagnostic_code="missing_oracle_output",
+            message="oracle output is missing",
+            oracle_backend=oracle_backend,
+        )
+
+    if output.kind == "number":
+        return _compare_number(
+            scenario_id=scenario_id,
+            output=output,
+            generated=generated,
+            oracle=oracle,
+            oracle_backend=oracle_backend,
+            default_numeric_tolerance=default_numeric_tolerance,
+        )
+    if output.kind == "text":
+        return _compare_text(
+            scenario_id=scenario_id,
+            output=output,
+            generated=generated,
+            oracle=oracle,
+            oracle_backend=oracle_backend,
+        )
+
+    return ComparisonResult(
+        scenario_id=scenario_id,
+        cell_ref=output.cell_ref,
+        kind=output.kind,
+        generated=generated,
+        oracle=oracle,
+        matches=False,
+        tolerance=_tolerance_for(output, default_numeric_tolerance),
+        difference=None,
+        diagnostic_code="unsupported_output_kind",
+        message=f"unsupported output kind: {output.kind}",
+        oracle_backend=oracle_backend,
+    )
+
+
+def _tolerance_for(output: ScenarioOutput, default_numeric_tolerance: float) -> float | None:
+    if output.kind != "number":
+        return None
+    return output.tolerance if output.tolerance is not None else default_numeric_tolerance
+
+
+def _compare_number(
+    *,
+    scenario_id: str,
+    output: ScenarioOutput,
+    generated: JsonValue,
+    oracle: JsonValue,
+    oracle_backend: str,
+    default_numeric_tolerance: float,
+) -> ComparisonResult:
+    tolerance = _tolerance_for(output, default_numeric_tolerance)
+    if not _is_number(generated) or not _is_number(oracle):
+        return ComparisonResult(
+            scenario_id=scenario_id,
+            cell_ref=output.cell_ref,
+            kind=output.kind,
+            generated=generated,
+            oracle=oracle,
+            matches=False,
+            tolerance=tolerance,
+            difference=None,
+            diagnostic_code="numeric_type_mismatch",
+            message="generated and oracle values must both be numeric",
+            oracle_backend=oracle_backend,
+        )
+
+    difference = abs(float(generated) - float(oracle))
+    matches = difference <= float(tolerance)
+    return ComparisonResult(
+        scenario_id=scenario_id,
+        cell_ref=output.cell_ref,
+        kind=output.kind,
+        generated=generated,
+        oracle=oracle,
+        matches=matches,
+        tolerance=tolerance,
+        difference=difference,
+        diagnostic_code=None if matches else "numeric_mismatch",
+        message="values match" if matches else "generated value differs from oracle value",
+        oracle_backend=oracle_backend,
+    )
+
+
+def _compare_text(
+    *,
+    scenario_id: str,
+    output: ScenarioOutput,
+    generated: JsonValue,
+    oracle: JsonValue,
+    oracle_backend: str,
+) -> ComparisonResult:
+    matches = isinstance(generated, str) and isinstance(oracle, str) and generated == oracle
+    return ComparisonResult(
+        scenario_id=scenario_id,
+        cell_ref=output.cell_ref,
+        kind=output.kind,
+        generated=generated,
+        oracle=oracle,
+        matches=matches,
+        tolerance=None,
+        difference=None,
+        diagnostic_code=None if matches else "text_mismatch",
+        message="values match" if matches else "generated text differs from oracle text",
+        oracle_backend=oracle_backend,
+    )
+
+
+def _is_number(value: JsonValue) -> bool:
+    return isinstance(value, int | float) and not isinstance(value, bool)
 
 
 @dataclass(frozen=True)
