@@ -84,6 +84,7 @@ This file records completed project work in chronological order.
 - Added P17.3 pass-six support for constrained static `OFFSET` translation; the sanitized private pass increased translated formulas to 215,422, cleared unsupported-function first failures, and left explicit error references plus oracle calculation failure as residual blockers for closeout.
 - Closed Phase 17 with sanitized final diagnostics, classified explicit error references and oracle calculation failure as residual blockers, and recorded Phase 18 conversion-planning inputs.
 - Shifted the primary private benchmark direction to the 2020 workbook after cross-version inspection showed the 2019 workbook contains explicit broken references; the 2020 baseline translated 296,319 of 296,976 formulas and exposed `_XLFN.IFNA` as the next formula-semantics blocker.
+- Merged Phase 17 PR #109, closed parent issue #88, and activated Phase 18 on `feature/p18-conversion-planning-pipeline`.
 
 ## 2026-06-19
 
