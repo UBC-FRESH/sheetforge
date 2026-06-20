@@ -278,16 +278,17 @@ Status: complete pending PR.
 
 GitHub parent issue: #87
 
-Planned branch: `feature/p18-conversion-planning-pipeline`
+Active branch: `feature/p18-conversion-planning-pipeline`
 
 Goal: turn extraction, graphing, translation, generation, and validation pieces into an explicit conversion plan workflow without pretending every workbook can be fully converted.
 
-- [ ] P18.1 Define conversion plan JSON contract. Child issue: #101.
-- [ ] P18.2 Build conversion plan API. Child issue: #99.
-- [ ] P18.3 Add conversion planning CLI. Child issue: #100.
-- [ ] P18.4 Test conversion planning workflow and closeout. Child issue: #98.
+- [x] P18.1 Define conversion plan JSON contract. Child issue: #101.
+- [x] P18.2 Build conversion plan API. Child issue: #99.
+  - [x] Track official external FABLE benchmark metadata and add a helper that materializes the untracked workbook files into canonical ignored paths.
+- [x] P18.3 Add conversion planning CLI. Child issue: #100.
+- [x] P18.4 Test conversion planning workflow and closeout. Child issue: #98.
 
-Status: planned backlog.
+Status: complete pending PR.
 
 ## Phase 19: Automated Validation And Evaluation Reports
 
@@ -306,7 +307,7 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Open the Phase 17 PR from `feature/p17-real-workbook-formula-semantics` to `main`.
+1. Open the Phase 18 PR from `feature/p18-conversion-planning-pipeline` back to `main`.
 2. Verify PR checks.
-3. Merge the Phase 17 PR and close parent issue #88.
-4. Activate Phase 18 on `feature/p18-conversion-planning-pipeline`.
+3. Merge the Phase 18 PR, close parent issue #87, and only then activate Phase 19.
+4. Use `planning/phase-18-closeout-phase-19-inputs.md` as the Phase 19 starting note.

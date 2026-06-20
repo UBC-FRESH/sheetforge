@@ -318,3 +318,23 @@ def test_translate_dynamic_offset_shape_reports_sharp_diagnostic(tmp_path: Path)
     assert expression.translated is False
     assert expression.diagnostics[0].code == "unsupported_offset_shape"
     assert expression.diagnostics[0].raw_value == "OFFSET"
+
+
+def test_translate_xlfn_ifna_as_ifna(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "xlfn-ifna.xlsx"
+    source = Workbook()
+    sheet = source.active
+    sheet.title = "Calc"
+    sheet["A1"] = 1
+    sheet["B1"] = '=_xlfn.IFNA(A1,"missing")'
+    source.save(workbook_path)
+    workbook = extract_workbook(workbook_path)
+    graph = build_dependency_graph(workbook)
+    formula_cell = next(cell for cell in workbook.cells if cell.cell_ref == "Calc!B1")
+
+    expression = translate_formula_cell(formula_cell, graph)
+
+    assert expression.translated is True
+    assert expression.root is not None
+    assert expression.root.kind == "function_call"
+    assert expression.root.function_name == "IFNA"

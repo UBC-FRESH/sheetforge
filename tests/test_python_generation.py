@@ -364,3 +364,67 @@ def test_generate_python_module_renders_vlookup(tmp_path: Path) -> None:
         "Calc!B1": "two",
         "Calc!B2": "one",
     }
+
+
+def test_generate_python_module_renders_ifna_for_lookup_errors(tmp_path: Path) -> None:
+    contract = GeneratedModuleContract(
+        workbook_id="ifna.xlsx",
+        module_name="ifna",
+        input_refs=("Lookup!A1", "Lookup!B1"),
+        output_refs=("Calc!B1", "Calc!B2"),
+        symbols=(
+            GeneratedSymbol(cell_ref="Lookup!A1", symbol_name="lookup_a1", kind="input"),
+            GeneratedSymbol(cell_ref="Lookup!B1", symbol_name="lookup_b1", kind="input"),
+            GeneratedSymbol(cell_ref="Calc!B1", symbol_name="calc_b1", kind="output", raw_formula="=IFNA(VLOOKUP(...),\"missing\")"),
+            GeneratedSymbol(cell_ref="Calc!B2", symbol_name="calc_b2", kind="output", raw_formula="=IFNA(A1,\"missing\")"),
+        ),
+    )
+    table_range = normalize_reference("Lookup!A1:B1")
+    expressions = {
+        "Calc!B1": formula_expression(
+            "Calc!B1",
+            '=IFNA(VLOOKUP(9,Lookup!A1:B1,2,FALSE),"missing")',
+            FormulaExpressionNode.function_call(
+                "IFNA",
+                (
+                    FormulaExpressionNode.function_call(
+                        "VLOOKUP",
+                        (
+                            FormulaExpressionNode.literal(9),
+                            FormulaExpressionNode.reference_to(table_range),
+                            FormulaExpressionNode.literal(2),
+                            FormulaExpressionNode.literal(False),
+                        ),
+                    ),
+                    FormulaExpressionNode.literal("missing"),
+                ),
+            ),
+        ),
+        "Calc!B2": formula_expression(
+            "Calc!B2",
+            '=IFNA(A1,"missing")',
+            FormulaExpressionNode.function_call(
+                "IFNA",
+                (
+                    FormulaExpressionNode.reference_to(normalize_reference("Lookup!A1")),
+                    FormulaExpressionNode.literal("missing"),
+                ),
+            ),
+        ),
+    }
+    output_path = tmp_path / "generated_ifna.py"
+
+    result = generate_python_module(
+        contract=contract,
+        expressions=expressions,
+        constants={"Lookup!A1": 1, "Lookup!B1": "one"},
+        output_path=output_path,
+    )
+    module = load_module(output_path)
+
+    assert result.generated is True
+    assert "_sf_ifna" in result.source_code
+    assert module.calculate() == {
+        "Calc!B1": "missing",
+        "Calc!B2": 1,
+    }

@@ -14,6 +14,18 @@ Bootstrap the environment:
 scripts/bootstrap_dev_env.sh
 ```
 
+This creates `.venv/` and installs the editable package with the `dev` extra:
+
+```bash
+.venv/bin/python -m pip install -e '.[dev]'
+```
+
+To also restore the public external FABLE benchmark workbooks into canonical ignored paths, run:
+
+```bash
+scripts/bootstrap_dev_env.sh --benchmarks
+```
+
 Activate it when working interactively:
 
 ```bash

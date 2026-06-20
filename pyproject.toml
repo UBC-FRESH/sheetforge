@@ -26,6 +26,13 @@ docs = [
   "sphinx>=7",
   "sphinx-rtd-theme>=2"
 ]
+dev = [
+  "formulas",
+  "pytest>=8",
+  "ruff>=0.8",
+  "sphinx>=7",
+  "sphinx-rtd-theme>=2"
+]
 oracle = [
   "formulas"
 ]

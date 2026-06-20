@@ -19,7 +19,7 @@ def test_supported_semantics_fixture_translates_and_generates(tmp_path: Path) ->
         if cell.formula is None
     }
     formula_order = (
-        tuple(f"Calc!B{index}" for index in range(1, 37))
+        tuple(f"Calc!B{index}" for index in range(1, 39))
         + ("TableData!B2", "TableData!B3", "CrossTarget!B2", "CrossTarget!B3", "OffsetData!B3")
     )
     contract = GeneratedModuleContract(

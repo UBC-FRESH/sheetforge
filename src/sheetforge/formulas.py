@@ -31,6 +31,7 @@ SUPPORTED_FUNCTIONS = frozenset(
         "COUNTIFS",
         "IF",
         "IFERROR",
+        "IFNA",
         "MAX",
         "MIN",
         "OR",
@@ -348,12 +349,13 @@ class _FormulaParser:
 
     def _parse_function_call(self, function_name: str) -> FormulaExpressionNode:
         self._expect("(")
-        function_name = function_name.upper()
+        raw_function_name = function_name.upper()
+        function_name = _normalized_function_name(raw_function_name)
         if function_name not in SUPPORTED_FUNCTIONS:
             raise FormulaTranslationError(
                 "unsupported_function",
-                f"function {function_name} is not supported",
-                function_name,
+                f"function {raw_function_name} is not supported",
+                raw_function_name,
             )
 
         arguments: list[FormulaExpressionNode] = []
@@ -469,6 +471,12 @@ def _formula_tokens(raw_formula: str) -> tuple[_FormulaToken, ...]:
             continue
         raise FormulaTranslationError("unsupported_formula_token", "unsupported formula token", token.value)
     return tuple(tokens)
+
+
+def _normalized_function_name(function_name: str) -> str:
+    if function_name.startswith("_XLFN."):
+        return function_name.removeprefix("_XLFN.")
+    return function_name
 
 
 def _number_value(raw_value: str) -> int | float:

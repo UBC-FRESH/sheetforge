@@ -84,6 +84,17 @@ This file records completed project work in chronological order.
 - Added P17.3 pass-six support for constrained static `OFFSET` translation; the sanitized private pass increased translated formulas to 215,422, cleared unsupported-function first failures, and left explicit error references plus oracle calculation failure as residual blockers for closeout.
 - Closed Phase 17 with sanitized final diagnostics, classified explicit error references and oracle calculation failure as residual blockers, and recorded Phase 18 conversion-planning inputs.
 - Shifted the primary private benchmark direction to the 2020 workbook after cross-version inspection showed the 2019 workbook contains explicit broken references; the 2020 baseline translated 296,319 of 296,976 formulas and exposed `_XLFN.IFNA` as the next formula-semantics blocker.
+- Merged Phase 17 PR #109, closed parent issue #88, and activated Phase 18 on `feature/p18-conversion-planning-pipeline`.
+- Defined the Phase 18 conversion plan contract for partial-conversion reporting, residual blocker classification, benchmark roles, generation summaries, validation summaries, and privacy review boundaries.
+- Added `_XLFN.IFNA` normalization and generated `IFNA` semantics; the 2020 private benchmark now translates 296,976 of 296,976 formulas with no translation diagnostics while cached generated subset validation remains at 10 outputs with 0 mismatches.
+- Added package conversion-plan records and `build_conversion_plan` for P18.2, including coverage summaries, diagnostic summaries, residual blocker classification, generation summaries, validation summaries, recommendations, API docs, and focused tests.
+- Promoted the public FABLE Calculator workbooks to official external benchmark status by tracking the source URL, local placement instructions, roles, and checksums while keeping workbook binaries untracked under ignored `tmp/`.
+- Added a benchmark materialization helper that downloads or consumes a local Dropbox ZIP/directory, verifies the public FABLE workbook payloads by checksum, and writes them to canonical ignored paths.
+- Added a `dev` dependency extra and linked benchmark materialization into the repo-local bootstrap ritual through `scripts/bootstrap_dev_env.sh --benchmarks`.
+- Added the P18.3 `sheetforge conversion plan` CLI command for JSON conversion-plan reports over extraction, dependency graphing, and formula translation.
+- Standardized the Sphinx documentation build on the Read the Docs theme used by the other FRESH lab packages.
+- Expanded conversion-plan residual-blocker classification across extraction, named ranges, formula extraction, graphing, validation, and generation diagnostics.
+- Closed Phase 18 with synthetic and 2020 FABLE conversion-plan workflow evidence and recorded Phase 19 validation automation inputs.
 
 ## 2026-06-19
 

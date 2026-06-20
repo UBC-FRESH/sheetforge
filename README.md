@@ -38,11 +38,12 @@ The current CLI prints JSON to stdout and stays close to the Python APIs:
 ```bash
 sheetforge workbook extract path/to/workbook.xlsx > tmp/extraction.json
 sheetforge workbook graph path/to/workbook.xlsx > tmp/dependency-graph.json
+sheetforge conversion plan path/to/workbook.xlsx > tmp/conversion-plan.json
 sheetforge model generate --contract tmp/contract.json --expressions tmp/expressions.json --constants tmp/constants.json --out tmp/generated_model.py > tmp/generation-result.json
 sheetforge validation report --scenario tests/fixtures/synthetic_model/baseline_scenario.json --generated-values tmp/generated-values.json --oracle-values tmp/oracle-values.json > tmp/validation-report.json
 ```
 
-These commands do not provide a one-step workbook converter. `model generate` expects explicit generated-module and formula-expression JSON inputs, and `validation report` compares already-observed generated/oracle values. See `planning/cli-json-workflows.md` for JSON examples and workflow boundaries.
+These commands do not provide a one-step workbook converter. `conversion plan` reports extraction, graphing, formula-translation, and residual-blocker status; `model generate` expects explicit generated-module and formula-expression JSON inputs; and `validation report` compares already-observed generated/oracle values. See `planning/cli-json-workflows.md` for JSON examples and workflow boundaries.
 
 ## Local Development
 
@@ -50,6 +51,12 @@ Bootstrap a repo-local virtual environment:
 
 ```bash
 scripts/bootstrap_dev_env.sh
+```
+
+This installs Sheetforge with the `dev` extra:
+
+```bash
+.venv/bin/python -m pip install -e '.[dev]'
 ```
 
 Run lint checks:
@@ -70,6 +77,12 @@ Build docs locally:
 .venv/bin/sphinx-build -b html docs _build/html -W
 ```
 
+Restore the public external FABLE benchmark workbooks into ignored local paths:
+
+```bash
+scripts/bootstrap_dev_env.sh --benchmarks
+```
+
 `sheetforge` is pre-release. The package metadata is sufficient for local editable installs and CI, but publishing metadata, release artifacts, and compatibility guarantees are intentionally deferred until the conversion workflow is more proven.
 
 ## Repository Conventions
@@ -79,6 +92,7 @@ Build docs locally:
 - `ROADMAP.md` is the current plan and next-step tracker.
 - `CHANGE_LOG.md` is the append-only project narrative.
 - `planning/` contains focused design notes and research records that are too detailed for the roadmap.
+- `benchmarks/` contains tracked metadata for official external benchmarks; large workbook binaries remain untracked and are restored locally under `tmp/`.
 - `src/sheetforge/` contains the importable Python package.
 - `tests/` contains package-backed tests and tracked synthetic fixture helpers.
 - `tmp/` is ignored local working space for private notes, source workbooks, experiments, and generated scratch outputs.
