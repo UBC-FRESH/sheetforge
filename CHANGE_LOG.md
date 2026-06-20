@@ -2,6 +2,10 @@
 
 This file records completed project work in chronological order.
 
+## 2026-06-20
+
+- Added validation report core objects for comparison records, diagnostics, report status, mismatch extraction, and JSON-serializable boundaries.
+
 ## 2026-06-19
 
 - Bootstrapped the repository with a lightweight project overview, agent working contract, roadmap, changelog, planning directory, and ignore rules.
