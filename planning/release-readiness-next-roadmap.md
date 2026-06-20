@@ -41,9 +41,10 @@ These gaps should drive the next implementation horizon. Sheetforge should not c
 
 The next horizon should stay focused on making real workbook behavior explicit and repeatable:
 
-1. Phase 16: expand real-workbook formula and reference semantics from sanitized evidence.
-2. Phase 17: define conversion plans so partial conversion, unsupported cells, generated outputs, and validation targets are explicit.
-3. Phase 18: automate generated-model execution, oracle/cached-value validation, and evaluation reports.
+1. Phase 16: align the CLI and documentation public surface with FRESH lab package conventions from `fhops` and `femic`, including Sphinx docs published to GitHub Pages from `main`.
+2. Phase 17: expand real-workbook formula and reference semantics from sanitized evidence.
+3. Phase 18: define conversion plans so partial conversion, unsupported cells, generated outputs, and validation targets are explicit.
+4. Phase 19: automate generated-model execution, oracle/cached-value validation, and evaluation reports.
 
 These phases are backlog lanes. They are not active until Phase 15 is merged and the maintainer activates Phase 16.
 
@@ -53,6 +54,8 @@ Keep the project pre-release.
 
 Do not add package publishing, release artifacts, a compatibility guarantee, or user-facing claims of full conversion until:
 
+- the CLI has been brought into the same Typer/Rich command style used by `fhops` and `femic`;
+- the Sphinx documentation is warning-clean locally and published from GitHub Actions to GitHub Pages on pushes to `main`;
 - the conversion plan workflow can explain what is converted and what is not;
 - generated outputs can be validated repeatably;
 - unsupported workbook semantics are reported clearly;

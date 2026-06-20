@@ -21,7 +21,7 @@ P15.2 decides which release, documentation, and quality metadata should exist be
 - No changelog automation.
 - No versioning policy beyond the existing `0.0.0` skeleton version.
 - No license choice beyond the existing `TBD` metadata.
-- No documentation site, API docs build, Markdown linter, link checker, or spell checker.
+- No documentation site, API docs build, Markdown linter, link checker, or spell checker in Phase 15. Full Sphinx docs and GitHub Pages publishing are now prioritized for Phase 16.
 - No formatter, type checker, coverage threshold, or pre-commit hook.
 
 ## Rationale
