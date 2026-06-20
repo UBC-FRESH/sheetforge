@@ -55,6 +55,7 @@ This file records completed project work in chronological order.
 - Reviewed Python API boundaries, documented stable/provisional entrypoints, and narrowed the package-root facade to primary workflow records and functions.
 - Added thin JSON CLI command groups for extraction, dependency graph building, generated Python module creation, and validation report assembly.
 - Documented the CLI JSON workflows, command expectations, and stabilization decisions.
+- Opened Phase 14 PR #86 from `feature/p14-cli-api-stabilization` back to `main`.
 
 ## 2026-06-19
 

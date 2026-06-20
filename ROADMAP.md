@@ -216,6 +216,8 @@ GitHub parent issue: #53
 
 Active branch: `feature/p14-cli-api-stabilization`
 
+Open PR: #86
+
 Goal: stabilize the Python API and add thin CLI wrappers only after the internal flow is coherent.
 
 - [x] P14.1 Review and stabilize Python API boundaries. Child issue: #73.
@@ -240,6 +242,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Open the Phase 14 PR from `feature/p14-cli-api-stabilization` back to `main`.
-2. Verify the PR checks and merge once clean.
+1. Verify Phase 14 PR #86 checks.
+2. Merge PR #86 once clean.
 3. Close parent issue #53 after the Phase 14 PR is merged.
