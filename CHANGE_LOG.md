@@ -19,6 +19,7 @@ This file records completed project work in chronological order.
 - Merged Phase 7 PR #79, closed parent issue #42, and activated Phase 8 on `feature/p8-workbook-extraction-core`.
 - Added extraction record objects for workbooks, sheets, cells, formulas, named ranges, and extraction diagnostics.
 - Added `openpyxl` workbook extraction for sheets, non-empty cells, formulas, named ranges, and initial extraction diagnostics.
+- Closed the Phase 8 extraction-core planning loop by recording Phase 9 dependency graph inputs in `planning/phase-8-closeout-phase-9-inputs.md`.
 
 ## 2026-06-19
 
