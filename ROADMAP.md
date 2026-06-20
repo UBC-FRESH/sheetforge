@@ -176,7 +176,7 @@ Active branch: `feature/p11-generated-python-model-core`
 
 Goal: generate small standalone Python modules from extracted and translated workbook logic.
 
-- [ ] P11.1 Define generated module contract. Child issue: #65.
+- [x] P11.1 Define generated module contract. Child issue: #65.
 - [ ] P11.2 Generate Python from translated workbook logic. Child issue: #64.
 - [ ] P11.3 Test generated model outputs and closeout. Child issue: #63.
 
@@ -240,6 +240,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P11.1 in child issue #65 on branch `feature/p11-generated-python-model-core`.
-2. Define generated module shape, provenance comments, calculate output contract, and `GenerationResult` fields.
-3. Keep issue #65, parent issue #47, this roadmap, and `CHANGE_LOG.md` synchronized before generating Python from translated logic.
+1. Work P11.2 in child issue #64 on branch `feature/p11-generated-python-model-core`.
+2. Generate standalone Python from translated workbook logic for the synthetic model.
+3. Keep issue #64, parent issue #47, this roadmap, and `CHANGE_LOG.md` synchronized before generated-output closeout.

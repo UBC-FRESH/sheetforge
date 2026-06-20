@@ -15,6 +15,13 @@ from sheetforge.formulas import (
     FormulaTranslationDiagnostic,
     translate_formula_cell,
 )
+from sheetforge.generation import (
+    GeneratedModuleContract,
+    GeneratedSymbol,
+    GenerationDiagnostic,
+    GenerationResult,
+    symbol_name_for_cell_ref,
+)
 from sheetforge.graph import (
     DependencyEdge,
     DependencyGraph,
@@ -54,6 +61,10 @@ __all__ = [
     "FormulaExpressionNode",
     "FormulaRecord",
     "FormulaTranslationDiagnostic",
+    "GeneratedModuleContract",
+    "GeneratedSymbol",
+    "GenerationDiagnostic",
+    "GenerationResult",
     "MISSING_VALUE",
     "NamedRangeRecord",
     "OracleConfig",
@@ -72,5 +83,6 @@ __all__ = [
     "load_validation_scenario",
     "normalize_cell_reference",
     "normalize_reference",
+    "symbol_name_for_cell_ref",
     "translate_formula_cell",
 ]
