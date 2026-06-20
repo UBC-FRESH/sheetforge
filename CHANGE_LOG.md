@@ -15,6 +15,7 @@ This file records completed project work in chronological order.
 - Added scalar comparison helpers for numeric tolerance, exact text, missing outputs, and unsupported output diagnostics.
 - Added a validation report builder that compares scenario outputs from observed generated and oracle value mappings.
 - Closed the Phase 7 validation-core planning loop by recording Phase 8 extraction inputs in `planning/phase-7-closeout-phase-8-inputs.md`.
+- Opened Phase 7 PR #79 from `feature/p7-validation-scenario-comparison-core` back to `main`.
 
 ## 2026-06-19
 
