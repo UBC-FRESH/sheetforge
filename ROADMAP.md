@@ -158,9 +158,7 @@ Status: complete.
 
 GitHub parent issue: #48
 
-Active branch: `feature/p10-formula-translation-core`
-
-Open PR: #82
+Merged PR: #82
 
 Goal: translate the first supported Excel formula subset into internal operations ready for generated Python.
 
@@ -168,21 +166,23 @@ Goal: translate the first supported Excel formula subset into internal operation
 - [x] P10.2 Translate supported synthetic formula subset. Child issue: #59.
 - [x] P10.3 Add unsupported formula diagnostics and closeout. Child issue: #66.
 
-Status: PR open.
+Status: complete.
 
 ## Phase 11: Generated Python Model Core
 
 GitHub parent issue: #47
 
-Planned branch: `feature/p11-generated-python-model-core`
+Active branch: `feature/p11-generated-python-model-core`
+
+Open PR: #83
 
 Goal: generate small standalone Python modules from extracted and translated workbook logic.
 
-- [ ] P11.1 Define generated module contract. Child issue: #65.
-- [ ] P11.2 Generate Python from translated workbook logic. Child issue: #64.
-- [ ] P11.3 Test generated model outputs and closeout. Child issue: #63.
+- [x] P11.1 Define generated module contract. Child issue: #65.
+- [x] P11.2 Generate Python from translated workbook logic. Child issue: #64.
+- [x] P11.3 Test generated model outputs and closeout. Child issue: #63.
 
-Status: planned backlog.
+Status: PR open.
 
 ## Phase 12: Oracle-Backed Validation
 
@@ -242,6 +242,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Merge Phase 10 PR #82 after checks pass.
-2. Close parent issue #48 after PR #82 merges.
-3. Activate Phase 11 on `feature/p11-generated-python-model-core`.
+1. Merge Phase 11 PR #83 after checks pass.
+2. Close parent issue #47 after PR #83 merges.
+3. Activate Phase 12 on `feature/p12-oracle-backed-validation`.

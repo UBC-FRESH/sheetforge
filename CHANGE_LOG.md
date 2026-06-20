@@ -33,6 +33,11 @@ This file records completed project work in chronological order.
 - Added formula translation diagnostics coverage for unsupported functions and unsupported operators.
 - Closed the Phase 10 formula-translation planning loop by recording Phase 11 generated-model inputs in `planning/phase-10-closeout-phase-11-inputs.md`.
 - Opened Phase 10 PR #82 from `feature/p10-formula-translation-core` back to `main`.
+- Merged Phase 10 PR #82, closed parent issue #48, and activated Phase 11 on `feature/p11-generated-python-model-core`.
+- Added generated Python module contract records, generation result records, generated symbol provenance, and cell-reference symbol naming.
+- Added standalone Python module generation from translated workbook logic, with provenance comments and generated-output tests using temporary files.
+- Closed the Phase 11 generated-model planning loop by recording Phase 12 oracle-backed validation inputs in `planning/phase-11-closeout-phase-12-inputs.md`.
+- Opened Phase 11 PR #83 from `feature/p11-generated-python-model-core` back to `main`.
 
 ## 2026-06-19
 
