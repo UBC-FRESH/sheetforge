@@ -85,6 +85,8 @@ This file records completed project work in chronological order.
 - Closed Phase 17 with sanitized final diagnostics, classified explicit error references and oracle calculation failure as residual blockers, and recorded Phase 18 conversion-planning inputs.
 - Shifted the primary private benchmark direction to the 2020 workbook after cross-version inspection showed the 2019 workbook contains explicit broken references; the 2020 baseline translated 296,319 of 296,976 formulas and exposed `_XLFN.IFNA` as the next formula-semantics blocker.
 - Merged Phase 17 PR #109, closed parent issue #88, and activated Phase 18 on `feature/p18-conversion-planning-pipeline`.
+- Defined the Phase 18 conversion plan contract for partial-conversion reporting, residual blocker classification, benchmark roles, generation summaries, validation summaries, and privacy review boundaries.
+- Added `_XLFN.IFNA` normalization and generated `IFNA` semantics; the 2020 private benchmark now translates 296,976 of 296,976 formulas with no translation diagnostics while cached generated subset validation remains at 10 outputs with 0 mismatches.
 
 ## 2026-06-19
 

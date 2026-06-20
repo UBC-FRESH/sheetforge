@@ -43,6 +43,8 @@ EXPECTED_OUTPUTS = {
     "Calc!B34": "one",
     "Calc!B35": "two",
     "Calc!B36": "one",
+    "Calc!B37": "missing",
+    "Calc!B38": 3,
     "TableData!B2": 10,
     "TableData!B3": 20,
     "CrossTarget!B2": 100,
@@ -119,6 +121,8 @@ def build_workbook(path: str | Path) -> Path:
     calc["B34"] = '=VLOOKUP(1.5,LookupData!A2:B4,2,TRUE)'
     calc["B35"] = '=VLOOKUP(2,LookupTable[],2,FALSE)'
     calc["B36"] = '=VLOOKUP(1.5,LookupTable[#All],2,TRUE)'
+    calc["B37"] = '=_xlfn.IFNA(VLOOKUP(9,LookupTable[],2,FALSE),"missing")'
+    calc["B38"] = '=_xlfn.IFNA(Inputs!B2,"missing")'
 
     table_data.append(["Amount", "Result"])
     table_data.append([10, "=SemanticsTable[[#This Row],[Amount]]"])

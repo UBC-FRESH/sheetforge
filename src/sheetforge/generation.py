@@ -244,6 +244,16 @@ def _render_module(
         "        return fallback",
         "",
         "",
+        "def _sf_ifna(value_fn, fallback):",
+        "    try:",
+        "        value = value_fn()",
+        "    except LookupError:",
+        "        return fallback",
+        "    if value == '#N/A':",
+        "        return fallback",
+        "    return value",
+        "",
+        "",
         "def _sf_coerce_criteria(raw, sample):",
         "    if isinstance(raw, str):",
         "        upper = raw.upper()",
@@ -434,6 +444,11 @@ def _render_function_call(node: FormulaExpressionNode) -> str:
             raise ValueError("IFERROR requires two operands")
         value, fallback = node.operands
         return f"_sf_iferror(lambda: {_render_expression(value)}, {_render_expression(fallback)})"
+    if node.function_name == "IFNA":
+        if len(node.operands) != 2:
+            raise ValueError("IFNA requires two operands")
+        value, fallback = node.operands
+        return f"_sf_ifna(lambda: {_render_expression(value)}, {_render_expression(fallback)})"
     if node.function_name == "AND":
         return f"all(_sf_flatten({_render_argument_tuple(node.operands)}))"
     if node.function_name == "OR":
