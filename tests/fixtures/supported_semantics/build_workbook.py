@@ -45,6 +45,8 @@ EXPECTED_OUTPUTS = {
     "Calc!B36": "one",
     "TableData!B2": 10,
     "TableData!B3": 20,
+    "CrossTarget!B2": 100,
+    "CrossTarget!B3": 200,
 }
 
 
@@ -60,6 +62,8 @@ def build_workbook(path: str | Path) -> Path:
     calc = workbook.create_sheet("Calc")
     table_data = workbook.create_sheet("TableData")
     criteria_data = workbook.create_sheet("CriteriaData")
+    cross_source = workbook.create_sheet("CrossSource")
+    cross_target = workbook.create_sheet("CrossTarget")
 
     inputs["A1"] = "Input"
     inputs["B1"] = "Value"
@@ -130,6 +134,16 @@ def build_workbook(path: str | Path) -> Path:
     lookup_data.append([2, "two"])
     lookup_data.append([4, "four"])
     lookup_data.add_table(Table(displayName="LookupTable", ref="A1:B4"))
+
+    cross_source.append(["Amount"])
+    cross_source.append([100])
+    cross_source.append([200])
+    cross_source.add_table(Table(displayName="CrossSourceTable", ref="A1:A3"))
+
+    cross_target.append(["Label", "Amount"])
+    cross_target.append(["first", "=CrossSourceTable[[#This Row],[Amount]]"])
+    cross_target.append(["second", "=CrossSourceTable[[#This Row],[Amount]]"])
+    cross_target.add_table(Table(displayName="CrossTargetTable", ref="A1:B3"))
 
     workbook.save(workbook_path)
     return workbook_path

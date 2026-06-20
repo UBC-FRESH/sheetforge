@@ -233,16 +233,56 @@ def _resolve_structured_reference(
     data_start_row = min_row + 1
     if parsed.current_row:
         if target.sheet != table.sheet or target.start_cell is None:
-            return None
+            return _resolve_cross_table_current_row(
+                source_table=table,
+                target=target,
+                column_name=column_name,
+                tables=tables,
+            )
         try:
             _target_col, target_row, _target_max_col, _target_max_row = range_boundaries(target.start_cell)
         except ValueError:
             return None
         if target_row < data_start_row or target_row > max_row:
-            return None
+            return _resolve_cross_table_current_row(
+                source_table=table,
+                target=target,
+                column_name=column_name,
+                tables=tables,
+            )
         return normalize_reference(f"{table.sheet}!{column_name}{target_row}")
 
     return normalize_reference(f"{table.sheet}!{column_name}{data_start_row}:{column_name}{max_row}")
+
+
+def _resolve_cross_table_current_row(
+    *,
+    source_table: TableRecord,
+    target: WorkbookReference,
+    column_name: str,
+    tables: dict[str, TableRecord],
+) -> WorkbookReference | None:
+    target_table = _table_containing_target(target, tables)
+    if target_table is None or target.start_cell is None:
+        return None
+
+    try:
+        _target_col, target_row, _target_max_col, _target_max_row = range_boundaries(target.start_cell)
+        _source_min_col, source_min_row, _source_max_col, source_max_row = range_boundaries(source_table.ref)
+        _target_min_col, target_min_row, _target_table_max_col, target_max_row = range_boundaries(target_table.ref)
+    except ValueError:
+        return None
+
+    source_data_rows = source_max_row - source_min_row
+    target_data_rows = target_max_row - target_min_row
+    if source_data_rows != target_data_rows:
+        return None
+
+    target_offset = target_row - (target_min_row + 1)
+    mapped_row = source_min_row + 1 + target_offset
+    if mapped_row < source_min_row + 1 or mapped_row > source_max_row:
+        return None
+    return normalize_reference(f"{source_table.sheet}!{column_name}{mapped_row}")
 
 
 @dataclass(frozen=True)

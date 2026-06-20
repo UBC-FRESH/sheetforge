@@ -157,6 +157,32 @@ def test_dependency_graph_resolves_whole_table_structured_references_as_ranges(t
     ]
 
 
+def test_dependency_graph_resolves_cross_table_current_row_by_row_offset(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "cross-table-current-row.xlsx"
+    source = Workbook()
+    source_sheet = source.active
+    source_sheet.title = "Source"
+    source_sheet.append(["Amount"])
+    source_sheet.append([10])
+    source_sheet.append([20])
+    source_sheet.add_table(Table(displayName="SourceTable", ref="A1:A3"))
+    target_sheet = source.create_sheet("Target")
+    target_sheet.append(["Result"])
+    target_sheet.append(["=SourceTable[[#This Row],[Amount]]"])
+    target_sheet.append(["=SourceTable[[#This Row],[Amount]]"])
+    target_sheet.add_table(Table(displayName="TargetTable", ref="A1:A3"))
+    source.save(workbook_path)
+
+    graph = build_dependency_graph(extract_workbook(workbook_path))
+
+    execution_edges = [edge for edge in graph.execution_edges if edge.target.normalized in {"Target!A2", "Target!A3"}]
+    assert graph.diagnostics == ()
+    assert [(edge.source.normalized, edge.target.normalized, edge.resolved_from.normalized) for edge in execution_edges if edge.resolved_from] == [
+        ("Source!A2", "Target!A2", "SourceTable[[#This Row],[Amount]]"),
+        ("Source!A3", "Target!A3", "SourceTable[[#This Row],[Amount]]"),
+    ]
+
+
 def test_dependency_graph_expands_range_execution_edges(tmp_path: Path) -> None:
     workbook_path = tmp_path / "range.xlsx"
     source = Workbook()
