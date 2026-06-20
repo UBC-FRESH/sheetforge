@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from openpyxl import Workbook
+from openpyxl.workbook.defined_name import DefinedName
 
 from sheetforge.extraction import extract_workbook
 from tests.fixtures.synthetic_model.build_workbook import build_workbook
@@ -93,3 +94,33 @@ def test_extract_workbook_reports_volatile_formula(tmp_path: Path) -> None:
         "missing_cached_formula_value",
         "unsupported_volatile_function",
     }
+
+
+def test_extract_workbook_reports_unresolved_non_range_defined_name(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "defined-name-formula.xlsx"
+    source = Workbook()
+    source.active.title = "Inputs"
+    source.active["A1"] = 1
+    source.defined_names.add(DefinedName("ComputedName", attr_text="=1+1"))
+    source.save(workbook_path)
+
+    workbook = extract_workbook(workbook_path)
+    named_range = workbook.named_ranges[0]
+
+    assert named_range.name == "ComputedName"
+    assert named_range.destinations == ()
+    assert named_range.status == "unresolved"
+    assert named_range.diagnostics[0].code == "unresolved_named_range"
+
+
+def test_extract_workbook_reads_sparse_populated_cells_without_dense_scan(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "sparse.xlsx"
+    source = Workbook()
+    source.active.title = "Inputs"
+    source.active["A1"] = 1
+    source.active["CV5000"] = "=A1+1"
+    source.save(workbook_path)
+
+    workbook = extract_workbook(workbook_path)
+
+    assert [cell.cell_ref for cell in workbook.cells] == ["Inputs!A1", "Inputs!CV5000"]

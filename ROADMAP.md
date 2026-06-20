@@ -200,15 +200,17 @@ Status: complete.
 
 GitHub parent issue: #52
 
-Planned branch: `feature/p13-real-workbook-evaluation-lane`
+Active branch: `feature/p13-real-workbook-evaluation-lane`
+
+Open PR: #85
 
 Goal: use private workbooks under ignored `tmp/` to evaluate the pipeline and record sanitized findings without committing source workbooks or private outputs.
 
-- [ ] P13.1 Define private workbook evaluation protocol. Child issue: #67.
-- [ ] P13.2 Run first private workbook evaluation locally. Child issue: #74.
-- [ ] P13.3 Record sanitized findings and unsupported features. Child issue: #72.
+- [x] P13.1 Define private workbook evaluation protocol. Child issue: #67.
+- [x] P13.2 Run first private workbook evaluation locally. Child issue: #74.
+- [x] P13.3 Record sanitized findings and unsupported features. Child issue: #72.
 
-Status: planned backlog.
+Status: implementation complete; PR pending.
 
 ## Phase 14: CLI And API Stabilization
 
@@ -240,6 +242,6 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Activate Phase 13 in parent issue #52.
-2. Create `feature/p13-real-workbook-evaluation-lane` from current `main`.
-3. Work P13.1 in child issue #67 before running any private workbook evaluation.
+1. Open the Phase 13 PR from `feature/p13-real-workbook-evaluation-lane` back to `main`.
+2. Verify the PR checks and merge when ready.
+3. Close parent issue #52 only after the PR has merged.
