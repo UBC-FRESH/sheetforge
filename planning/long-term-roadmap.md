@@ -220,6 +220,29 @@ Expected outputs:
 
 Excel-backed validation remains optional and should not enter default CI unless it has a controlled, documented environment.
 
+Closeout result:
+
+- synthetic generated-model evaluation is proven end to end through the CLI;
+- 2020 FABLE extraction, dependency graphing, and formula translation remain clean;
+- full 2020 FABLE workbook equivalence remains unproven until a generated-model contract can be inferred,
+  topologically ordered, materialized, and validated against selected benchmark outputs.
+
+## Phase 21: Full Benchmark Model Materialization And Validation
+
+Goal: turn clean benchmark conversion evidence into an executable generated Python model and validate
+selected outputs until the blocker-find-resolve-rerun loop converges.
+
+Expected outputs:
+
+- generated-model contract inference from dependency graphs and selected outputs;
+- topological symbol ordering for large generated modules;
+- a materialized 2020 FABLE generated model under ignored local artifacts;
+- selected 2020 FABLE output validation against cached values or an explicit oracle;
+- explicit residual blocker list if full equivalence still cannot be claimed.
+
+This phase is the next convergence gate. It should not accept a planning-only result if a concrete blocker
+can be reproduced, fixed, and rerun within the phase.
+
 ## Planning Discipline
 
 These future phases are backlog lanes, not permission to work around the active phase.

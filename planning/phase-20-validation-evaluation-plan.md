@@ -106,6 +106,52 @@ Acceptance criteria:
 - write ignored local reports under `tmp/`;
 - record what is proven, what remains unproven, and Phase 21 inputs.
 
+Status: complete.
+
+Local evidence:
+
+- `tmp/p20-synthetic-evaluation/summary.json`;
+- `tmp/p20-synthetic-evaluation/evaluation-result.json`;
+- `tmp/p20-synthetic-evaluation/generated_model.py`;
+- `tmp/p20-fable-2020-evaluation/conversion-plan.json`;
+- `tmp/p20-fable-2020-evaluation/closeout-summary.json`;
+- `tmp/logs/p20-synthetic-evaluation.log`;
+- `tmp/logs/p20-fable-2020-evaluation.log`;
+- `tmp/logs/p20-fable-2020-evaluation-closeout.log`.
+
+Result:
+
+- synthetic generated-model generation, execution, and validation ran end to end through the CLI;
+- synthetic generated outputs were `Summary!B2 = 70.2` and `Summary!B3 = "ok"`;
+- synthetic cached validation status was `pass` with no mismatches;
+- 2020 FABLE extraction completed for 54 sheets, 395,482 extracted cells, and 296,976 formula cells;
+- 2020 FABLE dependency graphing completed with 3,543,800 dependency edges and no graph diagnostics;
+- 2020 FABLE formula translation completed for 296,976 of 296,976 formulas with no translation
+  diagnostics.
+
+What this proves:
+
+- the generated-model execution API and CLI can execute a generated Python module from an explicit
+  contract;
+- the validation evaluation API and CLI can compare generated outputs against cached workbook values when
+  the generated-model boundary is explicit;
+- the 2020 FABLE benchmark remains clean through extraction, graphing, and translation.
+
+What this does not prove:
+
+- full 2020 FABLE workbook equivalence is not proven;
+- no full 2020 FABLE generated Python model was materialized in Phase 20;
+- no selected 2020 FABLE output set was validated against cached or oracle values in Phase 20.
+
+Phase 21 inputs:
+
+- infer generated-model contracts from dependency graphs and selected outputs;
+- choose benchmark validation outputs and required input boundaries;
+- topologically order generated symbols for large workbooks;
+- materialize a full 2020 FABLE generated model before claiming workbook equivalence;
+- compare selected benchmark outputs against cached or oracle values and continue the
+  blocker-find-resolve-rerun loop until convergence.
+
 ## Non-Goals
 
 - Do not claim full workbook equivalence before generated outputs are compared against usable oracle or

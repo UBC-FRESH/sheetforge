@@ -106,6 +106,7 @@ This file records completed project work in chronological order.
 - Added the P20.1 generated-model execution API with structured execution diagnostics, JSON-serializable observed outputs, package facade exports, API docs, and synthetic tests.
 - Added P20.2 validation orchestration over generated outputs, cached workbook values, and optional oracle results, preserving missing cached values and oracle failures as explicit validation evidence.
 - Added P20.3 CLI commands for generated model execution and validation evaluation JSON reports, with verbose progress on stderr and documented workflow boundaries.
+- Closed P20.4 by running a verbose synthetic generated-model evaluation through the CLI and a verbose 2020 FABLE benchmark boundary run, proving synthetic generated-model validation and preserving the 2020 benchmark's clean extraction, graph, and translation status while explicitly deferring full workbook equivalence to Phase 21 generated-model materialization and validation.
 
 ## 2026-06-19
 
