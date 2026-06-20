@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sheetforge"
+version = "0.0.0"
+description = "Tools for converting spreadsheet workbooks into transparent Python models."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "TBD" }
+authors = [
+  { name = "UBC FRESH" }
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = [
+  "openpyxl>=3.1",
+  "pytest>=8"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

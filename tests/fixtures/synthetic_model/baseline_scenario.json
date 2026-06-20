@@ -1,0 +1,26 @@
+{
+  "scenario_id": "synthetic_model_baseline",
+  "description": "Baseline validation for the controlled synthetic workbook.",
+  "source_workbook": "synthetic_model.xlsx",
+  "generated_model": "generated_model.py",
+  "oracle": {
+    "backend": "formulas"
+  },
+  "inputs": [],
+  "outputs": [
+    {
+      "cell_ref": "Summary!B2",
+      "kind": "number",
+      "tolerance": 1e-9
+    },
+    {
+      "cell_ref": "Summary!B3",
+      "kind": "text"
+    }
+  ],
+  "comparison": {
+    "default_numeric_tolerance": 1e-9,
+    "text": "exact",
+    "boolean": "exact"
+  }
+}

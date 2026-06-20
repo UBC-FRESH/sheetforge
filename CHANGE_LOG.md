@@ -2,6 +2,14 @@
 
 This file records completed project work in chronological order.
 
+## 2026-06-20
+
+- Added validation report core objects for comparison records, diagnostics, report status, mismatch extraction, and JSON-serializable boundaries.
+- Added the tracked synthetic fixture builder, baseline scenario JSON, expected output JSON, and tests that generate the workbook in a pytest temporary directory.
+- Added baseline and intentional numeric mismatch regression tests using the synthetic fixture assets and validation report core.
+- Added the first default GitHub Actions workflow for editable install and `python -m pytest`.
+- Opened Phase 6 PR #41 from `feature/p6-initial-package-validation-core` back to `main`.
+
 ## 2026-06-19
 
 - Bootstrapped the repository with a lightweight project overview, agent working contract, roadmap, changelog, planning directory, and ignore rules.
@@ -33,3 +41,5 @@ This file records completed project work in chronological order.
 - Defined the first CI and documentation verification boundary in `planning/ci-docs-verification-decision.md`.
 - Summarized the Phase 5 implementation bootstrap plan in `planning/implementation-bootstrap-plan.md` and created the planned Phase 6 issue sequence.
 - Opened Phase 5 PR #40 from `feature/p5-package-api-cli-ci-decisions` back to `main`.
+- Merged Phase 5 PR #40, closed parent issue #24, and activated Phase 6 on `feature/p6-initial-package-validation-core`.
+- Added the initial package and test skeleton with `pyproject.toml`, `src/sheetforge`, `tests`, and documented local test commands.

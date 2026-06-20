@@ -1,0 +1,14 @@
+{
+  "scenario_id": "synthetic_model_baseline",
+  "outputs": {
+    "Summary!B2": {
+      "kind": "number",
+      "value": 70.2,
+      "tolerance": 1e-9
+    },
+    "Summary!B3": {
+      "kind": "text",
+      "value": "ok"
+    }
+  }
+}
