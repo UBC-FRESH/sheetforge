@@ -87,11 +87,12 @@ Phase 18 should shift from adding formula semantics to building a conversion pla
 
 After Phase 17 closeout, local cross-version inspection showed that the original private workbook used for convergence contains explicit broken references in formula text, while the later private workbook versions do not. The primary private benchmark should therefore shift to the clean later workbook version rather than spending conversion-planning effort on source-workbook repair.
 
-Private benchmark policy:
+Benchmark policy:
 
-- use the 2020 workbook as the primary private convergence benchmark;
+- use the 2020 workbook as the primary FABLE Calculator convergence benchmark;
 - use the 2021 workbook as a later stress benchmark once 2020 is stable;
-- keep the 2019 workbook as a broken-reference regression case that proves Sheetforge reports explicit source `#REF!` formulas sharply and does not silently generate normal behavior for them.
+- keep the 2019 workbook as a broken-reference regression case that proves Sheetforge reports explicit source `#REF!` formulas sharply and does not silently generate normal behavior for them;
+- track only external benchmark metadata, source URL, and checksums under `benchmarks/fable-calculator/`; keep workbook binaries under ignored `tmp/private-workbooks/`.
 
 The 2020 baseline run used explicit local workbook selection and very-verbose logging under ignored `tmp/`.
 

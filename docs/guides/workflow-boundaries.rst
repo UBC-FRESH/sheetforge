@@ -29,6 +29,13 @@ Python Generation
 translated expression records. Generated modules are local artifacts and should normally stay under
 ignored paths such as ``tmp/``.
 
+Conversion Planning
+-------------------
+
+``sheetforge.conversion`` summarizes extraction, graphing, formula translation, generation, validation,
+and residual blockers into an inspectable conversion plan. A conversion plan can report partial success
+without claiming that a full workbook clone or equivalence proof exists.
+
 Validation
 ----------
 

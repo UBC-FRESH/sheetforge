@@ -87,6 +87,10 @@ This file records completed project work in chronological order.
 - Merged Phase 17 PR #109, closed parent issue #88, and activated Phase 18 on `feature/p18-conversion-planning-pipeline`.
 - Defined the Phase 18 conversion plan contract for partial-conversion reporting, residual blocker classification, benchmark roles, generation summaries, validation summaries, and privacy review boundaries.
 - Added `_XLFN.IFNA` normalization and generated `IFNA` semantics; the 2020 private benchmark now translates 296,976 of 296,976 formulas with no translation diagnostics while cached generated subset validation remains at 10 outputs with 0 mismatches.
+- Added package conversion-plan records and `build_conversion_plan` for P18.2, including coverage summaries, diagnostic summaries, residual blocker classification, generation summaries, validation summaries, recommendations, API docs, and focused tests.
+- Promoted the public FABLE Calculator workbooks to official external benchmark status by tracking the source URL, local placement instructions, roles, and checksums while keeping workbook binaries untracked under ignored `tmp/`.
+- Added a benchmark materialization helper that downloads or consumes a local Dropbox ZIP/directory, verifies the public FABLE workbook payloads by checksum, and writes them to canonical ignored paths.
+- Added a `dev` dependency extra and linked benchmark materialization into the repo-local bootstrap ritual through `scripts/bootstrap_dev_env.sh --benchmarks`.
 
 ## 2026-06-19
 

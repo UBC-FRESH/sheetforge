@@ -1,0 +1,37 @@
+{
+  "benchmark_set": "fable-calculator",
+  "status": "official_external_benchmark",
+  "source": {
+    "type": "dropbox_folder",
+    "url": "https://www.dropbox.com/scl/fo/ndgldfnq81v794mm8yebe/ADusMz23xtmYKDXoEkiNtJM?rlkey=d87qhjf5zd0pcowd5pfl5qdu7&st=qijm4tta&e=2&dl=0"
+  },
+  "local_directory": "tmp/private-workbooks",
+  "track_binaries": false,
+  "default_ci": false,
+  "workbooks": [
+    {
+      "filename": "2019_Open_FABLECalculator.xlsx",
+      "local_path": "tmp/private-workbooks/2019_Open_FABLECalculator.xlsx",
+      "role": "broken_reference_regression",
+      "sha256": "dcdb8c7cc987a4b427b0a8b311b663d9b71a4a9fa75bd8e8288238eda2a33129",
+      "bytes": 5526114,
+      "notes": "Contains explicit source #REF! references and is used to verify sharp source-defect diagnostics."
+    },
+    {
+      "filename": "2020_Open_FABLECalculator.xlsx",
+      "local_path": "tmp/private-workbooks/2020_Open_FABLECalculator.xlsx",
+      "role": "primary_benchmark",
+      "sha256": "31db886ac164966521c82ac16c3d94252a5c638ac51f18553d0734f78a19834d",
+      "bytes": 8207050,
+      "notes": "Current primary benchmark for conversion planning and generated-model scope work."
+    },
+    {
+      "filename": "2021_Open_FABLECalculator.xlsx",
+      "local_path": "tmp/private-workbooks/2021_Open_FABLECalculator.xlsx",
+      "role": "stress_benchmark",
+      "sha256": "aa5f2a768ae3670e93178a8f9f15fd10c4879101def52e987d374447098957e9",
+      "bytes": 9121843,
+      "notes": "Later stress benchmark to use after the 2020 benchmark is stable."
+    }
+  ]
+}

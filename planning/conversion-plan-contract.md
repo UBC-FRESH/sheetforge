@@ -1,4 +1,4 @@
-# Conversion Plan Contract
+ # Conversion Plan Contract
 
 Date: 2026-06-20
 
@@ -41,7 +41,7 @@ Current private benchmark policy:
 - 2021 workbook: `stress_benchmark`.
 - 2019 workbook: `broken_reference_regression`.
 
-Tracked public docs and planning notes should avoid raw private workbook names where possible. Local ignored reports may include filenames.
+Tracked public docs and planning notes should avoid raw private workbook names where possible. Official external benchmarks may be named in tracked files when the repository tracks only metadata, source URLs, and checksums rather than workbook binaries. Local ignored reports may include filenames.
 
 ## Top-Level Shape
 

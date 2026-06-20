@@ -34,6 +34,12 @@ Generation
 .. automodule:: sheetforge.generation
    :members:
 
+Conversion Planning
+-------------------
+
+.. automodule:: sheetforge.conversion
+   :members:
+
 Validation
 ----------
 

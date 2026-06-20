@@ -13,7 +13,20 @@ From the repository root:
 
    scripts/bootstrap_dev_env.sh
 
-This creates ``.venv/`` and installs Sheetforge with the test, quality, and documentation extras.
+This creates ``.venv/`` and installs Sheetforge with the ``dev`` extra:
+
+.. code-block:: bash
+
+   .venv/bin/python -m pip install -e '.[dev]'
+
+The editable install handles code and development dependencies only. It does not download external
+workbook assets as an install side effect.
+
+To also restore the public FABLE benchmark workbooks into canonical ignored paths, run:
+
+.. code-block:: bash
+
+   scripts/bootstrap_dev_env.sh --benchmarks
 
 Activate manually when needed:
 

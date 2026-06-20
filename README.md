@@ -52,6 +52,12 @@ Bootstrap a repo-local virtual environment:
 scripts/bootstrap_dev_env.sh
 ```
 
+This installs Sheetforge with the `dev` extra:
+
+```bash
+.venv/bin/python -m pip install -e '.[dev]'
+```
+
 Run lint checks:
 
 ```bash
@@ -70,6 +76,12 @@ Build docs locally:
 .venv/bin/sphinx-build -b html docs _build/html -W
 ```
 
+Restore the public external FABLE benchmark workbooks into ignored local paths:
+
+```bash
+scripts/bootstrap_dev_env.sh --benchmarks
+```
+
 `sheetforge` is pre-release. The package metadata is sufficient for local editable installs and CI, but publishing metadata, release artifacts, and compatibility guarantees are intentionally deferred until the conversion workflow is more proven.
 
 ## Repository Conventions
@@ -79,6 +91,7 @@ Build docs locally:
 - `ROADMAP.md` is the current plan and next-step tracker.
 - `CHANGE_LOG.md` is the append-only project narrative.
 - `planning/` contains focused design notes and research records that are too detailed for the roadmap.
+- `benchmarks/` contains tracked metadata for official external benchmarks; large workbook binaries remain untracked and are restored locally under `tmp/`.
 - `src/sheetforge/` contains the importable Python package.
 - `tests/` contains package-backed tests and tracked synthetic fixture helpers.
 - `tmp/` is ignored local working space for private notes, source workbooks, experiments, and generated scratch outputs.

@@ -8,7 +8,13 @@ Bootstrap a repo-local virtual environment:
    scripts/bootstrap_dev_env.sh
 
 The script creates ``.venv/`` under the repository root and installs Sheetforge with the test,
-quality, and documentation extras.
+quality, oracle, and documentation dependencies through the ``dev`` extra.
+
+To also materialize public FABLE benchmark workbooks into ``tmp/private-workbooks/``:
+
+.. code-block:: bash
+
+   scripts/bootstrap_dev_env.sh --benchmarks
 
 Activate the environment manually when useful:
 

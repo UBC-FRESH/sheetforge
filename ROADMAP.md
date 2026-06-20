@@ -283,7 +283,8 @@ Active branch: `feature/p18-conversion-planning-pipeline`
 Goal: turn extraction, graphing, translation, generation, and validation pieces into an explicit conversion plan workflow without pretending every workbook can be fully converted.
 
 - [x] P18.1 Define conversion plan JSON contract. Child issue: #101.
-- [ ] P18.2 Build conversion plan API. Child issue: #99.
+- [x] P18.2 Build conversion plan API. Child issue: #99.
+  - [x] Track official external FABLE benchmark metadata and add a helper that materializes the untracked workbook files into canonical ignored paths.
 - [ ] P18.3 Add conversion planning CLI. Child issue: #100.
 - [ ] P18.4 Test conversion planning workflow and closeout. Child issue: #98.
 
@@ -306,7 +307,7 @@ Status: planned backlog.
 
 ## Current Next Steps
 
-1. Work P18.2 in child issue #99 on branch `feature/p18-conversion-planning-pipeline`.
-2. Build package conversion-plan records and API from `planning/conversion-plan-contract.md`.
-3. Keep the 2020 private benchmark as the primary local evidence source and preserve 2019 as a broken-reference regression case.
-4. Keep issue #99, parent issue #87, this roadmap, and `CHANGE_LOG.md` synchronized before moving to P18.3.
+1. Work P18.3 in child issue #100 on branch `feature/p18-conversion-planning-pipeline`.
+2. Add a thin conversion-planning CLI over `build_conversion_plan`.
+3. Keep the CLI JSON output aligned with `planning/conversion-plan-contract.md`.
+4. Keep issue #100, parent issue #87, this roadmap, and `CHANGE_LOG.md` synchronized before moving to P18.4.

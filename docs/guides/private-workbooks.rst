@@ -5,6 +5,37 @@ Private source workbooks, raw extracts, generated clones, logs, and validation r
 artifacts. They should remain under ignored ``tmp/`` paths unless the maintainer explicitly approves a
 small sanitized tracked artifact.
 
+Official External Benchmarks
+----------------------------
+
+Some real workbooks are public benchmark inputs but still should not be committed as binary files. For
+those cases, Sheetforge tracks benchmark metadata, source URLs, expected filenames, roles, and checksums
+under ``benchmarks/`` while keeping the downloaded workbooks under ignored ``tmp/`` paths.
+
+The FABLE Calculator benchmark set is tracked this way:
+
+.. code-block:: text
+
+   benchmarks/fable-calculator/
+
+The workbook files are restored locally under ``tmp/private-workbooks/`` and verified with the tracked
+checksum file.
+
+Materialize the files from the tracked benchmark manifest:
+
+.. code-block:: bash
+
+   scripts/bootstrap_dev_env.sh --benchmarks
+
+If the Dropbox folder ZIP has already been downloaded manually, use:
+
+.. code-block:: bash
+
+   .venv/bin/python scripts/materialize_fable_benchmarks.py --from-zip path/to/downloaded-folder.zip
+
+The helper identifies workbook payloads by checksum and writes the standard filenames expected by the
+benchmark scaffolding.
+
 Recommended local layout:
 
 .. code-block:: text
