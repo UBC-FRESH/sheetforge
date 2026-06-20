@@ -188,6 +188,8 @@ GitHub parent issue: #54
 
 Active branch: `feature/p12-oracle-backed-validation`
 
+Open PR: #84
+
 Goal: introduce optional source-workbook oracle execution, starting with a pure-Python `formulas`-backed lane before any Excel-backed validation.
 
 - [x] P12.1 Define oracle interface and optional dependency boundary. Child issue: #70.
