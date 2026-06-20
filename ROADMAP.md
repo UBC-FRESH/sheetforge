@@ -105,12 +105,12 @@ Goal: build the first durable code-bearing slice from the Phase 5 decisions: pac
 - [x] P6.2 Add validation report core objects. Child issue: #37.
 - [x] P6.3 Add synthetic fixture builder and expected outputs. Child issue: #35.
 - [x] P6.4 Add baseline and mismatch regression tests. Child issue: #36.
-- [ ] P6.5 Add first default CI workflow. Child issue: #39.
+- [x] P6.5 Add first default CI workflow. Child issue: #39.
 
-Status: active.
+Status: ready for PR.
 
 ## Current Next Steps
 
-1. Work P6.5 in child issue #39 on branch `feature/p6-initial-package-validation-core`.
-2. Add the first default CI workflow now that package-backed pytest tests exist.
-3. Keep issue #39, this roadmap, and `CHANGE_LOG.md` synchronized, then prepare the Phase 6 PR once child issues are complete.
+1. Close P6.5 child issue #39 after committing the first default CI workflow.
+2. Open the Phase 6 PR from `feature/p6-initial-package-validation-core` back to `main`.
+3. After PR merge, close parent issue #34 and plan the next implementation phase from the Phase 6 results.
