@@ -234,12 +234,57 @@ Goal: add hardening, documentation, release, and quality tooling only where evid
 
 - [x] P15.1 Decide hardening tooling from evidence. Child issue: #77.
 - [x] P15.2 Add release and documentation metadata if needed. Child issue: #76.
-- [ ] P15.3 Summarize release readiness and next roadmap. Child issue: #75.
+- [x] P15.3 Summarize release readiness and next roadmap. Child issue: #75.
 
 Status: active.
 
+## Phase 16: Real Workbook Formula Semantics
+
+GitHub parent issue: #89
+
+Planned branch: `feature/p16-real-workbook-formula-semantics`
+
+Goal: expand formula and reference semantics based on real workbook evidence, especially structured references, unsupported functions, parser token forms, operators, external references, volatile functions, named ranges, and cached-value gaps.
+
+- [ ] P16.1 Prioritize real-workbook unsupported semantics. Child issue: #92.
+- [ ] P16.2 Add structured-reference extraction records. Child issue: #90.
+- [ ] P16.3 Expand formula translation subset. Child issue: #93.
+- [ ] P16.4 Validate expanded semantics and closeout. Child issue: #91.
+
+Status: planned backlog.
+
+## Phase 17: Conversion Planning And Pipeline Orchestration
+
+GitHub parent issue: #88
+
+Planned branch: `feature/p17-conversion-planning-pipeline`
+
+Goal: turn extraction, graphing, translation, generation, and validation pieces into an explicit conversion plan workflow without pretending every workbook can be fully converted.
+
+- [ ] P17.1 Define conversion plan JSON contract. Child issue: #97.
+- [ ] P17.2 Build conversion plan API. Child issue: #95.
+- [ ] P17.3 Add conversion planning CLI. Child issue: #96.
+- [ ] P17.4 Test conversion planning workflow and closeout. Child issue: #94.
+
+Status: planned backlog.
+
+## Phase 18: Automated Validation And Evaluation Reports
+
+GitHub parent issue: #87
+
+Planned branch: `feature/p18-automated-validation-reports`
+
+Goal: make generated-model execution, oracle execution where available, cached-value comparisons, and private evaluation reports repeatable through APIs and CLI commands.
+
+- [ ] P18.1 Add generated model execution API. Child issue: #101.
+- [ ] P18.2 Orchestrate oracle and cached-value validation. Child issue: #99.
+- [ ] P18.3 Add evaluation report CLI and JSON outputs. Child issue: #100.
+- [ ] P18.4 Run repeatable evaluation and closeout. Child issue: #98.
+
+Status: planned backlog.
+
 ## Current Next Steps
 
-1. Work P15.3 in child issue #75 on branch `feature/p15-hardening-release-prep`.
-2. Summarize what is ready, what remains unsupported, and the next roadmap horizon.
-3. Keep issue #75, parent issue #51, this roadmap, and `CHANGE_LOG.md` synchronized before opening the Phase 15 PR.
+1. Open the Phase 15 PR from `feature/p15-hardening-release-prep` back to `main`.
+2. Verify the PR checks and merge once clean.
+3. Close parent issue #51 after the Phase 15 PR is merged.

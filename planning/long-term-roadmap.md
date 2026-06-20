@@ -22,6 +22,9 @@ scenario/report core
   -> private workbook evaluation
   -> API/CLI stabilization
   -> hardening and release prep
+  -> real workbook semantics expansion
+  -> conversion planning
+  -> automated validation reports
 ```
 
 Each phase should produce package-backed behavior, tests, and documentation before the next phase relies on it.
@@ -143,6 +146,46 @@ Candidate work:
 - next roadmap horizon after unsupported workbook semantics are better understood.
 
 Avoid tooling churn without demonstrated pain.
+
+## Phase 16: Real Workbook Formula Semantics
+
+Goal: expand formula and reference semantics based on real workbook evidence.
+
+Expected focus:
+
+- structured table-reference formulas;
+- unsupported functions from private evaluation findings;
+- parser token forms and operators that currently produce diagnostics;
+- external references, volatile functions, unresolved named ranges, and cached-value gaps;
+- synthetic coverage for newly supported semantics without committing private workbook data.
+
+Phase 16 should improve explicit support or explicit diagnostics. It should not claim full workbook equivalence.
+
+## Phase 17: Conversion Planning And Pipeline Orchestration
+
+Goal: define a conversion plan workflow that explains what can be converted, what cannot be converted, and how generated outputs should be validated.
+
+Expected outputs:
+
+- conversion plan JSON contract;
+- API that composes extraction, graphing, translation, generation diagnostics, and validation targets;
+- CLI command for plan/report output;
+- tests that prove partial-conversion behavior is explicit.
+
+The conversion plan should make unsupported cells visible rather than hiding them behind a broad `convert` command.
+
+## Phase 18: Automated Validation And Evaluation Reports
+
+Goal: make generated-model execution, oracle execution where available, cached-value comparisons, and private evaluation reports repeatable.
+
+Expected outputs:
+
+- generated model execution API;
+- oracle/cached-value validation orchestration;
+- evaluation report CLI and JSON outputs;
+- sanitized private-evaluation summary workflow.
+
+Excel-backed validation remains optional and should not enter default CI unless it has a controlled, documented environment.
 
 ## Planning Discipline
 
