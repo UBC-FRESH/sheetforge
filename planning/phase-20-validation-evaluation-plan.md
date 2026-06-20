@@ -61,6 +61,19 @@ Acceptance criteria:
 - preserve oracle failures as explicit validation blockers;
 - produce validation reports with clear output counts, mismatches, and blockers.
 
+Status: complete.
+
+Result:
+
+- added `sheetforge.evaluation` with `ValidationEvaluationResult` and `evaluate_generated_model`;
+- orchestrated generated-model execution, cached workbook values from `WorkbookRecord`, and optional
+  oracle results;
+- kept missing cached values visible as validation diagnostics and missing-oracle-output comparisons;
+- preserved oracle diagnostics from `OracleResult` in oracle-backed validation reports;
+- added JSON round-trip support for validation reports used by evaluation results;
+- added focused synthetic tests for cached validation success, missing cached values, oracle blockers, and
+  evaluation-result payload round-trip.
+
 ### P20.3 Evaluation Report CLI And JSON Outputs
 
 Goal: expose the repeatable evaluation workflow through thin CLI commands and JSON reports.

@@ -180,6 +180,15 @@ class Diagnostic:
     severity: DiagnosticSeverity = "warning"
     location: str | None = None
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Diagnostic":
+        return cls(
+            diagnostic_code=data["diagnostic_code"],
+            message=data["message"],
+            severity=data.get("severity", "warning"),
+            location=data.get("location"),
+        )
+
     def to_dict(self) -> dict[str, JsonValue]:
         return {
             "diagnostic_code": self.diagnostic_code,
@@ -204,6 +213,22 @@ class ComparisonResult:
     diagnostic_code: str | None
     message: str
     oracle_backend: str
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ComparisonResult":
+        return cls(
+            scenario_id=data["scenario_id"],
+            cell_ref=data["cell_ref"],
+            kind=data["kind"],
+            generated=data.get("generated"),
+            oracle=data.get("oracle"),
+            matches=data["matches"],
+            tolerance=data.get("tolerance"),
+            difference=data.get("difference"),
+            diagnostic_code=data.get("diagnostic_code"),
+            message=data["message"],
+            oracle_backend=data["oracle_backend"],
+        )
 
     def to_dict(self) -> dict[str, JsonValue]:
         return {
@@ -402,6 +427,15 @@ class ValidationReport:
         if self.mismatches or any(diagnostic.severity == "error" for diagnostic in self.diagnostics):
             return "fail"
         return "pass"
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "ValidationReport":
+        return cls(
+            scenario_id=data["scenario_id"],
+            oracle_backend=data["oracle_backend"],
+            comparisons=tuple(ComparisonResult.from_dict(item) for item in data.get("comparisons", [])),
+            diagnostics=tuple(Diagnostic.from_dict(item) for item in data.get("diagnostics", [])),
+        )
 
     def to_dict(self) -> dict[str, JsonValue]:
         return {
