@@ -641,11 +641,11 @@ Planning note: `planning/phase-27-performance-memory-hardening.md`.
   - [x] Use expression-source formula storage for large generated modules to reduce lambda/code-object import pressure.
   - [x] Keep `calculate(inputs=None) -> dict` behavior stable unless a later public API phase intentionally changes it.
   - [x] Measure import time and generated-code object memory before and after each change.
-- [ ] P27.4 Reduce pipeline cache and validation memory footprint. Child issue: #157.
+- [x] P27.4 Reduce pipeline cache and validation memory footprint. Child issue: #157.
   - [x] Measure workbook, graph, expression, inference, generated-module, and output-map memory costs separately.
   - [x] Evaluate streaming, SQLite/shelve-style local caches, compact record encoding, or selective loading for validation.
   - [x] Explain why runtime memory can be much larger than the original workbook file size.
-  - [ ] Decide whether the slim oracle validation artifact should become tracked package/CLI behavior in P27 or feed the compact runtime IR backend.
+  - [x] Decide whether the slim oracle validation artifact should become tracked package/CLI behavior in P27 or feed the compact runtime IR backend.
 - [ ] P27.5 Evaluate multicore and sharded execution options. Child issue: #156.
   - [ ] Prototype parallel contract inference over output/dependency-closure shards and merge diagnostics deterministically.
   - [ ] Evaluate parallel formula translation and generated-source rendering where records are independent.
@@ -667,6 +667,7 @@ Acceptance criteria:
 
 ## Current Next Steps
 
-1. Continue P27.4 by deciding whether the slim oracle validation artifact should be promoted into package/CLI behavior now or reserved for the compact runtime IR backend.
+1. Start P27.5 by evaluating multicore and sharded execution options against the measured bottlenecks.
 2. Use the P27.4 slim validation result as the current memory baseline: recurring validation peak RSS dropped from about 12,981,284 KiB in the full debug process to about 1,564,740 KiB with the slim oracle path, while still matching 281,741 of 281,741 outputs.
-3. Preserve formula-template/vectorized-kernel work as a follow-on architecture target after P27 records current pipeline memory costs.
+3. Do not productize a separate slim-oracle public API in P27; feed that evidence into compact runtime IR and benchmark artifact design.
+4. Preserve formula-template/vectorized-kernel work as a follow-on architecture target after P27 records current pipeline memory costs.

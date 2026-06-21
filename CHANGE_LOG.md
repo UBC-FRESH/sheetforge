@@ -34,6 +34,7 @@ This file records completed project work in chronological order.
 - Closed P27.3 by adding expression-source formula storage for large generated modules: compact-lambda cold import measured 34.370 seconds and 10,518,600 KiB RSS, while expression-source cold import measured 4.898 seconds and 1,381,648 KiB RSS; direct expression-source import plus `calculate()` returned 281,741 outputs in 151.616 seconds with 1,380,728 KiB RSS, and full cached FABLE comparison still matched 281,741 of 281,741 outputs.
 - Started P27.4 memory-stage profiling and identified graph/inference residency as the dominant remaining full-process memory source: graph hydration holds about 10,182,548 KiB RSS for 3,543,800 edges, inference hydration pushes current RSS to about 11,850,248 KiB, while generated execution and comparison add comparatively little and still produce 281,741 matches with zero mismatches.
 - Prototyped a P27.4 slim-oracle validation path under ignored local artifacts: a 23.66 MB oracle file plus the expression-source generated model reran the full 281,741-output FABLE comparison with zero mismatches, dropping recurring validation peak RSS from about 12,981,284 KiB in the all-in-one debug process to about 1,564,740 KiB.
+- Closed P27.4 by deciding not to add a separate public slim-oracle CLI/API contract before the compact runtime IR backend; the slim validation prototype is retained as benchmark-artifact evidence for future runtime IR design.
 
 ## 2026-06-20
 

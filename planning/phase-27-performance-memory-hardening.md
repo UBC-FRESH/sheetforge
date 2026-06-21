@@ -422,6 +422,14 @@ Conclusion:
 - durable validation tooling should promote this idea into a first-class generated-output oracle or
   benchmark-output artifact rather than relying on ad hoc full-pipeline debug scripts.
 
+Decision:
+
+- do not add a new public slim-oracle CLI/API contract in P27;
+- use the prototype as evidence for the compact runtime IR backend and benchmark artifact design;
+- avoid creating a short-lived intermediate public artifact format immediately before runtime IR work;
+- keep the durable requirement: generated validation must be able to run from compact model artifacts
+  and compact expected-output/oracle artifacts without rehydrating the full graph and inference stack.
+
 ## Optimization Directions
 
 Prefer targeted changes supported by measurements:
