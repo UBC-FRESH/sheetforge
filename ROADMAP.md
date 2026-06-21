@@ -631,10 +631,10 @@ Planning note: `planning/phase-27-performance-memory-hardening.md`.
   - [x] Add high-frequency timing around generated helper functions, formula execution, range/table materialization, and criteria functions.
   - [x] Determine whether runtime is dominated by repeated formula evaluation, repeated range scans, Python import/code-object overhead, output materialization, or cache loading.
   - [x] Record profiler output and sanitized conclusions under `planning/`.
-- [ ] P27.2 Reduce repeated range and criteria work. Child issue: #159.
-  - [ ] Cache reusable range/table views where Excel semantics allow.
-  - [ ] Avoid rebuilding large Python lists for every `SUMIF`, `SUMIFS`, `COUNTIF`, and `COUNTIFS` call.
-  - [ ] Preserve lazy `IF`/`IFERROR`/`IFNA` branch behavior and runtime circular-dependency detection.
+- [x] P27.2 Reduce repeated range and criteria work. Child issue: #159.
+  - [x] Cache reusable range/table views where Excel semantics allow.
+  - [x] Avoid rebuilding large Python lists for every `SUMIF`, `SUMIFS`, `COUNTIF`, and `COUNTIFS` call.
+  - [x] Preserve lazy `IF`/`IFERROR`/`IFNA` branch behavior and runtime circular-dependency detection.
 - [ ] P27.3 Reduce generated module size and import overhead. Child issue: #158.
   - [ ] Evaluate compact generated-model layouts, shared expression helpers, or chunked modules.
   - [ ] Keep `calculate(inputs=None) -> dict` behavior stable unless a later public API phase intentionally changes it.
@@ -664,7 +664,7 @@ Acceptance criteria:
 
 ## Current Next Steps
 
-1. Start P27.2 by reducing repeated range and criteria work in generated models.
-2. Focus first on `_range` materialization and `SUMIFS` criteria scans, because the P27.1 baseline found 605,817 `_range` calls, 364,236,641 addressed range cells, and 121,247,129 criteria-match calls.
-3. Preserve lazy branch behavior, runtime circular-dependency detection, and the Phase 26 zero-mismatch FABLE validation result.
-4. Verify changes with focused generated-model tests before rerunning any long FABLE benchmark.
+1. Start P27.3 by reducing generated module size and import overhead.
+2. Use the P27.2 result as the execution baseline: optimized full-validation generated execution is 183.463 seconds with 281,741/281,741 matches.
+3. Focus on the remaining import/source-size problem: about 198.8 MB of generated Python, roughly 35 seconds import time, and about 10.7 GiB max RSS before calculation.
+4. Preserve the current `calculate(inputs=None) -> dict` behavior until a later API phase intentionally changes it.

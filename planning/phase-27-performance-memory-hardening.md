@@ -104,6 +104,58 @@ Initial conclusion:
 - `_get` appears to cache formula results as intended, but range and criteria helpers still repeatedly
   ask for very large numbers of constants and cached formula values.
 
+## P27.2 Range And Criteria Optimization Evidence
+
+Implemented changes:
+
+- generated `_range(...)` calls now return cached `_SfRangeView` objects keyed by sheet and bounds;
+- `_SfRangeView` materializes eager values or lazy callable values only when needed, and caches those
+  materializations after reuse rather than permanently storing every unique range on first touch;
+- `SUMIF`, `SUMIFS`, `COUNTIF`, and `COUNTIFS` now build criteria matcher callables once per criteria
+  argument instead of reparsing operator/wildcard criteria for every row;
+- generated `_sf_numeric_value` now uses a bounded `lru_cache` to reduce repeated numeric coercion of
+  common criteria values.
+
+Focused tests:
+
+- `tests/test_python_generation.py::test_generate_python_module_renders_criteria_functions`
+- `tests/test_python_generation.py::test_generate_python_module_skips_excluded_sumifs_sum_cells`
+- `tests/test_python_generation.py::test_generate_python_module_reuses_range_views_without_changing_results`
+
+Ignored raw artifacts:
+
+- `tmp/logs/p27-range-cache-focused-tests.log`
+- `tmp/logs/p27-range-cache-regenerate-model.log`
+- `tmp/logs/p27-range-cache-profile-full-execution.log`
+- `tmp/logs/p27-criteria-matcher-focused-tests.log`
+- `tmp/logs/p27-criteria-matcher-regenerate-model.log`
+- `tmp/logs/p27-criteria-matcher-profile-full-execution.log`
+- `tmp/logs/p27-optimized-full-validation.log`
+
+Measured performance:
+
+- P26 proof-run generated execution baseline: 1,469.944 seconds;
+- P27.1 profiled generated execution baseline: 1,502.321 seconds;
+- range-view profiled generated execution: 696.610 seconds;
+- range-view plus criteria-matcher profiled generated execution: 379.177 seconds;
+- optimized uninstrumented full-validation generated execution: 183.463 seconds;
+- optimized full-validation total elapsed time with cache loading, generation, execution, and
+  comparison: 424.417 seconds.
+
+Correctness evidence:
+
+- full cached 2020 FABLE validation still passed;
+- comparable outputs: 281,741;
+- matches: 281,741;
+- mismatches: 0.
+
+Remaining measured bottleneck:
+
+- generated source import remains roughly 35 seconds and about 10.7 GiB maximum RSS before
+  calculation;
+- generated source size remains about 198.8 MB;
+- P27.3 should therefore address generated module size and import overhead next.
+
 ## Optimization Directions
 
 Prefer targeted changes supported by measurements:

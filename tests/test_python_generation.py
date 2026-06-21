@@ -623,6 +623,9 @@ def test_generate_python_module_renders_criteria_functions(tmp_path: Path) -> No
 
     assert result.generated is True
     assert "_sf_sumif" in result.source_code
+    assert "_sf_criteria_matcher" in result.source_code
+    assert "class _SfRangeView" in result.source_code
+    assert "_range_cache = {}" in result.source_code
     assert module.calculate() == {
         "Calc!B1": 4,
         "Calc!B2": 1,
@@ -1190,3 +1193,75 @@ def test_generate_python_module_skips_excluded_sumifs_sum_cells(tmp_path: Path) 
     assert module.calculate() == {"Calc!C1": 5}
     with pytest.raises(RuntimeError, match="Data!A2 -> Data!A2"):
         module.calculate({"Data!B1": "skip", "Data!B2": "x"})
+
+
+def test_generate_python_module_reuses_range_views_without_changing_results(tmp_path: Path) -> None:
+    contract = GeneratedModuleContract(
+        workbook_id="range-cache.xlsx",
+        module_name="range_cache",
+        input_refs=("Data!A1", "Data!A2", "Data!B1", "Data!B2"),
+        output_refs=("Calc!C1", "Calc!C2", "Calc!C3"),
+        symbols=(
+            GeneratedSymbol(cell_ref="Data!A1", symbol_name="data_a1", kind="input"),
+            GeneratedSymbol(cell_ref="Data!A2", symbol_name="data_a2", kind="input"),
+            GeneratedSymbol(cell_ref="Data!B1", symbol_name="data_b1", kind="input"),
+            GeneratedSymbol(cell_ref="Data!B2", symbol_name="data_b2", kind="input"),
+            GeneratedSymbol(cell_ref="Calc!C1", symbol_name="calc_c1", kind="output", raw_formula='=SUMIFS(A1:A2,B1:B2,"x")'),
+            GeneratedSymbol(cell_ref="Calc!C2", symbol_name="calc_c2", kind="output", raw_formula='=SUMIFS(A1:A2,B1:B2,"y")'),
+            GeneratedSymbol(cell_ref="Calc!C3", symbol_name="calc_c3", kind="output", raw_formula='=COUNTIFS(B1:B2,"x")'),
+        ),
+    )
+    amount_range = normalize_reference("Data!A1:A2")
+    label_range = normalize_reference("Data!B1:B2")
+    expressions = {
+        "Calc!C1": formula_expression(
+            "Calc!C1",
+            '=SUMIFS(A1:A2,B1:B2,"x")',
+            FormulaExpressionNode.function_call(
+                "SUMIFS",
+                (
+                    FormulaExpressionNode.reference_to(amount_range),
+                    FormulaExpressionNode.reference_to(label_range),
+                    FormulaExpressionNode.literal("x"),
+                ),
+            ),
+        ),
+        "Calc!C2": formula_expression(
+            "Calc!C2",
+            '=SUMIFS(A1:A2,B1:B2,"y")',
+            FormulaExpressionNode.function_call(
+                "SUMIFS",
+                (
+                    FormulaExpressionNode.reference_to(amount_range),
+                    FormulaExpressionNode.reference_to(label_range),
+                    FormulaExpressionNode.literal("y"),
+                ),
+            ),
+        ),
+        "Calc!C3": formula_expression(
+            "Calc!C3",
+            '=COUNTIFS(B1:B2,"x")',
+            FormulaExpressionNode.function_call(
+                "COUNTIFS",
+                (
+                    FormulaExpressionNode.reference_to(label_range),
+                    FormulaExpressionNode.literal("x"),
+                ),
+            ),
+        ),
+    }
+    output_path = tmp_path / "generated_range_cache.py"
+
+    result = generate_python_module(
+        contract=contract,
+        expressions=expressions,
+        constants={"Data!A1": 2, "Data!A2": 5, "Data!B1": "x", "Data!B2": "y"},
+        output_path=output_path,
+    )
+    module = load_module(output_path)
+
+    assert result.generated is True
+    assert "_range_cache.get(key)" in result.source_code
+    assert "def values(self):" in result.source_code
+    assert "def lazy_values(self):" in result.source_code
+    assert module.calculate() == {"Calc!C1": 2, "Calc!C2": 5, "Calc!C3": 1}
