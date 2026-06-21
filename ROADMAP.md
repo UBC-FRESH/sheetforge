@@ -418,6 +418,12 @@ Goal: establish a professional deployment and publication workflow before any re
   - [x] Mirror release onboarding essentials in `CONTRIBUTING.md`.
   - [x] Verify docs build and local Read the Docs themed artifact.
 - [ ] P22.5 Rehearse release artifacts and close publication readiness. Child issue: #126.
+  - [x] Run full local verification with verbose logs.
+  - [x] Build sdist and wheel from a clean isolated build environment.
+  - [x] Run artifact inspection and clean install smoke tests.
+  - [x] Document TestPyPI rehearsal blocker: release workflow and trusted-publishing environments must be available after merge.
+  - [ ] Verify the published GitHub Pages site is the Sphinx Read the Docs themed documentation artifact.
+  - [x] Record real PyPI alpha publication as deferred until TestPyPI rehearsal and maintainer approval pass.
 
 Publication gates:
 
@@ -432,5 +438,7 @@ Status: active.
 
 ## Current Next Steps
 
-1. Complete P22.3 by verifying the GitHub Pages RTD-themed Sphinx artifact after deployment from `main`.
-2. Complete P22.5 by rehearsing artifacts, recording release readiness, opening the Phase 22 PR, and closing parent issue #124 only after merge.
+1. Open the Phase 22 PR and verify the PR checks, including release artifact validation and docs theme verification.
+2. After merge, verify the GitHub Pages deployment serves the Sphinx Read the Docs themed artifact.
+3. Rehearse TestPyPI publication from the merged release workflow once GitHub environments/trusted publishing are configured.
+4. Close P22.3, P22.5, and parent issue #124 only after the post-merge gates are resolved or explicitly deferred by the maintainer.

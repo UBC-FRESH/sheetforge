@@ -6,7 +6,7 @@ PYTHON_BIN="${PYTHON:-"$ROOT_DIR/.venv/bin/python"}"
 RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)"
 RUN_DIR="${RELEASE_CHECK_DIR:-"$ROOT_DIR/tmp/release-checks/$RUN_ID"}"
 DIST_DIR="$RUN_DIR/dist"
-INSTALL_DIR="$RUN_DIR/install"
+INSTALL_DIR="$RUN_DIR/install-$RUN_ID"
 
 if [[ ! -x "$PYTHON_BIN" ]]; then
   echo "Python executable not found: $PYTHON_BIN" >&2
