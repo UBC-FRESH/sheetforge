@@ -250,7 +250,9 @@ def infer_generated_module_contract(
     )
 
     input_order: list[str] = []
+    input_seen: set[str] = set()
     formula_order: list[str] = []
+    formula_seen: set[str] = set()
     visiting: set[str] = set()
     visited: set[str] = set()
     circular_dependency_locations: set[str] = set()
@@ -281,8 +283,9 @@ def infer_generated_module_contract(
 
             if dependencies_processed:
                 visiting.discard(cell_ref)
-                if cell_ref not in formula_order:
+                if cell_ref not in formula_seen:
                     formula_order.append(cell_ref)
+                    formula_seen.add(cell_ref)
                 visited.add(cell_ref)
                 continue
 
@@ -311,14 +314,16 @@ def infer_generated_module_contract(
 
             cell = cell_by_ref.get(cell_ref)
             if cell is None:
-                if cell_ref not in input_order:
+                if cell_ref not in input_seen:
                     input_order.append(cell_ref)
+                    input_seen.add(cell_ref)
                 visited.add(cell_ref)
                 continue
 
             if cell_ref in explicit_inputs or cell.formula is None:
-                if cell_ref not in input_order:
+                if cell_ref not in input_seen:
                     input_order.append(cell_ref)
+                    input_seen.add(cell_ref)
                 visited.add(cell_ref)
                 continue
 

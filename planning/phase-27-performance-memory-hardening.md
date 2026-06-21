@@ -430,6 +430,139 @@ Decision:
 - keep the durable requirement: generated validation must be able to run from compact model artifacts
   and compact expected-output/oracle artifacts without rehydrating the full graph and inference stack.
 
+## P27.5 Parallelization Experiments
+
+### Iteration 1: Rendering And Comparison Shards
+
+Ignored raw artifacts:
+
+- `tmp/p27_parallelization_experiments.py`
+- `tmp/logs/p27-parallelization-iteration-1.log`
+- `tmp/p27-profile/parallelization-experiments.json`
+
+Scope:
+
+- bounded 50,000-item sample;
+- formula rendering: serial payload rendering, serial hydrated-expression rendering, threaded hydrated
+  rendering, and process payload rendering;
+- scalar comparison: serial, threaded, and process comparison against matching generated/oracle values.
+
+Formula rendering results:
+
+- serial rendering from raw payloads, including per-item expression hydration: 5.690 seconds;
+- serial rendering from already hydrated expression objects: 0.383 seconds;
+- threaded hydrated rendering:
+  - 2 workers: 0.669 seconds;
+  - 4 workers: 1.123 seconds;
+  - 8 workers: 1.173 seconds;
+- process payload rendering:
+  - 2 workers: 2.952 seconds;
+  - 4 workers: 2.067 seconds;
+  - 8 workers: 1.593 seconds.
+
+Formula rendering conclusion:
+
+- formula rendering is too fast to justify parallelizing in the current source backend;
+- threads are slower than serial because the work is small and Python-level;
+- process rendering can beat payload-hydrating serial rendering on the sample, but still loses to
+  serial rendering once expressions are already hydrated, and full-model rendering is already only
+  about 9-10 seconds.
+
+Scalar comparison results:
+
+- serial comparison for 50,000 outputs: 0.294 seconds;
+- threaded comparison:
+  - 2 workers: 0.698 seconds;
+  - 4 workers: 0.710 seconds;
+  - 8 workers: 0.708 seconds;
+- process comparison:
+  - 2 workers: 0.292 seconds;
+  - 4 workers: 0.277 seconds;
+  - 8 workers: 0.400 seconds.
+
+Scalar comparison conclusion:
+
+- scalar comparison is too fast to justify production sharding in the current validation path;
+- process comparison is roughly tied on a 50,000-output sample but adds serialization, process, and
+  implementation complexity for a stage that takes about 1.5 seconds at full scale.
+
+Next iteration:
+
+- evaluate generated execution sharding feasibility, because generated execution remains the only
+  P27-stage runtime around the 2-3 minute scale after P27.2-P27.4;
+- specifically measure whether independent process execution over output shards would duplicate shared
+  dependency work and memory when the current generated module always computes its full output set.
+
+### Iteration 2: Output-Shard Feasibility And Pivot Back To Inference
+
+Ignored raw artifacts:
+
+- `tmp/p27_execution_shard_experiment.py`
+- `tmp/logs/p27-execution-shard-iteration-2.log`
+- `tmp/p27-profile/execution-shard-experiment.json`
+
+Scope:
+
+- patched an ignored generated model copy to accept `calculate(inputs=None, output_refs=None)`;
+- measured a bounded 40,000-output subset;
+- compared single-process subset execution with 2-worker process shards before stopping the experiment.
+
+Partial results:
+
+- single-process 40,000-output subset execution: 103.978 seconds;
+- the selected subset still evaluated more than 200,000 formulas because dependencies are broad;
+- 2-worker process shards: 86.066 seconds wall time;
+- worker times: 75.762 seconds and 80.165 seconds;
+- worker peak RSS: 1,689,184 KiB and 1,690,172 KiB.
+
+Conclusion:
+
+- current output-sharded execution duplicates deep dependency work across workers;
+- even a 40,000-output subset traverses much of the model;
+- this is not the right P27.5 target until runtime IR can partition dependency closures and share or
+  avoid duplicated cached values deliberately;
+- P27.5 should refocus on the historically dominant contract inference stage.
+
+### Iteration 3: Contract Inference Set-Membership Fix
+
+Production change:
+
+- `infer_generated_module_contract()` now uses companion `set` objects for membership checks while
+  preserving ordered `input_order` and `formula_order` lists;
+- this removes O(n) list-membership checks from the large dependency walk.
+
+Ignored raw artifacts:
+
+- `tmp/p27_inference_benchmark.py`
+- `tmp/logs/p27-inference-benchmark-set-membership.log`
+- `tmp/p27-profile/inference-benchmark.json`
+
+Benchmark scope:
+
+- loaded cached workbook, graph, and expression artifacts;
+- bypassed the existing inference cache;
+- inferred the full 2020 FABLE comparable-output contract for 281,741 outputs.
+
+Measured result:
+
+- pipeline cache load before inference: 168.476 seconds;
+- comparable-output universe construction: 1.041 seconds;
+- uncached contract inference after the set-membership fix: 224.001 seconds;
+- inferred symbols: 373,410;
+- inferred formula expressions: 289,951;
+- inferred constants/inputs: 83,459;
+- diagnostics: 1,808 `static_circular_dependency` warnings;
+- result: inferred successfully.
+
+Interpretation:
+
+- the previous roughly 30-minute inference behavior was very likely dominated by algorithmic list
+  membership inside the dependency walk;
+- the remaining inference bottleneck is now the dependency walk itself, at roughly 3.7 minutes;
+- next iteration should profile why the dependency walk still performs about 1.47 million visit calls
+  for 373,410 visited cells, with attention to range dependency expansion, static cycles, and repeated
+  selected-output dependency closures.
+
 ## Optimization Directions
 
 Prefer targeted changes supported by measurements:
