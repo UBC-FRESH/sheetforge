@@ -639,6 +639,70 @@ Practical conclusion:
 - preserve dependency-closure partitioning, template/vectorized kernels, and compact runtime IR as
   follow-on architecture work where they can avoid duplicated work rather than merely parallelize it.
 
+## P27.6 Full Validation Evidence
+
+Ignored raw artifacts:
+
+- `tmp/logs/p27-full-validation.log`
+- `tmp/logs/p27-full-validation-timed.log`
+- `tmp/p27-profile/p27-full-validation-time.txt`
+- `tmp/p26-fable-full-validation/summary.json`
+- `tmp/p26-fable-full-validation/blockers.json`
+- `tmp/p26-fable-full-validation/generated_fable_2020_model.py`
+
+Refresh run:
+
+- preserved the cached extraction, graph, and formula-translation pipeline;
+- moved the old inference cache aside so current P27 inference and generation code had to run;
+- pipeline cache status: hit;
+- contract inference status: refreshed from scratch;
+- contract inference elapsed time: 46.645 seconds;
+- generated source size: 122,318,322 bytes;
+- Python generation elapsed time: 10.219 seconds;
+- generated execution elapsed time: 154.477 seconds;
+- full run elapsed time: 419.672 seconds;
+- validation status: pass;
+- comparable outputs: 281,741;
+- matches: 281,741;
+- mismatches: 0;
+- blockers: none.
+
+Timed cache-hit run:
+
+- pipeline cache status: hit;
+- inference cache status: hit;
+- inference cache load elapsed time: 47.978 seconds;
+- Python generation elapsed time: 10.119 seconds;
+- generated execution elapsed time: 153.203 seconds;
+- full run elapsed time from the validation script: 385.252 seconds;
+- `/usr/bin/time -v` wall time: 6:38.11;
+- maximum resident set size: 13,224,896 KiB;
+- validation status: pass;
+- comparable outputs: 281,741;
+- matches: 281,741;
+- mismatches: 0;
+- blockers: none.
+
+Inference cache conclusion:
+
+- after the P27.5 inference fixes, loading the full inference cache took 47.978 seconds while
+  recomputing inference from scratch took 46.645 seconds in the adjacent refresh run;
+- the current JSON inference cache is therefore not a useful speed optimization for this benchmark;
+- it may still preserve intermediate artifacts for debugging, but the runtime/cache architecture should
+  not assume this cache shape is a performance win.
+
+Phase conclusion:
+
+- P27 preserves the Phase 26 full comparable-output correctness pass;
+- generated execution is now about 153-154 seconds in full validation, down from the P26 proof-run
+  baseline of about 1,469.944 seconds;
+- generated source is now about 122.3 MB, down from about 198.8 MB;
+- the current all-in-one validation path still peaks around 13.2 GiB RSS because it hydrates workbook,
+  graph, expression, inference, generated-model, generated-output, and comparison structures in one
+  process;
+- the P27.4 slim-validation prototype remains the better evidence for recurring validation memory,
+  while P27.6 confirms the production changes do not regress correctness.
+
 ## Optimization Directions
 
 Prefer targeted changes supported by measurements:
@@ -682,10 +746,9 @@ Parallel execution experiments should record:
 - deterministic output ordering;
 - correctness comparison against the serial result.
 
-The first parallel target should be contract inference. It was already observed as an expensive stage,
-and its output can be cached and compared deterministically. Generated execution should be profiled
-before parallelizing; if it is dominated by repeated range scans, indexing or memoization may beat
-process-level parallelism.
+After P27.5, contract inference is no longer a strong near-term parallelization target for the 2020
+FABLE benchmark. Any future parallel work should first show that it avoids duplicated dependency
+closures and object hydration rather than merely distributing duplicated work across processes.
 
 ## Guardrails
 
