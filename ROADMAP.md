@@ -343,22 +343,51 @@ Ignored local evidence:
 
 ## Phase 21: Full Benchmark Model Materialization And Validation
 
-GitHub parent issue: to create after Phase 20 merge.
+GitHub parent issue: #118
+
+Active branch: `feature/p21-full-benchmark-model-validation`
 
 Goal: turn the clean 2020 FABLE extraction, graph, and translation evidence into an executable generated
 Python benchmark model, then validate selected benchmark outputs and keep iterating on concrete blockers
 until generated-model equivalence is either proven or sharply scoped.
 
-- [ ] P21.1 Infer generated-model contracts from dependency graphs and selected outputs.
-- [ ] P21.2 Materialize the 2020 FABLE generated model with topologically ordered symbols.
-- [ ] P21.3 Validate selected 2020 FABLE outputs against cached or oracle values.
-- [ ] P21.4 Rerun the blocker-find-resolve-continue loop until the benchmark result converges.
+- [x] P21.1 Infer generated-model contracts from dependency graphs and selected outputs. Child issue: #122.
+- [x] P21.2 Materialize the 2020 FABLE generated model with topologically ordered symbols. Child issue: #121.
+- [x] P21.3 Validate selected 2020 FABLE outputs against cached or oracle values. Child issue: #120.
+- [x] P21.4 Rerun the blocker-find-resolve-continue loop until the benchmark result converges. Child issue: #119.
 
-Status: planned backlog.
+Status: complete pending PR merge.
+
+Closeout evidence:
+
+- The selected 2020 FABLE benchmark scope uses ten cached outputs from `SCENARIOS definition`.
+- Extraction covered 54 sheets, 395,482 cells, and 296,976 formula cells.
+- Dependency graphing produced 3,543,800 edges with no graph diagnostics.
+- Formula translation covered 296,976 of 296,976 formulas with no translation diagnostics.
+- Contract inference produced 20 symbols, 10 input constants, and 10 selected outputs with no diagnostics.
+- Generated Python materialization produced a 207-line standalone model with no generation diagnostics.
+- Generated execution returned all ten selected outputs.
+- Cached workbook validation passed with ten comparisons, zero mismatches, and zero diagnostics.
+
+Equivalence boundary:
+
+- Proven: selected-output equivalence for the ten declared `SCENARIOS definition` outputs against cached
+  workbook values.
+- Not proven: full-workbook generated-model materialization, full-workbook generated-output equivalence,
+  oracle-backed recalculation equivalence, and external workbook dependency behavior.
+
+Ignored local evidence:
+
+- `tmp/p21-fable-2020-materialization/summary.json`
+- `tmp/p21-fable-2020-validation/summary.json`
+- `tmp/p21-convergence-closeout/summary.json`
+- `tmp/logs/p21-fable-2020-materialization-rerun.log`
+- `tmp/logs/p21-fable-2020-validation.log`
+- `tmp/logs/p21-convergence-closeout.log`
 
 ## Current Next Steps
 
-1. Finish Phase 20 closeout on branch `feature/p20-automated-validation-reports`.
-2. Close child issue #116 after docs, verification, and commit are complete.
-3. Open and merge the Phase 20 PR back to `main`.
-4. Activate Phase 21 with GitHub parent and child issues before implementation.
+1. Run full verification on branch `feature/p21-full-benchmark-model-validation`.
+2. Commit and push the P21.4 closeout.
+3. Open the Phase 21 PR back to `main`.
+4. After merge, activate the next phase around broader benchmark coverage and remaining dependency policy.

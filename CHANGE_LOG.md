@@ -107,6 +107,11 @@ This file records completed project work in chronological order.
 - Added P20.2 validation orchestration over generated outputs, cached workbook values, and optional oracle results, preserving missing cached values and oracle failures as explicit validation evidence.
 - Added P20.3 CLI commands for generated model execution and validation evaluation JSON reports, with verbose progress on stderr and documented workflow boundaries.
 - Closed P20.4 by running a verbose synthetic generated-model evaluation through the CLI and a verbose 2020 FABLE benchmark boundary run, proving synthetic generated-model validation and preserving the 2020 benchmark's clean extraction, graph, and translation status while explicitly deferring full workbook equivalence to Phase 21 generated-model materialization and validation.
+- Merged Phase 20 PR #117, closed parent issue #112, and activated Phase 21 on `feature/p21-full-benchmark-model-validation` with parent issue #118 and child issues #119 through #122.
+- Added P21.1 generated-model contract inference from workbook records, dependency graphs, translated expressions, and selected output refs, with synthetic tests proving inferred contracts generate and execute the controlled fixture model.
+- Closed P21.2 by materializing a selected 2020 FABLE generated Python model under ignored local artifacts, using ten cached benchmark outputs, 20 inferred symbols, 10 input constants, no inference/generation diagnostics, and a successful generated-model execution smoke test.
+- Closed P21.3 by validating the selected 2020 FABLE generated model through the public CLI against cached workbook values, with ten passing comparisons, zero mismatches, and zero validation diagnostics.
+- Closed P21.4 by recording the convergence boundary: selected-output equivalence is proven for ten cached 2020 FABLE `SCENARIOS definition` outputs, while full-workbook equivalence, oracle-backed recalculation equivalence, and external dependency behavior remain unproven next targets.
 
 ## 2026-06-19
 
