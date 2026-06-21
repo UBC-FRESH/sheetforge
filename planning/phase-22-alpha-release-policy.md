@@ -4,13 +4,13 @@ Date: 2026-06-21
 
 ## Purpose
 
-This note records the P22.1 release policy decision draft for Sheetforge's first package publication workflow.
+This note records the P22.1 release policy decision for Sheetforge's first package publication workflow.
 
 GitHub task issue: #127
 
 ## Version Target
 
-Recommendation: use `0.1.0a1` for the first external alpha.
+Decision: use `0.1.0a1` for the first external alpha.
 
 Rationale:
 
@@ -24,9 +24,9 @@ The canonical version string should use Python packaging syntax: `0.1.0a1`.
 
 ## License
 
-Recommendation: use MIT for consistency with the sibling FRESH package `fhops`.
+Decision: use MIT for consistency with the sibling FRESH package `fhops`.
 
-Status: maintainer approval required before metadata changes or real PyPI publication.
+Status: approved by the maintainer on 2026-06-21.
 
 Rationale:
 
@@ -34,7 +34,7 @@ Rationale:
 - `femic` does not expose a shallow license file in the local checkout inspected during this task.
 - License choice is a maintainer/legal decision and should not be silently inferred from project style.
 
-P22.2 should not replace `license = { text = "TBD" }` until the maintainer explicitly approves the selected license.
+P22.2 may replace `license = { text = "TBD" }` with MIT package metadata and a tracked `LICENSE` file.
 
 ## Publication Sequence
 
@@ -75,6 +75,6 @@ The first alpha must not claim:
 - general support for arbitrary private workbooks;
 - stable public API compatibility.
 
-## Remaining P22.1 Gate
+## P22.1 Closeout
 
-The only remaining P22.1 decision gate is explicit maintainer license approval.
+P22.1 is complete. P22.2 owns package metadata changes, local artifact checks, and clean install smoke tests.

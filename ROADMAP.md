@@ -399,12 +399,16 @@ Active branch: `feature/p22-pypi-publication-deployment`
 
 Goal: establish a professional deployment and publication workflow before any real PyPI release. This phase should make release metadata, artifact builds, TestPyPI rehearsal, documentation deployment checks, and maintainer publication gates explicit and reproducible.
 
-- [ ] P22.1 Decide alpha release target, license, and publication policy. Child issue: #127.
+- [x] P22.1 Decide alpha release target, license, and publication policy. Child issue: #127.
   - [x] Recommend `0.1.0a1` as the first external alpha version line.
   - [x] Define staged publication policy: local artifacts, TestPyPI rehearsal, then gated real PyPI.
   - [x] Define benchmark evidence boundary for alpha release claims.
-  - [ ] Confirm maintainer-approved license before package metadata changes or real PyPI publication.
-- [ ] P22.2 Harden package metadata and artifact build checks. Child issue: #125.
+  - [x] Confirm maintainer-approved MIT license before package metadata changes or real PyPI publication.
+- [x] P22.2 Harden package metadata and artifact build checks. Child issue: #125.
+  - [x] Add MIT license file and package metadata.
+  - [x] Set package and import version to `0.1.0a1`.
+  - [x] Add local release artifact check script.
+  - [x] Verify sdist/wheel metadata, artifact contents, clean wheel install, package import, and installed CLI smoke test.
 - [ ] P22.3 Add release automation for GitHub, TestPyPI, and PyPI gates. Child issue: #129.
   - [ ] Verify GitHub Pages serves the built Sphinx Read the Docs themed artifact, not a fallback Jekyll/minima site.
 - [ ] P22.4 Document deployment runbook and developer release onboarding. Child issue: #128.
@@ -423,8 +427,6 @@ Status: active.
 
 ## Current Next Steps
 
-1. Complete P22.1 by confirming the maintainer-approved license; current recommendation is MIT.
-2. Complete P22.2 by hardening package metadata and adding local build/artifact checks.
-3. Complete P22.3 by adding gated TestPyPI/PyPI release workflows and verifying the GitHub Pages RTD-themed Sphinx artifact.
-4. Complete P22.4 by documenting the deployment runbook and developer release onboarding path.
-5. Complete P22.5 by rehearsing artifacts, recording release readiness, opening the Phase 22 PR, and closing parent issue #124 only after merge.
+1. Complete P22.3 by adding gated TestPyPI/PyPI release workflows and verifying the GitHub Pages RTD-themed Sphinx artifact.
+2. Complete P22.4 by documenting the deployment runbook and developer release onboarding path.
+3. Complete P22.5 by rehearsing artifacts, recording release readiness, opening the Phase 22 PR, and closing parent issue #124 only after merge.
