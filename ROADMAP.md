@@ -668,7 +668,7 @@ Acceptance criteria:
 
 ## Current Next Steps
 
-1. Start P27.5 by evaluating multicore and sharded execution options against the measured bottlenecks.
+1. Continue P27.5 by evaluating multicore and sharded options against the measured bottlenecks.
 2. Use the P27.4 slim validation result as the current memory baseline: recurring validation peak RSS dropped from about 12,981,284 KiB in the full debug process to about 1,564,740 KiB with the slim oracle path, while still matching 281,741 of 281,741 outputs.
 3. Do not productize a separate slim-oracle public API in P27; feed that evidence into compact runtime IR and benchmark artifact design.
 4. Preserve formula-template/vectorized-kernel work as a follow-on architecture target after P27 records current pipeline memory costs.
