@@ -119,6 +119,7 @@ def test_infer_generated_module_contract_for_synthetic_outputs(tmp_path: Path) -
     assert result.diagnostics == ()
     assert result.contract.input_refs == ("Inputs!B2", "Inputs!B3", "Inputs!B4")
     assert result.constants == {"Inputs!B2": 100, "Inputs!B3": 0.08, "Inputs!B4": 0.65}
+    assert result.contract.include_provenance_comments is True
     assert tuple(symbol.cell_ref for symbol in result.contract.symbols) == (
         "Inputs!B2",
         "Inputs!B3",
@@ -139,6 +140,107 @@ def test_infer_generated_module_contract_for_synthetic_outputs(tmp_path: Path) -
         "output",
         "output",
     ]
+
+
+def test_infer_generated_module_contract_disables_large_inline_provenance_comments(tmp_path: Path) -> None:
+    workbook = extract_workbook(build_workbook(tmp_path / "synthetic_model.xlsx"))
+    graph = build_dependency_graph(workbook)
+    formula_cells = {cell.cell_ref: cell for cell in workbook.cells if cell.formula is not None}
+    expressions = {
+        cell_ref: translate_formula_cell(cell, graph)
+        for cell_ref, cell in formula_cells.items()
+    }
+
+    result = infer_generated_module_contract(
+        workbook=workbook,
+        graph=graph,
+        expressions=expressions,
+        output_refs=("Summary!B2", "Summary!B3"),
+        module_name="synthetic_model",
+        inline_provenance_comment_limit=2,
+    )
+
+    assert result.inferred is True
+    assert result.contract.include_provenance_comments is False
+    assert any(symbol.raw_formula == "=BaseVolume*(1+GrowthRate)" for symbol in result.contract.symbols)
+
+
+def test_infer_generated_module_contract_uses_expression_sources_for_large_formula_sets(tmp_path: Path) -> None:
+    workbook = extract_workbook(build_workbook(tmp_path / "synthetic_model.xlsx"))
+    graph = build_dependency_graph(workbook)
+    formula_cells = {cell.cell_ref: cell for cell in workbook.cells if cell.formula is not None}
+    expressions = {
+        cell_ref: translate_formula_cell(cell, graph)
+        for cell_ref, cell in formula_cells.items()
+    }
+
+    result = infer_generated_module_contract(
+        workbook=workbook,
+        graph=graph,
+        expressions=expressions,
+        output_refs=("Summary!B2", "Summary!B3"),
+        module_name="synthetic_model",
+        inline_formula_lambda_limit=2,
+    )
+
+    assert result.inferred is True
+    assert result.contract.formula_storage == "expression_source"
+
+
+def test_generate_python_module_can_omit_inline_provenance_comments(tmp_path: Path) -> None:
+    contract, expressions, constants = synthetic_generation_inputs(tmp_path)
+    compact_contract = GeneratedModuleContract(
+        workbook_id=contract.workbook_id,
+        module_name=contract.module_name,
+        entrypoint=contract.entrypoint,
+        input_refs=contract.input_refs,
+        output_refs=contract.output_refs,
+        symbols=contract.symbols,
+        include_provenance_comments=False,
+    )
+    output_path = tmp_path / "generated_compact_model.py"
+
+    result = generate_python_module(
+        contract=compact_contract,
+        expressions=expressions,
+        constants=constants,
+        output_path=output_path,
+    )
+    module = load_module(output_path)
+
+    assert result.generated is True
+    assert "# Calc!B2: =BaseVolume*(1+GrowthRate)" not in result.source_code
+    assert module.calculate() == {"Summary!B2": 70.2, "Summary!B3": "ok"}
+
+
+def test_generate_python_module_can_store_formula_expression_sources(tmp_path: Path) -> None:
+    contract, expressions, constants = synthetic_generation_inputs(tmp_path)
+    compact_contract = GeneratedModuleContract(
+        workbook_id=contract.workbook_id,
+        module_name=contract.module_name,
+        entrypoint=contract.entrypoint,
+        input_refs=contract.input_refs,
+        output_refs=contract.output_refs,
+        symbols=contract.symbols,
+        formula_storage="expression_source",
+    )
+    output_path = tmp_path / "generated_expression_source_model.py"
+
+    result = generate_python_module(
+        contract=compact_contract,
+        expressions=expressions,
+        constants=constants,
+        output_path=output_path,
+    )
+    module = load_module(output_path)
+
+    assert result.generated is True
+    assert "    def _evaluate_formula(cell_ref, formula):" in result.source_code
+    assert "compile(formula, f'<modelwright formula {cell_ref}>', 'eval')" in result.source_code
+    assert "_formula_code_cache" not in result.source_code
+    assert "lambda: _sf_direct_reference" not in result.source_code
+    assert module.calculate() == {"Summary!B2": 70.2, "Summary!B3": "ok"}
+    assert module.calculate({"Inputs!B2": 10}) == {"Summary!B2": 7.02, "Summary!B3": "low"}
 
 
 def test_infer_generated_module_contract_ignores_unreached_dependency_diagnostics(tmp_path: Path) -> None:
@@ -317,6 +419,8 @@ def test_inferred_generated_module_runs_synthetic_model(tmp_path: Path) -> None:
     module = load_module(output_path)
 
     assert generation.generated is True
+    assert "    _output_refs = (" in generation.source_code
+    assert "    return {cell_ref: _get(cell_ref) for cell_ref in _output_refs}" in generation.source_code
     assert module.calculate() == {"Summary!B2": 70.2, "Summary!B3": "ok"}
     assert module.calculate({"Inputs!B2": 10}) == {"Summary!B2": 7.02, "Summary!B3": "low"}
 
@@ -623,6 +727,9 @@ def test_generate_python_module_renders_criteria_functions(tmp_path: Path) -> No
 
     assert result.generated is True
     assert "_sf_sumif" in result.source_code
+    assert "_sf_criteria_matcher" in result.source_code
+    assert "class _SfRangeView" in result.source_code
+    assert "_range_cache = {}" in result.source_code
     assert module.calculate() == {
         "Calc!B1": 4,
         "Calc!B2": 1,
@@ -1190,3 +1297,75 @@ def test_generate_python_module_skips_excluded_sumifs_sum_cells(tmp_path: Path) 
     assert module.calculate() == {"Calc!C1": 5}
     with pytest.raises(RuntimeError, match="Data!A2 -> Data!A2"):
         module.calculate({"Data!B1": "skip", "Data!B2": "x"})
+
+
+def test_generate_python_module_reuses_range_views_without_changing_results(tmp_path: Path) -> None:
+    contract = GeneratedModuleContract(
+        workbook_id="range-cache.xlsx",
+        module_name="range_cache",
+        input_refs=("Data!A1", "Data!A2", "Data!B1", "Data!B2"),
+        output_refs=("Calc!C1", "Calc!C2", "Calc!C3"),
+        symbols=(
+            GeneratedSymbol(cell_ref="Data!A1", symbol_name="data_a1", kind="input"),
+            GeneratedSymbol(cell_ref="Data!A2", symbol_name="data_a2", kind="input"),
+            GeneratedSymbol(cell_ref="Data!B1", symbol_name="data_b1", kind="input"),
+            GeneratedSymbol(cell_ref="Data!B2", symbol_name="data_b2", kind="input"),
+            GeneratedSymbol(cell_ref="Calc!C1", symbol_name="calc_c1", kind="output", raw_formula='=SUMIFS(A1:A2,B1:B2,"x")'),
+            GeneratedSymbol(cell_ref="Calc!C2", symbol_name="calc_c2", kind="output", raw_formula='=SUMIFS(A1:A2,B1:B2,"y")'),
+            GeneratedSymbol(cell_ref="Calc!C3", symbol_name="calc_c3", kind="output", raw_formula='=COUNTIFS(B1:B2,"x")'),
+        ),
+    )
+    amount_range = normalize_reference("Data!A1:A2")
+    label_range = normalize_reference("Data!B1:B2")
+    expressions = {
+        "Calc!C1": formula_expression(
+            "Calc!C1",
+            '=SUMIFS(A1:A2,B1:B2,"x")',
+            FormulaExpressionNode.function_call(
+                "SUMIFS",
+                (
+                    FormulaExpressionNode.reference_to(amount_range),
+                    FormulaExpressionNode.reference_to(label_range),
+                    FormulaExpressionNode.literal("x"),
+                ),
+            ),
+        ),
+        "Calc!C2": formula_expression(
+            "Calc!C2",
+            '=SUMIFS(A1:A2,B1:B2,"y")',
+            FormulaExpressionNode.function_call(
+                "SUMIFS",
+                (
+                    FormulaExpressionNode.reference_to(amount_range),
+                    FormulaExpressionNode.reference_to(label_range),
+                    FormulaExpressionNode.literal("y"),
+                ),
+            ),
+        ),
+        "Calc!C3": formula_expression(
+            "Calc!C3",
+            '=COUNTIFS(B1:B2,"x")',
+            FormulaExpressionNode.function_call(
+                "COUNTIFS",
+                (
+                    FormulaExpressionNode.reference_to(label_range),
+                    FormulaExpressionNode.literal("x"),
+                ),
+            ),
+        ),
+    }
+    output_path = tmp_path / "generated_range_cache.py"
+
+    result = generate_python_module(
+        contract=contract,
+        expressions=expressions,
+        constants={"Data!A1": 2, "Data!A2": 5, "Data!B1": "x", "Data!B2": "y"},
+        output_path=output_path,
+    )
+    module = load_module(output_path)
+
+    assert result.generated is True
+    assert "_range_cache.get(key)" in result.source_code
+    assert "def values(self):" in result.source_code
+    assert "def lazy_values(self):" in result.source_code
+    assert module.calculate() == {"Calc!C1": 2, "Calc!C2": 5, "Calc!C3": 1}

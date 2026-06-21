@@ -17,7 +17,10 @@ from modelwright.references import WorkbookReference
 
 
 JsonValue = str | int | float | bool | None | list[Any] | dict[str, Any]
+DEFAULT_INLINE_PROVENANCE_COMMENT_LIMIT = 50_000
+DEFAULT_INLINE_FORMULA_LAMBDA_LIMIT = 50_000
 DiagnosticSeverity = Literal["info", "warning", "error"]
+FormulaStorage = Literal["lambdas", "expression_source"]
 GeneratedSymbolKind = Literal["input", "intermediate", "output"]
 
 
@@ -89,6 +92,7 @@ class GeneratedModuleContract:
     output_refs: tuple[str, ...] = field(default_factory=tuple)
     symbols: tuple[GeneratedSymbol, ...] = field(default_factory=tuple)
     include_provenance_comments: bool = True
+    formula_storage: FormulaStorage = "lambdas"
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "GeneratedModuleContract":
@@ -100,6 +104,7 @@ class GeneratedModuleContract:
             output_refs=tuple(data.get("output_refs", [])),
             symbols=tuple(GeneratedSymbol.from_dict(item) for item in data.get("symbols", [])),
             include_provenance_comments=data.get("include_provenance_comments", True),
+            formula_storage=data.get("formula_storage", "lambdas"),
         )
 
     def to_dict(self) -> dict[str, JsonValue]:
@@ -111,6 +116,7 @@ class GeneratedModuleContract:
             "output_refs": list(self.output_refs),
             "symbols": [symbol.to_dict() for symbol in self.symbols],
             "include_provenance_comments": self.include_provenance_comments,
+            "formula_storage": self.formula_storage,
         }
 
 
@@ -186,6 +192,8 @@ def infer_generated_module_contract(
     module_name: str,
     input_refs: Sequence[str] = (),
     progress: Callable[[str], None] | None = None,
+    inline_provenance_comment_limit: int | None = DEFAULT_INLINE_PROVENANCE_COMMENT_LIMIT,
+    inline_formula_lambda_limit: int | None = DEFAULT_INLINE_FORMULA_LAMBDA_LIMIT,
 ) -> GeneratedContractInferenceResult:
     """Infer a generated module contract by walking dependencies for selected outputs."""
 
@@ -242,7 +250,9 @@ def infer_generated_module_contract(
     )
 
     input_order: list[str] = []
+    input_seen: set[str] = set()
     formula_order: list[str] = []
+    formula_seen: set[str] = set()
     visiting: set[str] = set()
     visited: set[str] = set()
     circular_dependency_locations: set[str] = set()
@@ -255,12 +265,11 @@ def infer_generated_module_contract(
             if isinstance(dependency, str):
                 refs.append(dependency)
                 continue
-            refs.extend(
-                expanded_range_dependencies.setdefault(
-                    dependency.normalized,
-                    _expand_range_dependency(dependency),
-                )
-            )
+            expanded = expanded_range_dependencies.get(dependency.normalized)
+            if expanded is None:
+                expanded = _expand_range_dependency(dependency)
+                expanded_range_dependencies[dependency.normalized] = expanded
+            refs.extend(expanded)
         return tuple(refs)
 
     def visit(root_ref: str) -> None:
@@ -273,8 +282,9 @@ def infer_generated_module_contract(
 
             if dependencies_processed:
                 visiting.discard(cell_ref)
-                if cell_ref not in formula_order:
+                if cell_ref not in formula_seen:
                     formula_order.append(cell_ref)
+                    formula_seen.add(cell_ref)
                 visited.add(cell_ref)
                 continue
 
@@ -303,14 +313,16 @@ def infer_generated_module_contract(
 
             cell = cell_by_ref.get(cell_ref)
             if cell is None:
-                if cell_ref not in input_order:
+                if cell_ref not in input_seen:
                     input_order.append(cell_ref)
+                    input_seen.add(cell_ref)
                 visited.add(cell_ref)
                 continue
 
             if cell_ref in explicit_inputs or cell.formula is None:
-                if cell_ref not in input_order:
+                if cell_ref not in input_seen:
                     input_order.append(cell_ref)
+                    input_seen.add(cell_ref)
                 visited.add(cell_ref)
                 continue
 
@@ -368,6 +380,12 @@ def infer_generated_module_contract(
         input_refs=tuple(input_order),
         output_refs=selected_outputs,
         symbols=symbols,
+        include_provenance_comments=(
+            inline_provenance_comment_limit is None or len(formula_order) <= inline_provenance_comment_limit
+        ),
+        formula_storage="lambdas"
+        if inline_formula_lambda_limit is None or len(formula_order) <= inline_formula_lambda_limit
+        else "expression_source",
     )
     return GeneratedContractInferenceResult(
         contract=contract,
@@ -478,6 +496,44 @@ def _render_module(
         '"""',
         "",
         "import fnmatch",
+        "from functools import lru_cache",
+        "",
+        "",
+        "class _SfRangeView:",
+        "    def __init__(self, sheet, min_col, min_row, max_col, max_row, get_value):",
+        "        self.sheet = sheet",
+        "        self.min_col = min_col",
+        "        self.min_row = min_row",
+        "        self.max_col = max_col",
+        "        self.max_row = max_row",
+        "        self._get_value = get_value",
+        "        self._values = None",
+        "        self._lazy_values = None",
+        "        self._value_calls = 0",
+        "        self._lazy_value_calls = 0",
+        "",
+        "    def _refs(self):",
+        "        for row in range(self.min_row, self.max_row + 1):",
+        "            for column in range(self.min_col, self.max_col + 1):",
+        "                yield f'{self.sheet}!{_sf_column_name(column)}{row}'",
+        "",
+        "    def values(self):",
+        "        if self._values is not None:",
+        "            return self._values",
+        "        values = tuple(self._get_value(ref) for ref in self._refs())",
+        "        self._value_calls += 1",
+        "        if self._value_calls > 1:",
+        "            self._values = values",
+        "        return values",
+        "",
+        "    def lazy_values(self):",
+        "        if self._lazy_values is not None:",
+        "            return self._lazy_values",
+        "        values = tuple(lambda ref=ref: self._get_value(ref) for ref in self._refs())",
+        "        self._lazy_value_calls += 1",
+        "        if self._lazy_value_calls > 1:",
+        "            self._lazy_values = values",
+        "        return values",
         "",
         "",
         "def _sf_column_name(index):",
@@ -490,6 +546,9 @@ def _render_module(
         "",
         "def _sf_flatten(values):",
         "    for value in values:",
+        "        if isinstance(value, _SfRangeView):",
+        "            yield from value.values()",
+        "            continue",
         "        if isinstance(value, (list, tuple)):",
         "            yield from _sf_flatten(value)",
         "        else:",
@@ -498,6 +557,9 @@ def _render_module(
         "",
         "def _sf_flatten_lazy(values):",
         "    for value in values:",
+        "        if isinstance(value, _SfRangeView):",
+        "            yield from value.lazy_values()",
+        "            continue",
         "        if isinstance(value, (list, tuple)):",
         "            yield from _sf_flatten_lazy(value)",
         "        else:",
@@ -525,6 +587,7 @@ def _render_module(
         "    return value",
         "",
         "",
+        "@lru_cache(maxsize=4096)",
         "def _sf_numeric_value(value):",
         "    if isinstance(value, bool):",
         "        return None",
@@ -605,17 +668,20 @@ def _render_module(
         "    raise ValueError(f'unsupported criteria operator: {operator}')",
         "",
         "",
-        "def _sf_matches_criteria(value, criteria):",
+        "def _sf_criteria_matcher(criteria):",
         "    if isinstance(criteria, str):",
         "        for operator in ('>=', '<=', '<>', '>', '<', '='):",
         "            if criteria.startswith(operator):",
-        "                expected = _sf_coerce_criteria(criteria[len(operator):], value)",
-        "                return _sf_compare_criteria(value, operator, expected)",
+        "                raw_expected = criteria[len(operator):]",
+        "                return lambda value: _sf_compare_criteria(value, operator, _sf_coerce_criteria(raw_expected, value))",
         "        if '*' in criteria or '?' in criteria:",
-        "            return fnmatch.fnmatchcase(str(value), criteria)",
-        "        expected = _sf_coerce_criteria(criteria, value)",
-        "        return _sf_compare_criteria(value, '=', expected)",
-        "    return _sf_compare_criteria(value, '=', criteria)",
+        "            return lambda value: fnmatch.fnmatchcase(str(value), criteria)",
+        "        return lambda value: _sf_compare_criteria(value, '=', _sf_coerce_criteria(criteria, value))",
+        "    return lambda value: _sf_compare_criteria(value, '=', criteria)",
+        "",
+        "",
+        "def _sf_matches_criteria(value, criteria):",
+        "    return _sf_criteria_matcher(criteria)(value)",
         "",
         "",
         "def _sf_lookup_equal(left, right):",
@@ -627,24 +693,26 @@ def _render_module(
         "def _sf_sumif(criteria_range, criteria, sum_range=None):",
         "    criteria_values = tuple(_sf_flatten((criteria_range,)))",
         "    sum_values = criteria_values if sum_range is None else tuple(_sf_flatten_lazy((sum_range,)))",
+        "    matcher = _sf_criteria_matcher(criteria)",
         "    total = 0",
         "    for criteria_value, sum_value in zip(criteria_values, sum_values):",
-        "        if _sf_matches_criteria(criteria_value, criteria):",
+        "        if matcher(criteria_value):",
         "            total += _sf_sum_value(sum_value)",
         "    return total",
         "",
         "",
         "def _sf_countif(criteria_range, criteria):",
-        "    return sum(1 for value in _sf_flatten((criteria_range,)) if _sf_matches_criteria(value, criteria))",
+        "    matcher = _sf_criteria_matcher(criteria)",
+        "    return sum(1 for value in _sf_flatten((criteria_range,)) if matcher(value))",
         "",
         "",
         "def _sf_sumifs(sum_range, *criteria_pairs):",
         "    sum_values = tuple(_sf_flatten_lazy((sum_range,)))",
         "    criteria_ranges = [tuple(_sf_flatten((criteria_range,))) for criteria_range, _criteria in criteria_pairs]",
-        "    criteria_values = tuple(criteria for _range, criteria in criteria_pairs)",
+        "    criteria_matchers = tuple(_sf_criteria_matcher(criteria) for _range, criteria in criteria_pairs)",
         "    total = 0",
         "    for index, sum_value in enumerate(sum_values):",
-        "        if all(_sf_matches_criteria(criteria_range[index], criteria) for criteria_range, criteria in zip(criteria_ranges, criteria_values)):",
+        "        if all(matcher(criteria_range[index]) for criteria_range, matcher in zip(criteria_ranges, criteria_matchers)):",
         "            total += _sf_sum_value(sum_value)",
         "    return total",
         "",
@@ -653,11 +721,11 @@ def _render_module(
         "    criteria_ranges = [tuple(_sf_flatten((criteria_range,))) for criteria_range, _criteria in criteria_pairs]",
         "    if not criteria_ranges:",
         "        return 0",
-        "    criteria_values = tuple(criteria for _range, criteria in criteria_pairs)",
+        "    criteria_matchers = tuple(_sf_criteria_matcher(criteria) for _range, criteria in criteria_pairs)",
         "    return sum(",
         "        1",
         "        for index in range(len(criteria_ranges[0]))",
-        "        if all(_sf_matches_criteria(criteria_range[index], criteria) for criteria_range, criteria in zip(criteria_ranges, criteria_values))",
+        "        if all(matcher(criteria_range[index]) for criteria_range, matcher in zip(criteria_ranges, criteria_matchers))",
         "    )",
         "",
         "",
@@ -699,6 +767,7 @@ def _render_module(
         f"def {contract.entrypoint}(inputs=None):",
         "    inputs = {} if inputs is None else dict(inputs)",
         "    _cache = {}",
+        "    _range_cache = {}",
         "    _stack = []",
         "    _evaluated_count = 0",
         "    _constants = {",
@@ -731,7 +800,7 @@ def _render_module(
             "            raise RuntimeError('circular dependency during generated model execution: ' + ' -> '.join(cycle))",
             "        _stack.append(cell_ref)",
             "        try:",
-            "            value = formula()",
+            "            value = _evaluate_formula(cell_ref, formula)",
             "        finally:",
             "            _stack.pop()",
             "        _cache[cell_ref] = value",
@@ -750,11 +819,12 @@ def _render_module(
             "        return value",
             "",
             "    def _range(sheet, min_col, min_row, max_col, max_row):",
-            "        return tuple(",
-            "            lambda ref=f'{sheet}!{_sf_column_name(column)}{row}': _get(ref)",
-            "            for row in range(min_row, max_row + 1)",
-            "            for column in range(min_col, max_col + 1)",
-            "        )",
+            "        key = (sheet, min_col, min_row, max_col, max_row)",
+            "        view = _range_cache.get(key)",
+            "        if view is None:",
+            "            view = _SfRangeView(sheet, min_col, min_row, max_col, max_row, _get)",
+            "            _range_cache[key] = view",
+            "        return view",
             "",
             "    def _table(sheet, min_col, min_row, max_col, max_row):",
             "        return tuple(",
@@ -762,6 +832,36 @@ def _render_module(
             "            for row in range(min_row, max_row + 1)",
             "        )",
             "",
+        ]
+    )
+    if contract.formula_storage == "lambdas":
+        lines.extend(
+            [
+                "    def _evaluate_formula(_cell_ref, formula):",
+                "        return formula()",
+                "",
+            ]
+        )
+    elif contract.formula_storage == "expression_source":
+        lines.extend(
+            [
+                "    _formula_globals = dict(globals())",
+                "    _formula_globals.update({",
+                "        '_get': _get,",
+                "        '_range': _range,",
+                "        '_table': _table,",
+                "    })",
+                "",
+                "    def _evaluate_formula(cell_ref, formula):",
+                "        code = compile(formula, f'<modelwright formula {cell_ref}>', 'eval')",
+                "        return eval(code, _formula_globals)",
+                "",
+            ]
+        )
+    else:
+        raise ValueError(f"unsupported formula storage: {contract.formula_storage}")
+    lines.extend(
+        [
             "    _formulas = {",
         ]
     )
@@ -771,7 +871,11 @@ def _render_module(
             lines.append(f"        # {symbol.cell_ref}" + (f": {symbol.raw_formula}" if symbol.raw_formula else ""))
 
         expression = expressions[symbol.cell_ref]
-        lines.append(f"        {symbol.cell_ref!r}: lambda: {_render_formula_root(expression.root)},")
+        rendered_formula = _render_formula_root(expression.root)
+        if contract.formula_storage == "lambdas":
+            lines.append(f"        {symbol.cell_ref!r}: lambda: {rendered_formula},")
+        else:
+            lines.append(f"        {symbol.cell_ref!r}: {rendered_formula!r},")
 
         if index == 1 or index % 10000 == 0 or index == len(formula_symbols):
             _progress(
@@ -781,12 +885,17 @@ def _render_module(
     lines.extend(
         [
             "    }",
-            "    return {",
+            "    _output_refs = (",
         ]
     )
     for output_ref in contract.output_refs:
-        lines.append(f"        {output_ref!r}: _get({output_ref!r}),")
-    lines.append("    }")
+        lines.append(f"        {output_ref!r},")
+    lines.extend(
+        [
+            "    )",
+            "    return {cell_ref: _get(cell_ref) for cell_ref in _output_refs}",
+        ]
+    )
     lines.append("")
     return "\n".join(lines)
 
