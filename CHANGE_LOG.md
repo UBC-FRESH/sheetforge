@@ -36,6 +36,7 @@ This file records completed project work in chronological order.
 - Prototyped a P27.4 slim-oracle validation path under ignored local artifacts: a 23.66 MB oracle file plus the expression-source generated model reran the full 281,741-output FABLE comparison with zero mismatches, dropping recurring validation peak RSS from about 12,981,284 KiB in the all-in-one debug process to about 1,564,740 KiB.
 - Closed P27.4 by deciding not to add a separate public slim-oracle CLI/API contract before the compact runtime IR backend; the slim validation prototype is retained as benchmark-artifact evidence for future runtime IR design.
 - Activated P27.5 to evaluate multicore and sharded execution options only where the P27 measurements still justify them, with caution around duplicating large graph/inference memory or breaking generated-model lazy evaluation semantics.
+- Added P27.5 production inference fixes after profiling the real bottleneck: ordered membership tracking and non-eager range-dependency expansion caching reduced uncached full 2020 FABLE contract inference from 224.001 seconds after the first fix to 46.237 seconds after the range-cache fix, while preserving 373,410 inferred symbols, 289,951 expressions, 83,459 constants/inputs, and 1,808 static-cycle diagnostics.
 
 ## 2026-06-20
 

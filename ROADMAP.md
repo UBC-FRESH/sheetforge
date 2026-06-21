@@ -648,10 +648,11 @@ Planning note: `planning/phase-27-performance-memory-hardening.md`.
   - [x] Decide whether the slim oracle validation artifact should become tracked package/CLI behavior in P27 or feed the compact runtime IR backend.
 - [ ] P27.5 Evaluate multicore and sharded execution options. Child issue: #156.
   - Status: active.
-  - [ ] Prototype parallel contract inference over output/dependency-closure shards and merge diagnostics deterministically.
-  - [ ] Evaluate parallel formula translation and generated-source rendering where records are independent.
-  - [ ] Evaluate sharded generated-output validation across independent output groups or separate worker processes.
-  - [ ] Treat shared-cache generated formula execution as a harder case; parallelize only if runtime semantics, cache consistency, and cycle detection remain correct.
+  - [x] Evaluate parallel formula rendering and validation comparison where records are independent; do not productionize because measured serial costs are already small.
+  - [x] Evaluate sharded generated-output execution across separate worker processes; do not productionize naive output sharding because broad dependency closures duplicate work and memory.
+  - [x] Reprofile contract inference before parallelizing it, and fix measured serial bottlenecks first.
+  - [x] Add production inference fixes for ordered membership tracking and cached range-dependency expansion.
+  - [ ] Decide whether further parallel contract inference remains warranted after the serial fixes.
   - [ ] Document CPU, memory, process startup, serialization, and determinism tradeoffs for high-core-count hosts.
 - [ ] P27.6 Rerun FABLE validation with performance evidence. Child issue: #160.
   - [ ] Always run verbose with stdout piped to `tmp/logs/` and print the tail command first.
@@ -668,7 +669,7 @@ Acceptance criteria:
 
 ## Current Next Steps
 
-1. Continue P27.5 by evaluating multicore and sharded options against the measured bottlenecks.
-2. Use the P27.4 slim validation result as the current memory baseline: recurring validation peak RSS dropped from about 12,981,284 KiB in the full debug process to about 1,564,740 KiB with the slim oracle path, while still matching 281,741 of 281,741 outputs.
-3. Do not productize a separate slim-oracle public API in P27; feed that evidence into compact runtime IR and benchmark artifact design.
+1. Finish P27.5 by deciding whether further parallel inference is still worth prototyping now that uncached full-contract inference is down to 46.237 seconds.
+2. Document the final P27.5 CPU, memory, startup, serialization, and determinism tradeoffs in the roadmap, planning note, and GitHub issue comments.
+3. Move to P27.6 only after P27.5 is closed with evidence, then rerun the full FABLE validation in verbose mode with logs and performance measurements.
 4. Preserve formula-template/vectorized-kernel work as a follow-on architecture target after P27 records current pipeline memory costs.

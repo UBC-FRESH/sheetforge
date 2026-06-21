@@ -563,6 +563,60 @@ Interpretation:
   for 373,410 visited cells, with attention to range dependency expansion, static cycles, and repeated
   selected-output dependency closures.
 
+### Iteration 4: Range Dependency Expansion Cache Fix
+
+Production change:
+
+- `infer_generated_module_contract()` now retrieves cached range expansions with an explicit
+  `dict.get()` check before calling `_expand_range_dependency()`;
+- this replaces `dict.setdefault(key, _expand_range_dependency(...))`, whose default argument was
+  evaluated eagerly on every call even when the key already existed;
+- the previous code therefore looked cached but still repeatedly expanded the same range dependencies.
+
+Ignored raw artifacts:
+
+- `tmp/logs/p27-inference-cprofile.log`
+- `tmp/p27-profile/inference-benchmark-set-membership.cprofile`
+- `tmp/logs/p27-inference-benchmark-range-cache-fix.log`
+- `tmp/p27-profile/inference-benchmark-range-cache-fix.json`
+
+Profile evidence:
+
+- cProfile on the post-set-membership inference run showed `_expand_range_dependency()` as the
+  remaining dominant production hotspot;
+- `_expand_range_dependency()` was called 841,648 times;
+- its nested cell-reference generator accounted for 489,051,685 generated references under profiling;
+- the cumulative profiled time attributed to range expansion was about 280.626 seconds.
+
+Benchmark scope:
+
+- loaded cached workbook, graph, and expression artifacts;
+- bypassed the existing inference cache;
+- inferred the full 2020 FABLE comparable-output contract for 281,741 outputs;
+- used the same benchmark shape as iteration 3.
+
+Measured result:
+
+- pipeline cache load before inference: 167.573 seconds;
+- comparable-output universe construction: 1.014 seconds;
+- uncached contract inference after the range-expansion cache fix: 46.237 seconds;
+- inferred symbols: 373,410;
+- inferred formula expressions: 289,951;
+- inferred constants/inputs: 83,459;
+- diagnostics: 1,808 `static_circular_dependency` warnings;
+- result: inferred successfully.
+
+Interpretation:
+
+- the hot path was not fundamentally range expansion itself, but accidental repeated expansion caused
+  by eager `setdefault()` default evaluation;
+- uncached full-contract inference is now about 4.8x faster than after iteration 3 and roughly in the
+  same order as the pipeline cache-load stage;
+- P27.5 has now produced two production inference fixes backed by profiling and full-FABLE benchmark
+  evidence;
+- remaining dominant P27 costs are cache hydration/object memory and generated-model execution, not
+  contract inference membership or range expansion.
+
 ## Optimization Directions
 
 Prefer targeted changes supported by measurements:

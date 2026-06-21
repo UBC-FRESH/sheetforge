@@ -265,12 +265,11 @@ def infer_generated_module_contract(
             if isinstance(dependency, str):
                 refs.append(dependency)
                 continue
-            refs.extend(
-                expanded_range_dependencies.setdefault(
-                    dependency.normalized,
-                    _expand_range_dependency(dependency),
-                )
-            )
+            expanded = expanded_range_dependencies.get(dependency.normalized)
+            if expanded is None:
+                expanded = _expand_range_dependency(dependency)
+                expanded_range_dependencies[dependency.normalized] = expanded
+            refs.extend(expanded)
         return tuple(refs)
 
     def visit(root_ref: str) -> None:
