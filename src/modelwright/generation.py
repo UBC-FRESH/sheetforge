@@ -838,12 +838,17 @@ def _render_module(
     lines.extend(
         [
             "    }",
-            "    return {",
+            "    _output_refs = (",
         ]
     )
     for output_ref in contract.output_refs:
-        lines.append(f"        {output_ref!r}: _get({output_ref!r}),")
-    lines.append("    }")
+        lines.append(f"        {output_ref!r},")
+    lines.extend(
+        [
+            "    )",
+            "    return {cell_ref: _get(cell_ref) for cell_ref in _output_refs}",
+        ]
+    )
     lines.append("")
     return "\n".join(lines)
 

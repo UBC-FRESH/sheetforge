@@ -208,6 +208,42 @@ Conclusion:
 - the remaining P27.3 work should focus on formula and output source layout, code-object count, module
   chunking, or the planned compact runtime IR backend rather than spending more effort on comments.
 
+## P27.3 Compact Output Map Evidence
+
+Implemented change:
+
+- generated modules now build their public output dictionary from a single `_output_refs` tuple and a
+  dict comprehension;
+- this replaces the previous generated return literal that repeated each output cell reference twice;
+- public behavior remains `calculate(inputs=None) -> dict[str, value]`;
+- Python dict insertion order preserves the selected output order from `_output_refs`.
+
+Measured compact-provenance plus compact-output-map result:
+
+- generated source: 124,057,682 bytes;
+- generation elapsed time from cached inference: 9.009 seconds;
+- import-only elapsed time: 34.093 seconds;
+- maximum RSS after import: 10,658,776 KiB, or about 10.2 GiB;
+- generated execution: 169.040 seconds;
+- cached compare loop elapsed time, including cache loads, generation, execution, and comparison:
+  390.196 seconds.
+
+Correctness evidence:
+
+- compact-output-map 2020 FABLE validation still passed;
+- comparable outputs: 281,741;
+- matches: 281,741;
+- mismatches: 0.
+
+Conclusion:
+
+- output-map compaction removed another roughly 8.2 MB beyond compact provenance;
+- the combined P27.3 source-size reduction is about 74.7 MB, from 198.8 MB to 124.1 MB;
+- import time and memory still remain near the previous baseline, so source text bytes alone are not
+  the dominant import/RSS driver;
+- the remaining P27.3 target is the formula function/lambda structure and generated code-object
+  volume, which probably requires chunking, indexed runtime data, or a compact runtime IR backend.
+
 ## Optimization Directions
 
 Prefer targeted changes supported by measurements:

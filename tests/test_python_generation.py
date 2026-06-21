@@ -367,6 +367,8 @@ def test_inferred_generated_module_runs_synthetic_model(tmp_path: Path) -> None:
     module = load_module(output_path)
 
     assert generation.generated is True
+    assert "    _output_refs = (" in generation.source_code
+    assert "    return {cell_ref: _get(cell_ref) for cell_ref in _output_refs}" in generation.source_code
     assert module.calculate() == {"Summary!B2": 70.2, "Summary!B3": "ok"}
     assert module.calculate({"Inputs!B2": 10}) == {"Summary!B2": 7.02, "Summary!B3": "low"}
 
