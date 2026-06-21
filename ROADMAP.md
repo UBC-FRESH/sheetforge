@@ -409,20 +409,20 @@ Goal: establish a professional deployment and publication workflow before any re
   - [x] Set package and import version to `0.1.0a1`.
   - [x] Add local release artifact check script.
   - [x] Verify sdist/wheel metadata, artifact contents, clean wheel install, package import, and installed CLI smoke test.
-- [ ] P22.3 Add release automation for GitHub, TestPyPI, and PyPI gates. Child issue: #129.
+- [x] P22.3 Add release automation for GitHub, TestPyPI, and PyPI gates. Child issue: #129.
   - [x] Add CI release artifact build validation.
   - [x] Add manually gated TestPyPI and tag/protected-environment gated PyPI publication workflow skeleton.
-  - [ ] Verify GitHub Pages serves the built Sphinx Read the Docs themed artifact, not a fallback Jekyll/minima site.
+  - [x] Verify GitHub Pages serves the built Sphinx Read the Docs themed artifact, not a fallback Jekyll/minima site.
 - [x] P22.4 Document deployment runbook and developer release onboarding. Child issue: #128.
   - [x] Add Sphinx release and deployment runbook.
   - [x] Mirror release onboarding essentials in `CONTRIBUTING.md`.
   - [x] Verify docs build and local Read the Docs themed artifact.
-- [ ] P22.5 Rehearse release artifacts and close publication readiness. Child issue: #126.
+- [x] P22.5 Rehearse release artifacts and close publication readiness. Child issue: #126.
   - [x] Run full local verification with verbose logs.
   - [x] Build sdist and wheel from a clean isolated build environment.
   - [x] Run artifact inspection and clean install smoke tests.
   - [x] Document TestPyPI rehearsal blocker: release workflow and trusted-publishing environments must be available after merge.
-  - [ ] Verify the published GitHub Pages site is the Sphinx Read the Docs themed documentation artifact.
+  - [x] Verify the published GitHub Pages site is the Sphinx Read the Docs themed documentation artifact.
   - [x] Record real PyPI alpha publication as deferred until TestPyPI rehearsal and maintainer approval pass.
 
 Publication gates:
@@ -434,11 +434,13 @@ Publication gates:
 - The first published alpha version must use canonical Python packaging syntax such as `0.1.0a1` or `1.0.0a1`.
 - The project license must be selected explicitly by the maintainer before real PyPI publication.
 
-Status: active.
+Merged PR: #130
+
+Status: complete.
 
 ## Current Next Steps
 
-1. Open the Phase 22 PR and verify the PR checks, including release artifact validation and docs theme verification.
-2. After merge, verify the GitHub Pages deployment serves the Sphinx Read the Docs themed artifact.
-3. Rehearse TestPyPI publication from the merged release workflow once GitHub environments/trusted publishing are configured.
-4. Close P22.3, P22.5, and parent issue #124 only after the post-merge gates are resolved or explicitly deferred by the maintainer.
+1. Configure the `testpypi` GitHub environment and trusted publishing relationship.
+2. Run the `Release` workflow manually with `publish_target = testpypi`.
+3. Install `sheetforge==0.1.0a1` from TestPyPI in a clean environment and run import/CLI smoke tests.
+4. Decide whether to proceed to real PyPI alpha publication from tag `v0.1.0a1`.

@@ -81,6 +81,12 @@ Required next steps before real PyPI:
 
 ## GitHub Pages State
 
-Local docs artifact verification passed. Deployed Pages verification remains post-merge because deployment only runs from `main`.
+Local docs artifact verification passed. Post-merge deployed Pages verification also passed.
 
-The deployed site should show the Sphinx Read the Docs side navigation and should not look like a Jekyll/minima project page.
+The live site at `https://ubc-fresh.github.io/sheetforge/` contains the expected Sphinx Read the Docs markers:
+
+- `_static/css/theme.css`;
+- `wy-nav-side`;
+- `sphinx_rtd_theme`.
+
+The live site did not contain `minima` or `jekyll-theme` markers during the post-merge check.
