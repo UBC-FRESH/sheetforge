@@ -9,9 +9,13 @@ DIST_DIR="$RUN_DIR/dist"
 INSTALL_DIR="$RUN_DIR/install-$RUN_ID"
 
 if [[ ! -x "$PYTHON_BIN" ]]; then
-  echo "Python executable not found: $PYTHON_BIN" >&2
-  echo "Run scripts/bootstrap_dev_env.sh first or set PYTHON=/path/to/python." >&2
-  exit 2
+  if command -v "$PYTHON_BIN" >/dev/null 2>&1; then
+    PYTHON_BIN="$(command -v "$PYTHON_BIN")"
+  else
+    echo "Python executable not found: $PYTHON_BIN" >&2
+    echo "Run scripts/bootstrap_dev_env.sh first or set PYTHON=/path/to/python." >&2
+    exit 2
+  fi
 fi
 
 mkdir -p "$DIST_DIR" "$INSTALL_DIR"
