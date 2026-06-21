@@ -17,6 +17,7 @@ from modelwright.references import WorkbookReference
 
 
 JsonValue = str | int | float | bool | None | list[Any] | dict[str, Any]
+DEFAULT_INLINE_PROVENANCE_COMMENT_LIMIT = 50_000
 DiagnosticSeverity = Literal["info", "warning", "error"]
 GeneratedSymbolKind = Literal["input", "intermediate", "output"]
 
@@ -186,6 +187,7 @@ def infer_generated_module_contract(
     module_name: str,
     input_refs: Sequence[str] = (),
     progress: Callable[[str], None] | None = None,
+    inline_provenance_comment_limit: int | None = DEFAULT_INLINE_PROVENANCE_COMMENT_LIMIT,
 ) -> GeneratedContractInferenceResult:
     """Infer a generated module contract by walking dependencies for selected outputs."""
 
@@ -368,6 +370,9 @@ def infer_generated_module_contract(
         input_refs=tuple(input_order),
         output_refs=selected_outputs,
         symbols=symbols,
+        include_provenance_comments=(
+            inline_provenance_comment_limit is None or len(formula_order) <= inline_provenance_comment_limit
+        ),
     )
     return GeneratedContractInferenceResult(
         contract=contract,

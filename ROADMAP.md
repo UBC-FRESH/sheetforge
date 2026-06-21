@@ -636,7 +636,8 @@ Planning note: `planning/phase-27-performance-memory-hardening.md`.
   - [x] Avoid rebuilding large Python lists for every `SUMIF`, `SUMIFS`, `COUNTIF`, and `COUNTIFS` call.
   - [x] Preserve lazy `IF`/`IFERROR`/`IFNA` branch behavior and runtime circular-dependency detection.
 - [ ] P27.3 Reduce generated module size and import overhead. Child issue: #158.
-  - [ ] Evaluate compact generated-model layouts, shared expression helpers, or chunked modules.
+  - [x] Disable inline formula provenance comments for large generated modules and verify full FABLE correctness is unchanged.
+  - [ ] Evaluate compact generated-model layouts, shared expression helpers, or chunked modules for the remaining formula/output source.
   - [ ] Keep `calculate(inputs=None) -> dict` behavior stable unless a later public API phase intentionally changes it.
   - [ ] Measure import time and generated-code object memory before and after any change.
 - [ ] P27.4 Reduce pipeline cache and validation memory footprint. Child issue: #157.
@@ -664,7 +665,7 @@ Acceptance criteria:
 
 ## Current Next Steps
 
-1. Start P27.3 by reducing generated module size and import overhead.
+1. Continue P27.3 by attacking formula/output source layout and import overhead after the compact-provenance slice.
 2. Use the P27.2 result as the execution baseline: optimized full-validation generated execution is 183.463 seconds with 281,741/281,741 matches.
-3. Focus on the remaining import/source-size problem: about 198.8 MB of generated Python, roughly 35 seconds import time, and about 10.7 GiB max RSS before calculation.
+3. Use the P27.3 compact-provenance result as the current source-size baseline: generated Python dropped from about 198.8 MB to 132.3 MB with 281,741/281,741 matches, but import still takes about 34 seconds and about 10.6 GiB max RSS.
 4. Preserve the current `calculate(inputs=None) -> dict` behavior until a later API phase intentionally changes it.

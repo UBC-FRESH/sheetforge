@@ -29,6 +29,7 @@ This file records completed project work in chronological order.
 - Activated Phase 27 on `feature/p27-performance-memory-hardening`, created GitHub child issues #155 through #160 under parent issue #152, and scoped the phase around measured profiling evidence before any performance, memory, parallelism, or generated-output architecture changes.
 - Completed the P27.1 baseline profile against the Phase 26 generated FABLE model: import takes about 35 seconds and 10.7 GiB maximum RSS before calculation, full profiled execution takes about 1,502 seconds, and the dominant runtime signals are repeated range/criteria work including 605,817 `_range` calls, 364,236,641 addressed range cells, 199,343 `_sf_sumifs` calls, and 121,247,129 criteria-match calls.
 - Completed P27.2 range and criteria optimization by adding generated range views, reused range materialization, precompiled criteria matchers, and cached numeric coercion; optimized full FABLE validation still passed with 281,741 of 281,741 comparable outputs matching, while generated execution dropped from the P26 baseline of 1,469.944 seconds to 183.463 seconds.
+- Completed the first P27.3 generated-size slice by disabling inline formula provenance comments for large generated modules: the 2020 FABLE generated source dropped from about 198.8 MB to 132.3 MB and still matched 281,741 of 281,741 comparable outputs, while import time and memory remained roughly 34 seconds and 10.6 GiB, leaving formula/output source layout as the next import-overhead target.
 
 ## 2026-06-20
 

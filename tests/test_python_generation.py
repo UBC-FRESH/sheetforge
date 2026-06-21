@@ -119,6 +119,7 @@ def test_infer_generated_module_contract_for_synthetic_outputs(tmp_path: Path) -
     assert result.diagnostics == ()
     assert result.contract.input_refs == ("Inputs!B2", "Inputs!B3", "Inputs!B4")
     assert result.constants == {"Inputs!B2": 100, "Inputs!B3": 0.08, "Inputs!B4": 0.65}
+    assert result.contract.include_provenance_comments is True
     assert tuple(symbol.cell_ref for symbol in result.contract.symbols) == (
         "Inputs!B2",
         "Inputs!B3",
@@ -139,6 +140,55 @@ def test_infer_generated_module_contract_for_synthetic_outputs(tmp_path: Path) -
         "output",
         "output",
     ]
+
+
+def test_infer_generated_module_contract_disables_large_inline_provenance_comments(tmp_path: Path) -> None:
+    workbook = extract_workbook(build_workbook(tmp_path / "synthetic_model.xlsx"))
+    graph = build_dependency_graph(workbook)
+    formula_cells = {cell.cell_ref: cell for cell in workbook.cells if cell.formula is not None}
+    expressions = {
+        cell_ref: translate_formula_cell(cell, graph)
+        for cell_ref, cell in formula_cells.items()
+    }
+
+    result = infer_generated_module_contract(
+        workbook=workbook,
+        graph=graph,
+        expressions=expressions,
+        output_refs=("Summary!B2", "Summary!B3"),
+        module_name="synthetic_model",
+        inline_provenance_comment_limit=2,
+    )
+
+    assert result.inferred is True
+    assert result.contract.include_provenance_comments is False
+    assert any(symbol.raw_formula == "=BaseVolume*(1+GrowthRate)" for symbol in result.contract.symbols)
+
+
+def test_generate_python_module_can_omit_inline_provenance_comments(tmp_path: Path) -> None:
+    contract, expressions, constants = synthetic_generation_inputs(tmp_path)
+    compact_contract = GeneratedModuleContract(
+        workbook_id=contract.workbook_id,
+        module_name=contract.module_name,
+        entrypoint=contract.entrypoint,
+        input_refs=contract.input_refs,
+        output_refs=contract.output_refs,
+        symbols=contract.symbols,
+        include_provenance_comments=False,
+    )
+    output_path = tmp_path / "generated_compact_model.py"
+
+    result = generate_python_module(
+        contract=compact_contract,
+        expressions=expressions,
+        constants=constants,
+        output_path=output_path,
+    )
+    module = load_module(output_path)
+
+    assert result.generated is True
+    assert "# Calc!B2: =BaseVolume*(1+GrowthRate)" not in result.source_code
+    assert module.calculate() == {"Summary!B2": 70.2, "Summary!B3": "ok"}
 
 
 def test_infer_generated_module_contract_ignores_unreached_dependency_diagnostics(tmp_path: Path) -> None:

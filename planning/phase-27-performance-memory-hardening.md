@@ -156,6 +156,58 @@ Remaining measured bottleneck:
 - generated source size remains about 198.8 MB;
 - P27.3 should therefore address generated module size and import overhead next.
 
+## P27.3 Compact Provenance Evidence
+
+Implemented change:
+
+- inferred generated-module contracts now disable inline formula provenance comments by default once
+  the reachable formula count exceeds 50,000 cells;
+- small/debug models still keep inline comments by default;
+- callers can force comments with `inline_provenance_comment_limit=None`;
+- raw formula provenance remains on each `GeneratedSymbol`, so the information is not discarded from
+  the contract layer.
+
+Why this was the first size slice:
+
+- the P26/P27 FABLE generated source had 289,951 provenance comment lines;
+- those comments accounted for about 66,471,192 bytes of source;
+- removing them is low risk because generated runtime behavior never reads comments.
+
+Measured source-size breakdown before the change:
+
+- total generated source: 198,769,198 bytes and 945,428 lines;
+- preamble/runtime helper source: about 10,027 bytes and 319 lines;
+- constants source: 3,502,940 bytes and 83,462 lines;
+- formula source: 178,211,932 bytes and 579,904 lines, including provenance comments;
+- output dictionary source: 17,044,299 bytes and 281,743 lines.
+
+Measured compact-provenance result:
+
+- compact generated source: 132,298,006 bytes;
+- source-size reduction: about 66.5 MB;
+- import-only elapsed time: 34.328 seconds;
+- maximum RSS after import: 11,096,124 KiB, or about 10.6 GiB;
+- compact-source generated execution: 169.982 seconds;
+- compact-source cached compare loop elapsed time, including cache loads and comparison:
+  380.879 seconds.
+
+Correctness evidence:
+
+- compact-source 2020 FABLE validation still passed;
+- comparable outputs: 281,741;
+- matches: 281,741;
+- mismatches: 0.
+
+Conclusion:
+
+- inline provenance comments were a real source-size problem and should stay disabled for large
+  generated modules;
+- comment removal alone does not materially solve import time or memory use;
+- constants are only about 3.5 MB of the generated source, so extracting constants from Python source
+  would not be the next highest-leverage source-size fix by itself;
+- the remaining P27.3 work should focus on formula and output source layout, code-object count, module
+  chunking, or the planned compact runtime IR backend rather than spending more effort on comments.
+
 ## Optimization Directions
 
 Prefer targeted changes supported by measurements:
