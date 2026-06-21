@@ -616,7 +616,9 @@ Status: complete.
 
 GitHub parent issue: #152
 
-Status: planned backlog.
+Active branch: `feature/p27-performance-memory-hardening`
+
+Status: active.
 
 Goal: make full-workbook generated-model validation practical by profiling and reducing generated
 runtime, cache-load, and memory costs exposed by the 2020 FABLE benchmark. This phase should start
@@ -625,29 +627,29 @@ hide validation defects.
 
 Planning note: `planning/phase-27-performance-memory-hardening.md`.
 
-- [ ] P27.1 Profile generated-model runtime hotspots.
-  - [ ] Add high-frequency timing around generated helper functions, formula execution, range/table materialization, and criteria functions.
-  - [ ] Determine whether runtime is dominated by repeated formula evaluation, repeated range scans, Python import/code-object overhead, output materialization, or cache loading.
-  - [ ] Record profiler output and sanitized conclusions under `planning/`.
-- [ ] P27.2 Reduce repeated range and criteria work.
+- [x] P27.1 Profile generated-model runtime hotspots. Child issue: #155.
+  - [x] Add high-frequency timing around generated helper functions, formula execution, range/table materialization, and criteria functions.
+  - [x] Determine whether runtime is dominated by repeated formula evaluation, repeated range scans, Python import/code-object overhead, output materialization, or cache loading.
+  - [x] Record profiler output and sanitized conclusions under `planning/`.
+- [ ] P27.2 Reduce repeated range and criteria work. Child issue: #159.
   - [ ] Cache reusable range/table views where Excel semantics allow.
   - [ ] Avoid rebuilding large Python lists for every `SUMIF`, `SUMIFS`, `COUNTIF`, and `COUNTIFS` call.
   - [ ] Preserve lazy `IF`/`IFERROR`/`IFNA` branch behavior and runtime circular-dependency detection.
-- [ ] P27.3 Reduce generated module size and import overhead.
+- [ ] P27.3 Reduce generated module size and import overhead. Child issue: #158.
   - [ ] Evaluate compact generated-model layouts, shared expression helpers, or chunked modules.
   - [ ] Keep `calculate(inputs=None) -> dict` behavior stable unless a later public API phase intentionally changes it.
   - [ ] Measure import time and generated-code object memory before and after any change.
-- [ ] P27.4 Reduce pipeline cache and validation memory footprint.
+- [ ] P27.4 Reduce pipeline cache and validation memory footprint. Child issue: #157.
   - [ ] Measure workbook, graph, expression, inference, generated-module, and output-map memory costs separately.
   - [ ] Evaluate streaming, SQLite/shelve-style local caches, compact record encoding, or selective loading for validation.
   - [ ] Explain why runtime memory can be much larger than the original workbook file size.
-- [ ] P27.5 Evaluate multicore and sharded execution options.
+- [ ] P27.5 Evaluate multicore and sharded execution options. Child issue: #156.
   - [ ] Prototype parallel contract inference over output/dependency-closure shards and merge diagnostics deterministically.
   - [ ] Evaluate parallel formula translation and generated-source rendering where records are independent.
   - [ ] Evaluate sharded generated-output validation across independent output groups or separate worker processes.
   - [ ] Treat shared-cache generated formula execution as a harder case; parallelize only if runtime semantics, cache consistency, and cycle detection remain correct.
   - [ ] Document CPU, memory, process startup, serialization, and determinism tradeoffs for high-core-count hosts.
-- [ ] P27.6 Rerun FABLE validation with performance evidence.
+- [ ] P27.6 Rerun FABLE validation with performance evidence. Child issue: #160.
   - [ ] Always run verbose with stdout piped to `tmp/logs/` and print the tail command first.
   - [ ] Record runtime, peak memory, cache-hit behavior, and correctness comparison results.
   - [ ] Confirm performance changes do not regress Phase 26 correctness evidence.
@@ -662,6 +664,7 @@ Acceptance criteria:
 
 ## Current Next Steps
 
-1. Close Phase 26 parent issue after release evidence is synchronized.
-2. Activate P27 for performance, memory, and generated-output architecture work targeting `0.1.0a3`.
-3. Start with profiling generated-model runtime hotspots before changing architecture.
+1. Start P27.2 by reducing repeated range and criteria work in generated models.
+2. Focus first on `_range` materialization and `SUMIFS` criteria scans, because the P27.1 baseline found 605,817 `_range` calls, 364,236,641 addressed range cells, and 121,247,129 criteria-match calls.
+3. Preserve lazy branch behavior, runtime circular-dependency detection, and the Phase 26 zero-mismatch FABLE validation result.
+4. Verify changes with focused generated-model tests before rerunning any long FABLE benchmark.

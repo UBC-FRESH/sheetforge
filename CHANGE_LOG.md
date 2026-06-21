@@ -26,6 +26,8 @@ This file records completed project work in chronological order.
 - Achieved the Phase 26 full comparable-output validation pass for the 2020 FABLE Calculator benchmark: the generated Modelwright Python model matched 281,741 of 281,741 comparable cached workbook outputs with zero mismatches, while 15,235 cached blank formula outputs were recorded as non-comparable validation-boundary evidence rather than blockers.
 - Prepared the `0.1.0a2` release candidate with updated package/import version, release-boundary documentation, repeatable release artifact cleanup, local Ruff, 145-test pytest, Sphinx warning-as-error docs, Read the Docs theme verification, and clean sdist/wheel artifact checks.
 - Published `modelwright==0.1.0a2` to PyPI from annotated tag `v0.1.0a2`, created the matching GitHub release, verified PyPI JSON lists the release, and confirmed a clean ignored PyPI install imports version `0.1.0a2` and runs `modelwright --help`.
+- Activated Phase 27 on `feature/p27-performance-memory-hardening`, created GitHub child issues #155 through #160 under parent issue #152, and scoped the phase around measured profiling evidence before any performance, memory, parallelism, or generated-output architecture changes.
+- Completed the P27.1 baseline profile against the Phase 26 generated FABLE model: import takes about 35 seconds and 10.7 GiB maximum RSS before calculation, full profiled execution takes about 1,502 seconds, and the dominant runtime signals are repeated range/criteria work including 605,817 `_range` calls, 364,236,641 addressed range cells, 199,343 `_sf_sumifs` calls, and 121,247,129 criteria-match calls.
 
 ## 2026-06-20
 

@@ -40,6 +40,70 @@ Phase 27 should measure before optimizing:
 Raw profiler outputs should stay under ignored `tmp/`. Sanitized conclusions belong in this note or a
 successor planning note.
 
+## Baseline Profile: 2026-06-21
+
+Ignored raw artifacts:
+
+- `tmp/p27_profile_generated_model.py`
+- `tmp/logs/p27-profile-import-only.log`
+- `tmp/logs/p27-profile-full-execution.log`
+- `tmp/p27-profile/generated-model-profile.json`
+- `tmp/p27-profile/generated_fable_2020_model_profiled.py`
+
+Scope:
+
+- reused the Phase 26 generated source artifact:
+  `tmp/p26-fable-full-validation/generated_fable_2020_model.py`;
+- did not regenerate extraction, graph, expressions, inference, or source code;
+- instrumented a temporary copy of the generated source under ignored `tmp/`;
+- measured import-only behavior and full `calculate()` behavior over the 2020 FABLE comparable-output
+  universe.
+
+Headline measurements:
+
+- generated source size: 198,767,455 bytes;
+- import-only elapsed time: 36.079 seconds in the first run and 34.892 seconds in the full profile;
+- maximum RSS after import: about 11,222,896 KiB, or roughly 10.7 GiB;
+- full profiled `calculate()` elapsed time: 1,502.321 seconds;
+- outputs returned: 281,741;
+- formula evaluations: 286,505;
+- `_get` calls: 251,517,729;
+- `_get` constant hits: 188,153,993;
+- `_get` cache hits: 63,077,231;
+- `_range` calls: 605,817;
+- `_range` addressed cells: 364,236,641;
+- `_table` calls: 38,336;
+- `_table` addressed cells: 4,141,335.
+
+Helper timing caveat:
+
+- helper timings are cumulative and nested because wrappers time helpers that call other wrapped
+  helpers; therefore helper seconds should not be summed or compared directly to wall time;
+- call counts and relative ranking are still useful for identifying where runtime work concentrates.
+
+Top helper signals:
+
+- `_sf_sumifs`: 199,343 calls;
+- `_sf_value`: 251,715,601 calls;
+- `_sf_sum_value`: 356,219 calls;
+- `_sf_iferror`: 20,976 calls;
+- `_sf_matches_criteria`: 121,247,129 calls;
+- `_sf_compare_criteria`: 121,296,032 calls;
+- `_sf_criteria_equal`: 121,292,302 calls;
+- `_sf_numeric_value`: 242,584,604 calls;
+- `_sf_coerce_criteria`: 111,343,168 calls.
+
+Initial conclusion:
+
+- the first optimization target should be repeated range and criteria work, not parallel execution;
+- P27.2 should focus on reducing repeated `_range` materialization and `SUMIFS` criteria scans while
+  preserving lazy evaluation and runtime circular-dependency behavior;
+- import/source size remains a major problem at roughly 35 seconds and 10.7 GiB before calculation,
+  but generated execution spends about 25 minutes in the current source backend, so P27.2 comes before
+  P27.3 unless new evidence contradicts this baseline;
+- `_get` appears to cache formula results as intended, but range and criteria helpers still repeatedly
+  ask for very large numbers of constants and cached formula values.
+
 ## Optimization Directions
 
 Prefer targeted changes supported by measurements:
