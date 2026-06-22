@@ -5,6 +5,7 @@ This file records completed project work in chronological order.
 ## 2026-06-22
 
 - Activated Phase 29 on `feature/p29-model-wrapper-templates`, created GitHub parent issue #167 and child issues #171, #170, #169, #168, and #172, and scoped initial wrapper-template facades for generated Python models with `0.1.0a4` publication as the final phase closeout task.
+- Closed P29.1 by expanding `planning/model-wrapper-template-facades.md` into a concrete initial wrapper API contract covering generated-model boundaries, facade records, declaration helpers, table semantics, scenario mutation, report payloads, provenance preservation, error handling, and alpha API limits.
 
 ## 2026-06-21
 

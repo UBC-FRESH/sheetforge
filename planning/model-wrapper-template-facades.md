@@ -103,6 +103,183 @@ Useful behavior:
 - `model.calculate()` delegates to generated source.
 - `model.report("crop_outputs")` returns a structured table payload.
 
+## Initial API Contract
+
+P29.2 should implement a small `modelwright.wrappers` module with a deliberately narrow alpha API.
+The first implementation should be useful enough for custom wrappers while staying easy to revise.
+
+### Generated Model Boundary
+
+The wrapper module should accept any generated-model object with this shape:
+
+```python
+calculate(inputs: dict[str, object] | None = None) -> dict[str, object]
+```
+
+The wrapper must not modify generated source. Input changes are passed as ordinary `Sheet!A1` override
+values to `calculate()`.
+
+The generated model may be:
+
+- an imported module with a `calculate` function;
+- a plain callable with the same behavior;
+- a lightweight adapter object created by tests.
+
+### Core Records
+
+The initial module should expose frozen or mostly immutable records for declarations and result
+payloads:
+
+- `CellRef`: a normalized cell reference string plus optional label, description, role, and unit.
+- `TableRef`: a declared rectangular range with sheet name, range ref, optional row labels, optional
+  column labels, and cell role hints.
+- `ReportRef`: a named group of cell refs and/or table refs that should be returned together.
+- `CellView`: inspection payload for one cell reference, including current value if calculated,
+  optional declared metadata, and provenance ref.
+- `TableView`: rectangular payload with row keys, column keys, cell refs, and values.
+- `Scenario`: named input override mapping with `with_input(...)` copy behavior.
+
+Names can change during P29.2 if tests reveal a cleaner shape, but the implemented API should preserve
+these responsibilities.
+
+### Facade Object
+
+The main facade should be a lightweight object, likely named `ModelFacade` or `WrappedModel`, with
+this behavior:
+
+- constructed from a generated model plus explicit wrapper declarations;
+- stores declarations separately from calculation results;
+- exposes declared sheets, cells, tables, reports, and scenarios;
+- executes the generated model lazily when `calculate(...)`, `cell(...)`, `table(...)`, or
+  `report(...)` needs values;
+- caches the last calculation result only inside the facade/scenario object, never inside generated
+  source;
+- allows callers to provide or replace input overrides.
+
+Minimum method contract:
+
+```python
+facade.inputs() -> dict[str, CellRef]
+facade.outputs() -> dict[str, CellRef]
+facade.scenario(name: str = "default", inputs: dict[str, object] | None = None) -> Scenario
+facade.calculate(scenario: Scenario | None = None) -> dict[str, object]
+facade.inspect(cell_ref: str, scenario: Scenario | None = None) -> CellView
+facade.table(name: str, scenario: Scenario | None = None) -> TableView
+facade.report(name: str, scenario: Scenario | None = None) -> dict[str, object]
+```
+
+The first implementation can return plain dictionaries/lists for `TableView` and report serialization
+as long as the returned shape is documented and tested.
+
+### Declaration Helpers
+
+The module should provide small helper functions for user-authored wrapper declarations:
+
+```python
+cell("Inputs!B7", label="Discount rate", role="input", unit="fraction")
+table(
+    name="crop_outputs",
+    sheet="3_calc_crops",
+    range_ref="AO29:AV80",
+    row_labels=[...],
+    column_labels=[...],
+)
+report("summary", cells=[...], tables=[...])
+```
+
+Helpers should validate obvious mistakes early:
+
+- missing `!` in cell refs where a full workbook ref is required;
+- malformed rectangular range refs;
+- duplicate declaration names;
+- row/column label counts that do not match range shape when explicit labels are supplied.
+
+### Table Semantics
+
+The first table contract is intentionally rectangular and cell-address based.
+
+Required behavior:
+
+- expand `Sheet!A1:C3` or `sheet="Sheet", range_ref="A1:C3"` into ordered cell refs;
+- preserve row-major order;
+- expose row labels and column labels when supplied;
+- use stable fallback labels when labels are omitted, such as row numbers and column letters;
+- allow table values to be read from generated calculation results.
+
+Out of scope for P29:
+
+- merged cells;
+- hidden rows/columns;
+- spilled arrays;
+- formatted tables as visual objects;
+- automatic semantic row/column label discovery beyond explicit declarations and simple extraction
+  metadata already available to the caller.
+
+### Mutation Semantics
+
+Mutation should mean scenario input override changes, not editing generated model code.
+
+Preferred behavior:
+
+- `Scenario` is immutable or copy-on-write;
+- `scenario.with_input("Inputs!B7", 42)` returns a new scenario;
+- `facade.calculate(scenario)` passes `scenario.inputs` to generated `calculate`;
+- invalid input refs can be rejected if they are not declared as mutable inputs, but P29.2 may start
+  with a warning/diagnostic-style result if strict rejection complicates useful workflows.
+
+The API should make it clear when a value is:
+
+- a declared input override;
+- a generated output;
+- absent from generated outputs;
+- declared metadata without a calculated value.
+
+### Reporting Semantics
+
+Reports should be structured selections, not formatted documents.
+
+The initial report output can be a JSON-serializable dictionary:
+
+```python
+{
+    "name": "summary",
+    "cells": {"discount_rate": {"cell_ref": "Inputs!B7", "value": 0.05}},
+    "tables": {"crop_outputs": {"rows": [...], "columns": [...], "values": [[...]]}},
+}
+```
+
+CSV, Markdown, rich console tables, Excel export, and HTML reports are out of scope for the first
+module unless they become trivial wrappers around the JSON-serializable table payload.
+
+### Metadata And Provenance
+
+Every facade result must preserve raw workbook references. Friendly names are convenience aliases, not
+replacements for provenance.
+
+P29.2 should avoid any API that loses:
+
+- workbook sheet name;
+- original cell ref;
+- declared table range;
+- generated model output key;
+- scenario input override source.
+
+### Error Handling
+
+Initial errors should be explicit Python exceptions for invalid declarations and missing generated
+model behavior. Suggested exception names:
+
+- `WrapperDeclarationError`
+- `WrapperExecutionError`
+
+Runtime generated-model calculation errors should not be hidden. The facade can add context, but it
+must not silently replace calculation failures with cached values.
+
+### Public API Stability
+
+This phase introduces an alpha API. Documentation and release notes must state that wrapper helpers
+are provisional and may change before a stable release.
+
 ## Risks
 
 - Too much automatic semantic recovery could recreate spreadsheet ambiguity in Python.

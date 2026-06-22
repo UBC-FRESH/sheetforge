@@ -737,13 +737,13 @@ enough workbook, sheet, table, row, column, cell, scenario, and report structure
 models to support inspection, mutation, execution, and reporting without reintroducing spreadsheet
 files as the execution environment.
 
-- [ ] P29.1 Define wrapper facade contract. Child issue: #171.
-  - Status: active.
-  - [ ] Define the problem boundary between raw generated models and analyst-usable facades.
-  - [ ] Specify workbook, sheet, table, row, column, cell, and scenario concepts.
-  - [ ] Decide what metadata must come from extraction/generation versus user-authored wrapper declarations.
-  - [ ] Define inspection, mutation, execution, and reporting API sketches.
-  - [ ] Record non-goals: no full spreadsheet UI, no Excel dependency, no stable public API guarantee yet.
+- [x] P29.1 Define wrapper facade contract. Child issue: #171.
+  - Status: complete.
+  - [x] Define the problem boundary between raw generated models and analyst-usable facades.
+  - [x] Specify workbook, sheet, table, row, column, cell, and scenario concepts.
+  - [x] Decide what metadata must come from extraction/generation versus user-authored wrapper declarations.
+  - [x] Define inspection, mutation, execution, and reporting API sketches.
+  - [x] Record non-goals: no full spreadsheet UI, no Excel dependency, no stable public API guarantee yet.
 - [ ] P29.2 Implement initial wrapper template module. Child issue: #170.
   - [ ] Add an initial `modelwright` wrapper/template module.
   - [ ] Provide workbook/sheet/table/cell facade primitives around generated `calculate(inputs=None) -> dict` models.
@@ -778,7 +778,7 @@ Release boundary:
 
 ## Current Next Steps
 
-1. Close P29.1 by converting the wrapper-facade planning note into a concrete initial API contract.
-2. Implement the first lightweight wrapper/template module in P29.2 using synthetic generated-model tests.
+1. Start P29.2 by implementing the first lightweight `modelwright.wrappers` module against the P29.1 contract.
+2. Add focused synthetic tests for facade declarations, scenario input overrides, table views, and report payloads.
 3. Document custom wrapper usage and alpha limitations before benchmark validation.
 4. Publish `0.1.0a4` only as the final Phase 29 closeout task after verification and maintainer approval.
