@@ -744,12 +744,13 @@ files as the execution environment.
   - [x] Decide what metadata must come from extraction/generation versus user-authored wrapper declarations.
   - [x] Define inspection, mutation, execution, and reporting API sketches.
   - [x] Record non-goals: no full spreadsheet UI, no Excel dependency, no stable public API guarantee yet.
-- [ ] P29.2 Implement initial wrapper template module. Child issue: #170.
-  - [ ] Add an initial `modelwright` wrapper/template module.
-  - [ ] Provide workbook/sheet/table/cell facade primitives around generated `calculate(inputs=None) -> dict` models.
-  - [ ] Support user-authored labels and rectangular table declarations.
-  - [ ] Support input mutation and output reporting without mutating generated source.
-  - [ ] Add focused synthetic tests.
+- [x] P29.2 Implement initial wrapper template module. Child issue: #170.
+  - Status: complete.
+  - [x] Add an initial `modelwright` wrapper/template module.
+  - [x] Provide workbook/sheet/table/cell facade primitives around generated `calculate(inputs=None) -> dict` models.
+  - [x] Support user-authored labels and rectangular table declarations.
+  - [x] Support input mutation and output reporting without mutating generated source.
+  - [x] Add focused synthetic tests.
 - [ ] P29.3 Document custom wrapper workflow. Child issue: #169.
   - [ ] Add Sphinx docs explaining why raw generated models need facades.
   - [ ] Show a minimal custom wrapper around a generated synthetic model.
@@ -778,7 +779,7 @@ Release boundary:
 
 ## Current Next Steps
 
-1. Start P29.2 by implementing the first lightweight `modelwright.wrappers` module against the P29.1 contract.
-2. Add focused synthetic tests for facade declarations, scenario input overrides, table views, and report payloads.
-3. Document custom wrapper usage and alpha limitations before benchmark validation.
+1. Start P29.3 by documenting custom wrapper usage and alpha limitations.
+2. Include examples for facade declarations, scenario input overrides, table views, and report payloads.
+3. Validate wrapper behavior against synthetic and benchmark-derived metadata after docs are in place.
 4. Publish `0.1.0a4` only as the final Phase 29 closeout task after verification and maintainer approval.
