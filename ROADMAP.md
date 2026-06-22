@@ -685,11 +685,11 @@ memory hardening after full 2020 FABLE comparable-output validation remained gre
   - [x] Update release deployment docs and current alpha target text.
   - [x] Record P27 performance/correctness release boundary in roadmap/changelog.
   - [x] Avoid overstating public API stability or universal workbook conversion claims.
-- [ ] P28.2 Verify local release artifacts for `0.1.0a3`. Child issue: #164.
-  - [ ] Run Ruff, pytest, Sphinx docs, docs theme verification, and `git diff --check`.
-  - [ ] Run `scripts/check_release_artifacts.sh`.
-  - [ ] Confirm artifacts contain no private workbooks, generated clones, logs, or ignored `tmp/` material.
-  - [ ] Record local verification evidence in roadmap/changelog and issue comments.
+- [x] P28.2 Verify local release artifacts for `0.1.0a3`. Child issue: #164.
+  - [x] Run Ruff, pytest, Sphinx docs, docs theme verification, and `git diff --check`.
+  - [x] Run `scripts/check_release_artifacts.sh`.
+  - [x] Confirm artifacts contain no private workbooks, generated clones, logs, or ignored `tmp/` material.
+  - [x] Record local verification evidence in roadmap/changelog and issue comments.
 - [ ] P28.3 Publish and verify `0.1.0a3`. Child issue: #163.
   - [ ] Open and merge the release PR to `main`.
   - [ ] Create annotated tag `v0.1.0a3` after merge.
@@ -707,7 +707,7 @@ Release claim boundary:
 
 ## Current Next Steps
 
-1. Run local verification and release artifact checks for P28.2.
-2. Record P28.2 verification evidence in roadmap, changelog, and GitHub issue comments.
-3. Open the P28 release PR back to `main`.
+1. Open the P28 release PR back to `main`.
+2. Wait for CI release artifact checks and docs build to pass.
+3. Merge the release PR, then create annotated tag `v0.1.0a3`.
 4. Publish `0.1.0a3` only after the release PR is merged and the maintainer approves the release workflow gate.
