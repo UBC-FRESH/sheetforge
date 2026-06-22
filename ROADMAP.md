@@ -674,7 +674,7 @@ GitHub parent issue: #162
 
 Active branch: `feature/p28-v0.1.0a3-release`
 
-Status: active.
+Status: complete.
 
 Goal: publish `modelwright==0.1.0a3` as the alpha release that records Phase 27 performance and
 memory hardening after full 2020 FABLE comparable-output validation remained green.
@@ -690,13 +690,23 @@ memory hardening after full 2020 FABLE comparable-output validation remained gre
   - [x] Run `scripts/check_release_artifacts.sh`.
   - [x] Confirm artifacts contain no private workbooks, generated clones, logs, or ignored `tmp/` material.
   - [x] Record local verification evidence in roadmap/changelog and issue comments.
-- [ ] P28.3 Publish and verify `0.1.0a3`. Child issue: #163.
-  - [ ] Open and merge the release PR to `main`.
-  - [ ] Create annotated tag `v0.1.0a3` after merge.
-  - [ ] Publish through the gated GitHub Actions release workflow after maintainer approval.
-  - [ ] Verify PyPI JSON lists `0.1.0a3`.
-  - [ ] Install from PyPI into a clean ignored environment, import `modelwright`, verify `__version__`, and run `modelwright --help`.
-  - [ ] Verify GitHub release and docs deployment.
+- [x] P28.3 Publish and verify `0.1.0a3`. Child issue: #163.
+  - [x] Open and merge the release PR to `main`.
+  - [x] Create annotated tag `v0.1.0a3` after merge.
+  - [x] Publish through the gated GitHub Actions release workflow after maintainer approval.
+  - [x] Verify PyPI JSON lists `0.1.0a3`.
+  - [x] Install from PyPI into a clean ignored environment, import `modelwright`, verify `__version__`, and run `modelwright --help`.
+  - [x] Verify GitHub release and docs deployment.
+
+Release result:
+
+- Annotated tag: `v0.1.0a3`.
+- GitHub release: `modelwright 0.1.0a3`.
+- PyPI package: `modelwright==0.1.0a3`.
+- Clean PyPI install verified in ignored `tmp/pypi-install/modelwright-0.1.0a3/.venv`.
+- Import verified `modelwright.__version__ == "0.1.0a3"`.
+- CLI help smoke test passed.
+- GitHub Pages release documentation verified live with the Read the Docs theme.
 
 Release claim boundary:
 
@@ -707,7 +717,7 @@ Release claim boundary:
 
 ## Current Next Steps
 
-1. Open the P28 release PR back to `main`.
-2. Wait for CI release artifact checks and docs build to pass.
-3. Merge the release PR, then create annotated tag `v0.1.0a3`.
-4. Publish `0.1.0a3` only after the release PR is merged and the maintainer approves the release workflow gate.
+1. Activate the next development phase for compact runtime IR / benchmark artifact architecture.
+2. Keep the source backend as the audit/debug backend while moving production full-workbook materialization toward compact runtime artifacts.
+3. Preserve the 2020 FABLE full comparable-output validation as the release benchmark gate.
+4. Treat inference-cache replacement as part of the compact runtime/cache architecture because the current JSON inference cache is not a speed win after P27.
