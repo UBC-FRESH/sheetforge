@@ -10,6 +10,10 @@ The example wraps three validated ``SCENARIOS selection`` outputs, renders them 
 keeps the validation boundary explicit: the source Phase 26 full-validation report recorded 281,741
 comparable cached outputs, 281,741 matches, and 0 mismatches.
 
+Open the literate notebook:
+
+- :download:`fable-2020-notebook-interface.ipynb <../../examples/notebooks/fable-2020-notebook-interface.ipynb>`
+
 Run it from the repository root:
 
 .. code-block:: bash
@@ -24,8 +28,11 @@ Use it from a notebook stored under ``tmp/notebooks/``:
    import sys
 
    repo_root = Path.cwd().resolve()
-   while repo_root.name != "sheetforge":
+   while repo_root != repo_root.parent and not (repo_root / "pyproject.toml").exists():
        repo_root = repo_root.parent
+
+   if not (repo_root / "pyproject.toml").exists():
+       raise RuntimeError("Could not find the Modelwright repository root.")
 
    sys.path.insert(0, str(repo_root))
 

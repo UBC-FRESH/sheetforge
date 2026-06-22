@@ -5,6 +5,10 @@ This tiny example uses a small generated-model-shaped ``calculate(inputs=None)``
 with ``ModelFacade``, and renders outputs, a declared table, and a baseline-vs-scenario comparison as
 DataFrames.
 
+Open the literate notebook:
+
+- :download:`synthetic-notebook-interface.ipynb <../../examples/notebooks/synthetic-notebook-interface.ipynb>`
+
 Run it from the repository root:
 
 .. code-block:: bash
@@ -19,8 +23,11 @@ Use it from a notebook stored under ``tmp/notebooks/``:
    import sys
 
    repo_root = Path.cwd().resolve()
-   while repo_root.name != "sheetforge":
+   while repo_root != repo_root.parent and not (repo_root / "pyproject.toml").exists():
        repo_root = repo_root.parent
+
+   if not (repo_root / "pyproject.toml").exists():
+       raise RuntimeError("Could not find the Modelwright repository root.")
 
    sys.path.insert(0, str(repo_root))
 

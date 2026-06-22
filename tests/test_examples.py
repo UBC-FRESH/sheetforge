@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import lzma
 from pathlib import Path
 from types import ModuleType
@@ -39,3 +40,86 @@ def test_fable_generated_model_archive_is_tracked_and_readable() -> None:
         prefix = archive.read(128)
 
     assert b"Generated Modelwright model" in prefix
+
+
+def notebook(path: str) -> dict:
+    return json.loads((ROOT / path).read_text())
+
+
+def source_text(cell: dict) -> str:
+    source = cell.get("source", "")
+    if isinstance(source, list):
+        return "".join(source)
+    return source
+
+
+def output_text(cell: dict) -> str:
+    chunks: list[str] = []
+    for output in cell.get("outputs", []):
+        if "text" in output:
+            text = output["text"]
+            chunks.append("".join(text) if isinstance(text, list) else text)
+        data = output.get("data", {})
+        text_plain = data.get("text/plain")
+        if text_plain is not None:
+            chunks.append("".join(text_plain) if isinstance(text_plain, list) else text_plain)
+    return "\n".join(chunks)
+
+
+def test_literate_notebooks_have_expected_structure() -> None:
+    for notebook_path in [
+        "examples/notebooks/synthetic-notebook-interface.ipynb",
+        "examples/notebooks/fable-2020-notebook-interface.ipynb",
+    ]:
+        payload = notebook(notebook_path)
+        cells = payload["cells"]
+
+        assert payload["nbformat"] == 4
+        assert payload["metadata"]["kernelspec"]["name"] == "python3"
+        assert cells[0]["cell_type"] == "markdown"
+        assert source_text(cells[0]).startswith("# ")
+        assert sum(cell["cell_type"] == "markdown" for cell in cells) >= 5
+        assert sum(cell["cell_type"] == "code" for cell in cells) >= 5
+
+        for index, cell in enumerate(cells):
+            if cell["cell_type"] == "code":
+                assert index > 0
+                assert cells[index - 1]["cell_type"] == "markdown"
+                assert cell.get("outputs"), f"{notebook_path} code cell {index} has no stored output"
+
+
+def test_synthetic_notebook_outputs_are_known_valid() -> None:
+    payload = notebook("examples/notebooks/synthetic-notebook-interface.ipynb")
+    outputs = "\n".join(output_text(cell) for cell in payload["cells"] if cell["cell_type"] == "code")
+
+    assert "Declared inputs: ['base', 'growth']" in outputs
+    assert "projected  Summary!B2  132.0" in outputs
+    assert "volume   132.0        240" in outputs
+    assert "projected          110.0          132.0            22.0            0.2" in outputs
+
+
+def test_synthetic_notebook_code_cells_execute() -> None:
+    payload = notebook("examples/notebooks/synthetic-notebook-interface.ipynb")
+    namespace: dict[str, object] = {}
+    for cell in payload["cells"]:
+        if cell["cell_type"] == "code":
+            exec(source_text(cell), namespace)
+
+    comparison = namespace["compare_scenarios_frame"](
+        namespace["facade"],
+        namespace["baseline"],
+        namespace["shock"],
+    ).set_index("name")
+    assert comparison.loc["projected", "scenario_value"] == 132.0
+    assert comparison.loc["projected", "absolute_change"] == pytest.approx(22.0)
+
+
+def test_fable_notebook_static_outputs_preserve_validation_boundary() -> None:
+    payload = notebook("examples/notebooks/fable-2020-notebook-interface.ipynb")
+    text = "\n".join(source_text(cell) + "\n" + output_text(cell) for cell in payload["cells"])
+
+    assert "generated_fable_2020_model.py.xz" in text
+    assert "281,741 comparable cached outputs" in text
+    assert "SCENARIOS selection!D20': 2.146115426018433" in text
+    assert "scenario_metric_3  SCENARIOS selection!D22  1.462761" in text
+    assert "range_ref': 'D20:D22'" in text
