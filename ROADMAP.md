@@ -935,7 +935,7 @@ GitHub parent issue: #183
 
 Active branch: `feature/p31-literate-notebook-examples`
 
-Status: active.
+Status: complete.
 
 Goal: substantially enhance the examples seed from Phase 30 with actual known-valid Jupyter
 notebook files and matching Sphinx gallery documentation. The notebooks should follow a literate
@@ -985,16 +985,16 @@ Release target: `modelwright==0.1.0a6`.
         default tests.
   - [x] Run Ruff, pytest, Sphinx docs, and docs theme verification.
   - [x] Record evidence in roadmap, changelog, and issue comments.
-- [ ] P31.6 Publish `modelwright==0.1.0a6`. Child issue: #189.
-  - Status: active.
+- [x] P31.6 Publish `modelwright==0.1.0a6`. Child issue: #189.
+  - Status: complete.
   - [x] Confirm P31 notebook example scope and evidence are complete.
   - [x] Bump package/import version and release docs to `0.1.0a6`.
   - [x] Run local release checks, including Ruff, pytest, Sphinx docs, docs theme verification, and
         release artifact checks.
-  - [ ] Open and merge the P31 PR to `main`.
-  - [ ] Create annotated tag `v0.1.0a6`.
-  - [ ] Publish through the gated release workflow after maintainer approval.
-  - [ ] Verify PyPI JSON, clean PyPI install, import version, CLI help, GitHub release, and docs deployment.
+  - [x] Open and merge the P31 PR to `main`.
+  - [x] Create annotated tag `v0.1.0a6`.
+  - [x] Publish through the gated release workflow after maintainer approval.
+  - [x] Verify PyPI JSON, clean PyPI install, import version, CLI help, GitHub release, and docs deployment.
 
 Acceptance boundary:
 
@@ -1026,3 +1026,17 @@ Verification evidence:
   `modelwright 0.1.0a6` and the artifact inspection included the tracked notebook files in the sdist
   without including source workbooks, ignored `tmp/`, or private validation material.
 - Local release artifacts were about `56K` for the wheel and `2.2M` for the sdist.
+
+Release result:
+
+- PR #190 merged to `main`.
+- Annotated tag: `v0.1.0a6`.
+- GitHub release: `modelwright 0.1.0a6`.
+- PyPI package: `modelwright==0.1.0a6`.
+- Clean PyPI install verified in ignored `tmp/pypi-install/modelwright-0.1.0a6/.venv` with
+  `modelwright[notebook]==0.1.0a6`.
+- Import verified `modelwright.__version__ == "0.1.0a6"`.
+- Notebook extra verified by importing pandas and `modelwright.notebooks.inputs_frame`.
+- CLI help verified from the clean PyPI install.
+- GitHub Pages docs verified with the Examples Gallery, both notebook example pages, both downloadable
+  `.ipynb` files, and `0.1.0a6` release-deployment content.
