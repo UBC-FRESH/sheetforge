@@ -863,7 +863,7 @@ Release target: `modelwright==0.1.0a5`.
   - [x] Add Sphinx Examples Gallery pages linked from the docs index.
   - [x] Add lightweight tests for example integrity without running expensive production-size FABLE
         calculation in default pytest.
-- [ ] P30.7 Publish `modelwright==0.1.0a5`. Child issue: #180.
+- [x] P30.7 Publish `modelwright==0.1.0a5`. Child issue: #180.
   - Status: complete.
   - [x] Confirm P30 notebook/DataFrame scope and evidence are complete.
   - [x] Bump package/import version and release docs to `0.1.0a5`.
@@ -929,5 +929,100 @@ Release result:
 
 ## Current Next Steps
 
-1. Keep Phase 30 closed unless a release defect is discovered.
-2. Plan the next roadmap phase before opening a new feature branch.
+## Phase 31: Literate Notebook Examples Gallery
+
+GitHub parent issue: #183
+
+Active branch: `feature/p31-literate-notebook-examples`
+
+Status: active.
+
+Goal: substantially enhance the examples seed from Phase 30 with actual known-valid Jupyter
+notebook files and matching Sphinx gallery documentation. The notebooks should follow a literate
+programming style: headings and subheadings, explanatory markdown before code, code cells, stored
+outputs, and enough context that motivated new users can understand the workflow without reading
+package internals first.
+
+Release target: `modelwright==0.1.0a6`.
+
+- [x] P31.1 Define literate notebook example contract. Child issue: #187.
+  - Status: complete.
+  - [x] Decide notebook file placement and naming.
+  - [x] Define required markdown/code/output structure.
+  - [x] Define how notebooks import repo examples from source checkouts and installed packages.
+  - [x] Define validation strategy for notebook JSON, markdown/code alternation, expected outputs, and
+        expensive FABLE execution boundaries.
+  - [x] Record non-goals and release boundary in roadmap/planning docs.
+- [x] P31.2 Add synthetic `.ipynb` notebook example. Child issue: #185.
+  - Status: complete.
+  - [x] Add a real `.ipynb` file with headings, explanatory markdown, code cells, and stored outputs.
+  - [x] Show import setup, facade construction, scenario creation, input/output frames, table frame,
+        and scenario comparison.
+  - [x] Keep the notebook fast enough for default validation.
+  - [x] Add tests that verify the notebook is valid and its expected outputs stay synchronized.
+- [x] P31.3 Add 2020 FABLE `.ipynb` notebook example. Child issue: #186.
+  - Status: complete.
+  - [x] Add a real `.ipynb` file with headings, explanatory markdown, code cells, and stored outputs.
+  - [x] Explain the compressed generated-model artifact and why the original workbook is not tracked.
+  - [x] Show facade construction, calculation, output frames, table frame, report frames, and
+        validation-boundary context.
+  - [x] Avoid running the expensive FABLE generated-model calculation in default pytest; keep full
+        execution opt-in.
+  - [x] Keep raw workbooks and generated decompressed models ignored under `tmp/`.
+- [x] P31.4 Integrate notebooks into examples gallery docs. Child issue: #184.
+  - Status: complete.
+  - [x] Add notebook download/open links to the examples gallery pages.
+  - [x] Explain the intended workflow for opening notebooks from a source checkout.
+  - [x] Keep generated workbook binaries and raw validation reports out of docs.
+  - [x] Verify Sphinx docs build warning-free.
+- [x] P31.5 Validate notebook examples and docs. Child issue: #188.
+  - Status: complete.
+  - [x] Validate notebook JSON structure and metadata.
+  - [x] Validate literate structure: headings, explanatory markdown before code, code cells, and stored
+        outputs.
+  - [x] Execute or otherwise verify the synthetic notebook in default tests.
+  - [x] Keep production-size FABLE execution opt-in but verify static stored outputs and provenance in
+        default tests.
+  - [x] Run Ruff, pytest, Sphinx docs, and docs theme verification.
+  - [x] Record evidence in roadmap, changelog, and issue comments.
+- [ ] P31.6 Publish `modelwright==0.1.0a6`. Child issue: #189.
+  - Status: active.
+  - [x] Confirm P31 notebook example scope and evidence are complete.
+  - [x] Bump package/import version and release docs to `0.1.0a6`.
+  - [x] Run local release checks, including Ruff, pytest, Sphinx docs, docs theme verification, and
+        release artifact checks.
+  - [ ] Open and merge the P31 PR to `main`.
+  - [ ] Create annotated tag `v0.1.0a6`.
+  - [ ] Publish through the gated release workflow after maintainer approval.
+  - [ ] Verify PyPI JSON, clean PyPI install, import version, CLI help, GitHub release, and docs deployment.
+
+Acceptance boundary:
+
+- May claim tracked, known-valid literate notebook examples for synthetic and generated 2020 FABLE
+  notebook/DataFrame workflows.
+- May claim Sphinx Examples Gallery pages that link to actual `.ipynb` notebooks.
+- Must not claim a full spreadsheet UI, automatic workbook semantic recovery, stable public API
+  compatibility, or Excel-backed recalculation equivalence.
+
+Implementation evidence:
+
+- Added `examples/notebooks/synthetic-notebook-interface.ipynb` with literate markdown, code cells,
+  and stored outputs for the synthetic notebook/DataFrame workflow.
+- Added `examples/notebooks/fable-2020-notebook-interface.ipynb` with literate markdown, code cells,
+  and stored outputs for the generated 2020 FABLE wrapper workflow.
+- Added notebook download links to the Sphinx Examples Gallery pages.
+- Added default tests that parse notebook JSON, verify Python 3 kernel metadata, validate markdown
+  before code, require stored outputs, execute the synthetic notebook code cells, and verify the FABLE
+  notebook's stored validation-boundary output without running the expensive generated model.
+
+Verification evidence:
+
+- `scripts/bootstrap_dev_env.sh` passed and installed the `0.1.0a6` editable package.
+- `.venv/bin/python -m ruff check .` passed.
+- `.venv/bin/python -m pytest -vv` passed with `167` passed and `1` skipped benchmark.
+- `.venv/bin/sphinx-build -b html docs _build/html -W` passed and copied the notebook downloads.
+- `.venv/bin/python scripts/verify_docs_theme.py _build/html` passed.
+- `scripts/check_release_artifacts.sh` passed for `0.1.0a6`; the clean wheel install imported
+  `modelwright 0.1.0a6` and the artifact inspection included the tracked notebook files in the sdist
+  without including source workbooks, ignored `tmp/`, or private validation material.
+- Local release artifacts were about `56K` for the wheel and `2.2M` for the sdist.
