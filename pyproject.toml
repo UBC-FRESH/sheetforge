@@ -82,6 +82,9 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+  "benchmark: tests that require local benchmark artifacts and are skipped unless explicitly enabled"
+]
 
 [tool.ruff]
 line-length = 120

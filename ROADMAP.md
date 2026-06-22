@@ -762,6 +762,7 @@ files as the execution environment.
   - Status: complete.
   - [x] Verify wrapper primitives against tracked synthetic fixture outputs.
   - [x] Use FABLE-derived public/extracted metadata where practical without committing private/generated artifacts.
+  - [x] Add an opt-in benchmark-gated wrapper test against the local generated 2020 FABLE model.
   - [x] Confirm wrapper behavior does not change generated-model calculation semantics.
   - [x] Run full local verification.
   - [x] Record evidence in roadmap/changelog and issue comments.
