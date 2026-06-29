@@ -1047,7 +1047,7 @@ Release result:
 
 GitHub parent issue: #191
 
-Active branch: `feature/p32-generated-artifact-materialization`
+Active branch: `main` after PR #202.
 
 Status: active.
 
@@ -1091,10 +1091,10 @@ Release target: `modelwright==0.1.0a7`.
 - [ ] P32.5 Improve notebook examples from first-user friction. Child issue: #196.
   - Status: active.
   - [ ] Triage Gloria/Camilla usability observations.
-  - [ ] Triage Abdulateef validation-run friction.
-  - [ ] Close generated-model artifact materialization documentation/tooling gap. Implementation issue: #201.
-  - [ ] Apply only focused notebook/docs/API-polish changes justified by pilot feedback.
-  - [ ] Keep unrelated converter compatibility work out of this phase.
+  - [x] Triage Abdulateef validation-run friction.
+  - [x] Close generated-model artifact materialization documentation/tooling gap. Implementation issue: #201.
+  - [x] Apply only focused notebook/docs/API-polish changes justified by pilot feedback.
+  - [x] Keep unrelated converter compatibility work out of this phase.
 - [ ] P32.6 Publish `modelwright==0.1.0a7`. Child issue: #197.
   - Status: planned.
   - [ ] Confirm P32 onboarding/protocol/template scope and evidence are complete.
@@ -1126,6 +1126,8 @@ Implementation evidence:
 - Added `modelwright model infer-contract` to materialize `contract.json`, `expressions.json`, and
   `constants.json` from a source workbook plus explicit selected output refs, and documented the
   generated-model artifact workflow for FABLE Pyculator testers.
+- PR #202 merged the generated-model artifact materialization slice to `main`, and issue #201 is
+  closed.
 
 Verification evidence:
 
@@ -1137,6 +1139,9 @@ Verification evidence:
 - `.venv/bin/python scripts/verify_docs_theme.py _build/html` passed.
 - `scripts/check_release_artifacts.sh` passed; the clean wheel install imported `modelwright 0.1.0a6`
   and smoke-tested the CLI.
+- Post-merge `Test` workflow passed on `main` for commit `f865ec9`.
+- Post-merge `docs-pages` workflow passed and deployed the generated-model artifact guide at
+  `https://ubc-fresh.github.io/modelwright/guides/generated-model-artifacts.html`.
 - `ruby -e 'require "yaml"; ...'` parsed all GitHub issue-template YAML files successfully.
 - `.venv/bin/python` parsed `examples/fable_2020/scenario_output_manifest.example.json` as valid JSON.
 - `git diff --check` passed.
