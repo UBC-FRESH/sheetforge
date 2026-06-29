@@ -128,9 +128,10 @@ def model_infer_contract(
         help="Python module name to record in the generated-module contract.",
     ),
     output_refs: list[str] = typer.Option(
-        [],
+        [""],
         "--output-ref",
         help="Workbook output cell ref to include in the generated model. May be repeated.",
+        show_default=False,
     ),
     output_refs_file: Path | None = typer.Option(
         None,
@@ -564,6 +565,8 @@ def _selected_output_refs(*, output_refs: Sequence[str], output_refs_file: Path 
     selected: list[str] = []
     seen: set[str] = set()
     for ref in refs:
+        if not ref:
+            continue
         if ref not in seen:
             selected.append(ref)
             seen.add(ref)
