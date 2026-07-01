@@ -1050,6 +1050,10 @@ FreshForge serial local runner.
 Phase 32 is complete: `modelwright==0.1.0a7` is published to PyPI and GitHub as the generated-model
 workflow orchestration alpha.
 
+Phase 35 is active on `feature/p35-generated-model-workflow-summaries`: it adds compact
+Modelwright stage summaries and sharper provider diagnostics for FreshForge-executed generated-model
+workflows, using FreshForge Phase 7 namespaces and whole-run summaries where useful.
+
 ## Phase 33: FreshForge Provider Pilot For Modelwright Workflows
 
 GitHub parent issue: #205
@@ -1213,12 +1217,30 @@ Closeout evidence:
 
 GitHub parent issue: #220
 
-Status: planned backlog.
+Active branch: `feature/p35-generated-model-workflow-summaries`.
+
+Status: active.
 
 Goal: improve machine-readable summaries and diagnostics for Modelwright generated-model workflows
 used through FreshForge and downstream tools.
 
-Child issues: create only when this phase is activated.
+- [x] P35.1 Define generated-model stage summary contract. Child issue: #224.
+  - [x] Add compact stage summaries under `ProviderRunResult.data["summary"]`.
+  - [x] Summarize inference, generation, execution, and validation-evaluation stages.
+- [x] P35.2 Add provider diagnostics and failure semantics. Child issue: #223.
+  - [x] Reject empty required artifact path strings and empty required outputs.
+  - [x] Emit stage-specific diagnostics for generation, execution, and validation failures.
+  - [x] Treat explicit validation failure as FreshForge node failure.
+- [x] P35.3 Add FreshForge namespace and summary integration tests. Child issue: #225.
+  - [x] Run the synthetic generated-model workflow with a FreshForge run namespace.
+  - [x] Assert namespaced artifacts, FreshForge run summaries, and Modelwright stage summaries.
+- [x] P35.4 Update docs, roadmap, changelog, and examples. Child issue: #226.
+  - [x] Update FreshForge provider docs with namespace and stage-summary guidance.
+  - [x] Update downstream planning note and changelog.
+- [ ] P35.5 Verify, PR, deploy docs, and close phase. Child issue: #227.
+  - [x] Run full local verification.
+  - [ ] Open PR and verify CI/docs.
+  - [ ] Confirm post-merge docs deployment.
 
 Dependency note: this phase should consume FreshForge Phase 7 run namespaces/summaries where useful
 and provide the stage-level generated-model summaries needed by FABLE Pyculator Phase 18 output-ref
@@ -1229,6 +1251,29 @@ Acceptance boundary:
 - May expose clearer generated-model workflow status, artifact, and diagnostic summaries.
 - Must not add FABLE output-table discovery, scenario-bundle semantics, or FreshForge orchestration
   policy beyond provider-owned generated-model execution details.
+
+Implementation evidence:
+
+- Added compact provider stage summaries for `model_infer_contract`, `model_generate`,
+  `model_execute`, and `validation_evaluate` under `ProviderRunResult.data["summary"]`.
+- Added validation diagnostics for empty required output and artifact declarations.
+- Added stage-specific failure diagnostics for generated-model generation, execution, and validation
+  failures while preserving generic unexpected-exception diagnostics.
+- Added fail-fast validation semantics when cached/oracle validation reports explicitly fail.
+- Added namespaced FreshForge synthetic workflow tests that assert FreshForge run summaries and
+  Modelwright stage summaries together.
+
+Local verification:
+
+- `.venv/bin/python -m ruff check .` passed.
+- `.venv/bin/python -m pytest` passed with 184 tests and 1 skipped benchmark.
+- `.venv/bin/sphinx-build -b html docs _build/html -W` passed.
+- `.venv/bin/python scripts/verify_docs_theme.py _build/html` passed.
+- `scripts/check_release_artifacts.sh` passed.
+- `git diff --check` passed.
+- FreshForge smoke checks passed: `freshforge providers --json`, `freshforge validate
+  examples/freshforge/generated_model_workflow.yaml --json`, and `freshforge plan
+  examples/freshforge/generated_model_workflow.yaml --json`.
 
 ## Phase 36: Compact Validation Evidence Extraction For Downstream Automation
 

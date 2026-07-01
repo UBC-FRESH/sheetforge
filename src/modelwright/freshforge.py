@@ -171,6 +171,26 @@ class ModelwrightFreshForgeProvider:
                 location=location,
             )
         )
+        diagnostics.extend(
+            _empty_value_diagnostics(
+                diagnostic=diagnostic,
+                severity=severity,
+                values=node.outputs,
+                required=tuple(node_type.outputs),
+                field_name="outputs",
+                location=location,
+            )
+        )
+        diagnostics.extend(
+            _empty_value_diagnostics(
+                diagnostic=diagnostic,
+                severity=severity,
+                values=artifacts,
+                required=tuple(node_type.artifacts),
+                field_name="artifacts",
+                location=location,
+            )
+        )
         return tuple(diagnostics)
 
     def run_node(
@@ -186,6 +206,7 @@ class ModelwrightFreshForgeProvider:
             artifacts = _resolved_artifacts(node, context)
             if node_type.id == "model_infer_contract":
                 payload = _run_model_infer_contract(node, artifacts, context)
+                summary = _infer_contract_summary(payload)
                 _write_json(artifacts["inference_result"], payload)
                 return provider_result(
                     status=run_status.SUCCESS,
@@ -195,37 +216,69 @@ class ModelwrightFreshForgeProvider:
                         "input_constants": str(artifacts["constants"]),
                     },
                     artifacts=_string_artifacts(artifacts),
-                    data={"inferred": payload.get("inferred")},
+                    data={"inferred": payload.get("inferred"), "summary": summary},
                 )
             if node_type.id == "model_generate":
                 payload = _run_model_generate(artifacts)
+                summary = _model_generate_summary(payload)
+                stage_diagnostics = _stage_failure_diagnostics(
+                    diagnostic=diagnostic,
+                    severity=severity,
+                    failed=not bool(payload.get("generated")),
+                    code="modelwright.model_generate.failed",
+                    message="Modelwright generated-model source generation failed.",
+                    location=f"nodes.{node.id}",
+                )
                 _write_json(artifacts["generation_result"], payload)
                 return provider_result(
                     status=run_status.SUCCESS if payload.get("generated") else run_status.FAILED,
                     outputs={"generated_model": str(artifacts["generated_model"])},
                     artifacts=_string_artifacts(artifacts),
-                    data={"generated": payload.get("generated")},
+                    diagnostics=stage_diagnostics,
+                    data={"generated": payload.get("generated"), "summary": summary},
                 )
             if node_type.id == "model_execute":
                 payload = _run_model_execute(artifacts)
+                summary = _model_execute_summary(payload)
+                stage_diagnostics = _stage_failure_diagnostics(
+                    diagnostic=diagnostic,
+                    severity=severity,
+                    failed=not bool(payload.get("executed")),
+                    code="modelwright.model_execute.failed",
+                    message="Modelwright generated-model execution failed.",
+                    location=f"nodes.{node.id}",
+                )
                 _write_json(artifacts["generated_values"], payload)
                 return provider_result(
                     status=run_status.SUCCESS if payload.get("executed") else run_status.FAILED,
                     outputs={"generated_values": str(artifacts["generated_values"])},
                     artifacts=_string_artifacts(artifacts),
-                    data={"executed": payload.get("executed")},
+                    diagnostics=stage_diagnostics,
+                    data={"executed": payload.get("executed"), "summary": summary},
                 )
             if node_type.id == "validation_evaluate":
                 payload = _run_validation_evaluate(node, artifacts, context)
+                summary = _validation_evaluate_summary(payload)
+                validation_failed = _validation_evaluate_failed(payload)
+                stage_diagnostics = _stage_failure_diagnostics(
+                    diagnostic=diagnostic,
+                    severity=severity,
+                    failed=validation_failed,
+                    code="modelwright.validation_evaluate.failed",
+                    message="Modelwright generated-model validation evaluation failed.",
+                    location=f"nodes.{node.id}",
+                )
                 _write_json(artifacts["evaluation_report"], payload)
                 return provider_result(
-                    status=run_status.SUCCESS,
+                    status=run_status.FAILED if validation_failed else run_status.SUCCESS,
                     outputs={"validation_report": str(artifacts["evaluation_report"])},
                     artifacts=_string_artifacts(artifacts),
+                    diagnostics=stage_diagnostics,
                     data={
                         "cached_validation_status": (
                             payload.get("cached_validation_report", {}) or {}
                         ).get("status"),
+                        "summary": summary,
                     },
                 )
         except Exception as exc:  # noqa: BLE001
@@ -379,6 +432,180 @@ def _write_json(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
+def _infer_contract_summary(payload: dict[str, Any]) -> dict[str, Any]:
+    contract = _dict(payload.get("contract"))
+    diagnostics = _list(payload.get("diagnostics"))
+    return {
+        "stage": "model_infer_contract",
+        "inferred": bool(payload.get("inferred")),
+        "input_ref_count": len(_list(contract.get("input_refs"))),
+        "output_ref_count": len(_list(contract.get("output_refs"))),
+        "symbol_count": len(_list(contract.get("symbols"))),
+        "expression_count": len(_dict(payload.get("expressions"))),
+        "constant_count": len(_dict(payload.get("constants"))),
+        **_diagnostic_counts(diagnostics),
+    }
+
+
+def _model_generate_summary(payload: dict[str, Any]) -> dict[str, Any]:
+    contract = _dict(payload.get("contract"))
+    source_code = payload.get("source_code")
+    source = source_code if isinstance(source_code, str) else ""
+    diagnostics = _list(payload.get("diagnostics"))
+    return {
+        "stage": "model_generate",
+        "generated": bool(payload.get("generated")),
+        "source_line_count": len(source.splitlines()),
+        "source_byte_count": len(source.encode("utf-8")),
+        "input_ref_count": len(_list(contract.get("input_refs"))),
+        "output_ref_count": len(_list(contract.get("output_refs"))),
+        "symbol_count": len(_list(contract.get("symbols"))),
+        **_diagnostic_counts(diagnostics),
+    }
+
+
+def _model_execute_summary(payload: dict[str, Any]) -> dict[str, Any]:
+    contract = _dict(payload.get("contract"))
+    output_values = _dict(payload.get("output_values"))
+    diagnostics = _list(payload.get("diagnostics"))
+    return {
+        "stage": "model_execute",
+        "executed": bool(payload.get("executed")),
+        "declared_output_count": len(_list(contract.get("output_refs"))),
+        "generated_output_count": len(output_values),
+        "missing_output_diagnostic_count": _diagnostic_code_count(
+            diagnostics,
+            "missing_generated_output",
+        ),
+        **_diagnostic_counts(diagnostics),
+    }
+
+
+def _validation_evaluate_summary(payload: dict[str, Any]) -> dict[str, Any]:
+    generated_execution = _dict(payload.get("generated_execution"))
+    generated_diagnostics = _list(generated_execution.get("diagnostics"))
+    diagnostics = (*generated_diagnostics, *_list(payload.get("diagnostics")))
+    return {
+        "stage": "validation_evaluate",
+        "scenario_id": payload.get("scenario_id"),
+        "generated_execution": {
+            "executed": bool(generated_execution.get("executed")),
+            "declared_output_count": len(
+                _list(_dict(generated_execution.get("contract")).get("output_refs"))
+            ),
+            "generated_output_count": len(_dict(generated_execution.get("output_values"))),
+            **_diagnostic_counts(generated_diagnostics),
+        },
+        "cached_validation": _validation_report_summary(
+            _dict_or_none(payload.get("cached_validation_report"))
+        ),
+        "oracle_validation": _validation_report_summary(
+            _dict_or_none(payload.get("oracle_validation_report"))
+        ),
+        **_diagnostic_counts(diagnostics),
+    }
+
+
+def _validation_report_summary(report: dict[str, Any] | None) -> dict[str, Any]:
+    if report is None:
+        return {
+            "available": False,
+            "status": None,
+            "comparison_count": 0,
+            "match_count": 0,
+            "mismatch_count": 0,
+            "diagnostic_count": 0,
+            "error_count": 0,
+            "warning_count": 0,
+        }
+    comparisons = _list(report.get("comparisons"))
+    mismatches = _list(report.get("mismatches"))
+    diagnostics = _list(report.get("diagnostics"))
+    return {
+        "available": True,
+        "status": report.get("status"),
+        "comparison_count": len(comparisons),
+        "match_count": len(comparisons) - len(mismatches),
+        "mismatch_count": len(mismatches),
+        **_diagnostic_counts(diagnostics),
+    }
+
+
+def _validation_evaluate_failed(payload: dict[str, Any]) -> bool:
+    generated_execution = _dict(payload.get("generated_execution"))
+    if not bool(generated_execution.get("executed")):
+        return True
+    reports = (
+        _dict_or_none(payload.get("cached_validation_report")),
+        _dict_or_none(payload.get("oracle_validation_report")),
+    )
+    if any(report is not None and report.get("status") == "fail" for report in reports):
+        return True
+    diagnostics = (*_list(generated_execution.get("diagnostics")), *_list(payload.get("diagnostics")))
+    return _diagnostic_counts(diagnostics)["error_count"] > 0
+
+
+def _stage_failure_diagnostics(
+    *,
+    diagnostic: Any,
+    severity: Any,
+    failed: bool,
+    code: str,
+    message: str,
+    location: str,
+) -> tuple[Any, ...]:
+    if not failed:
+        return ()
+    return (
+        diagnostic(
+            severity=severity.ERROR,
+            code=code,
+            message=message,
+            location=location,
+        ),
+    )
+
+
+def _diagnostic_counts(diagnostics: tuple[Any, ...]) -> dict[str, int]:
+    return {
+        "diagnostic_count": len(diagnostics),
+        "error_count": sum(1 for diagnostic in diagnostics if _diagnostic_severity(diagnostic) == "error"),
+        "warning_count": sum(1 for diagnostic in diagnostics if _diagnostic_severity(diagnostic) == "warning"),
+    }
+
+
+def _diagnostic_code_count(diagnostics: tuple[Any, ...], code: str) -> int:
+    return sum(1 for diagnostic in diagnostics if _diagnostic_code(diagnostic) == code)
+
+
+def _diagnostic_severity(diagnostic: Any) -> str | None:
+    if isinstance(diagnostic, dict):
+        value = diagnostic.get("severity")
+        return value if isinstance(value, str) else None
+    value = getattr(diagnostic, "severity", None)
+    return value if isinstance(value, str) else None
+
+
+def _diagnostic_code(diagnostic: Any) -> str | None:
+    if isinstance(diagnostic, dict):
+        value = diagnostic.get("code") or diagnostic.get("diagnostic_code")
+        return value if isinstance(value, str) else None
+    value = getattr(diagnostic, "code", None) or getattr(diagnostic, "diagnostic_code", None)
+    return value if isinstance(value, str) else None
+
+
+def _dict(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def _dict_or_none(value: Any) -> dict[str, Any] | None:
+    return value if isinstance(value, dict) else None
+
+
+def _list(value: Any) -> tuple[Any, ...]:
+    return tuple(value) if isinstance(value, list) else ()
+
+
 def _missing_key_diagnostics(
     *,
     diagnostic: Any,
@@ -421,6 +648,30 @@ def _empty_parameter_diagnostics(
                     code="modelwright.parameters.empty",
                     message=f"Modelwright node parameter '{key}' must be nonempty.",
                     location=f"{location}.parameters.{key}",
+                )
+            )
+    return tuple(diagnostics)
+
+
+def _empty_value_diagnostics(
+    *,
+    diagnostic: Any,
+    severity: Any,
+    values: dict[str, Any],
+    required: tuple[str, ...],
+    field_name: str,
+    location: str,
+) -> tuple[Any, ...]:
+    diagnostics: list[Any] = []
+    for key in required:
+        value = values.get(key)
+        if isinstance(value, str) and not value.strip():
+            diagnostics.append(
+                diagnostic(
+                    severity=severity.ERROR,
+                    code=f"modelwright.{field_name}.empty",
+                    message=f"Modelwright node {field_name} key '{key}' must be nonempty.",
+                    location=f"{location}.{field_name}.{key}",
                 )
             )
     return tuple(diagnostics)

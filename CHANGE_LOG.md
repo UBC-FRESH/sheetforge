@@ -4,6 +4,15 @@ This file records completed project work in chronological order.
 
 ## 2026-06-22
 
+- Activated Phase 35 on `feature/p35-generated-model-workflow-summaries`, created child issues #223
+  through #227 under parent issue #220, and scoped the phase around compact Modelwright stage
+  summaries plus sharper FreshForge provider diagnostics for generated-model workflows.
+- Added compact `ProviderRunResult.data["summary"]` payloads for Modelwright FreshForge
+  `model_infer_contract`, `model_generate`, `model_execute`, and `validation_evaluate` nodes so
+  downstream tools can inspect counts and status without parsing raw generated artifacts.
+- Added Phase 35 provider diagnostics for empty required output/artifact declarations and
+  stage-specific generated-model generation, execution, and validation failures; explicit
+  validation failures now fail the FreshForge `validation_evaluate` node.
 - Activated Phase 33 as a maintainer-approved parallel FreshForge provider pilot on
   `feature/p33-modelwright-freshforge-provider`, created parent issue #205 and child issues #206
   through #210, and scoped a plan-only Modelwright provider that FreshForge can discover, validate,

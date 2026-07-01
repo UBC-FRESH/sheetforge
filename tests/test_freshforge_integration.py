@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tomllib
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -197,124 +198,146 @@ def test_missing_required_parameter_returns_provider_diagnostic() -> None:
     assert diagnostics[0].location == "nodes[0].parameters.workbook"
 
 
-def test_freshforge_run_executes_synthetic_generated_model_workflow(tmp_path: Path) -> None:
+def test_empty_required_outputs_and_artifacts_return_provider_diagnostics() -> None:
+    pytest.importorskip("freshforge")
+    from freshforge.loading import load_workflow_document
+    from freshforge.validation import validate_workflow_document, validate_workflow_with_providers
+
+    document = load_workflow_document(EXAMPLE_PATH)
+    document["nodes"][3]["outputs"]["generated_model"] = " "
+    document["nodes"][3]["artifacts"]["generated_model"] = ""
+    spec, structural = validate_workflow_document(document)
+
+    assert spec is not None
+    diagnostics = validate_workflow_with_providers(
+        spec,
+        registry=_registry_with_modelwright_provider(),
+        structural_diagnostics=structural,
+    )
+
+    assert {diagnostic.code for diagnostic in diagnostics} == {
+        "modelwright.outputs.empty",
+        "modelwright.artifacts.empty",
+    }
+
+
+def test_model_generate_failure_returns_stage_specific_diagnostic(tmp_path: Path) -> None:
+    pytest.importorskip("freshforge")
+    from freshforge.records import RunStatus
+
+    contract_path = tmp_path / "contract.json"
+    expressions_path = tmp_path / "expressions.json"
+    constants_path = tmp_path / "constants.json"
+    contract_path.write_text(
+        json.dumps(
+            {
+                "workbook_id": "synthetic",
+                "module_name": "generated_synthetic_model",
+                "entrypoint": "calculate",
+                "input_refs": [],
+                "output_refs": ["Calc!B1"],
+                "symbols": [
+                    {
+                        "cell_ref": "Calc!B1",
+                        "symbol_name": "calc_b1",
+                        "kind": "output",
+                        "raw_formula": "=Inputs!B1",
+                    }
+                ],
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    expressions_path.write_text("{}", encoding="utf-8")
+    constants_path.write_text("{}", encoding="utf-8")
+
+    result = provider_factory().run_node(
+        SimpleNamespace(
+            id="generate_model",
+            artifacts={
+                "contract": str(contract_path),
+                "expressions": str(expressions_path),
+                "constants": str(constants_path),
+                "generated_model": str(tmp_path / "generated_synthetic_model.py"),
+                "generation_result": str(tmp_path / "generation-result.json"),
+            },
+        ),
+        _provider_node_type("model_generate"),
+        context=_context(),
+    )
+
+    assert result.status is RunStatus.FAILED
+    assert {diagnostic.code for diagnostic in result.diagnostics} == {
+        "modelwright.model_generate.failed"
+    }
+    assert result.data["summary"]["generated"] is False
+    assert result.data["summary"]["error_count"] == 1
+
+
+def test_model_execute_failure_returns_stage_specific_diagnostic(tmp_path: Path) -> None:
+    pytest.importorskip("freshforge")
+    from freshforge.records import RunStatus
+
+    contract_path = tmp_path / "contract.json"
+    contract_path.write_text(
+        json.dumps(
+            {
+                "workbook_id": "synthetic",
+                "module_name": "generated_synthetic_model",
+                "entrypoint": "calculate",
+                "input_refs": [],
+                "output_refs": ["Calc!B1"],
+                "symbols": [
+                    {
+                        "cell_ref": "Calc!B1",
+                        "symbol_name": "calc_b1",
+                        "kind": "output",
+                        "raw_formula": None,
+                    }
+                ],
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = provider_factory().run_node(
+        SimpleNamespace(
+            id="execute_model",
+            artifacts={
+                "contract": str(contract_path),
+                "generated_model": str(tmp_path / "missing_generated_model.py"),
+                "generated_values": str(tmp_path / "generated-values.json"),
+            },
+        ),
+        _provider_node_type("model_execute"),
+        context=_context(),
+    )
+
+    assert result.status is RunStatus.FAILED
+    assert {diagnostic.code for diagnostic in result.diagnostics} == {
+        "modelwright.model_execute.failed"
+    }
+    assert result.data["summary"]["executed"] is False
+    assert result.data["summary"]["error_count"] == 1
+
+
+def test_freshforge_run_executes_synthetic_generated_model_workflow_with_summaries(
+    tmp_path: Path,
+) -> None:
     pytest.importorskip("freshforge")
     from freshforge.execution import run_workflow
     from freshforge.validation import validate_workflow_document
 
     workbook_path = build_workbook(tmp_path / "synthetic_model.xlsx")
-    artifact_dir = tmp_path / "freshforge-run"
-    artifact_dir.mkdir()
-    output_refs_path = artifact_dir / "output_refs.json"
-    output_refs_path.write_text(
-        json.dumps(["Summary!B2", "Summary!B3"], indent=2),
-        encoding="utf-8",
+    namespace = "strategy/output-columns"
+    workflow, artifact_dir = _synthetic_generated_model_workflow(
+        tmp_path=tmp_path,
+        workbook_path=workbook_path,
+        run_namespace=namespace,
+        cached_summary_b2=70.2,
     )
-    workbook_record_path = artifact_dir / "workbook-record.json"
-    workbook_record_path.write_text(
-        json.dumps(
-            WorkbookRecord(
-                workbook_id="synthetic_model.xlsx",
-                source_path="synthetic_model.xlsx",
-                cells=(
-                    CellRecord(
-                        cell_ref="Summary!B2",
-                        kind="formula",
-                        raw_value="=Calc!B4",
-                        cached_value=70.2,
-                    ),
-                    CellRecord(
-                        cell_ref="Summary!B3",
-                        kind="formula",
-                        raw_value='=IF(B2>100,"high","ok")',
-                        cached_value="ok",
-                    ),
-                ),
-            ).to_dict(),
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
-    scenario_path = Path("tests/fixtures/synthetic_model/baseline_scenario.json").resolve()
-
-    workflow = {
-        "workflow": {"id": "modelwright_freshforge_run"},
-        "nodes": [
-            {
-                "id": "infer_contract",
-                "provider": "modelwright.model_infer_contract",
-                "outputs": {
-                    "generated_contract": "generated_contract",
-                    "formula_expressions": "formula_expressions",
-                    "input_constants": "input_constants",
-                },
-                "parameters": {
-                    "workbook": workbook_path.name,
-                    "module_name": "generated_synthetic_model",
-                },
-                "artifacts": {
-                    "output_refs": "freshforge-run/output_refs.json",
-                    "contract": "freshforge-run/contract.json",
-                    "expressions": "freshforge-run/expressions.json",
-                    "constants": "freshforge-run/constants.json",
-                    "inference_result": "freshforge-run/inference-result.json",
-                },
-            },
-            {
-                "id": "generate_model",
-                "provider": "modelwright.model_generate",
-                "needs": ["infer_contract"],
-                "inputs": {
-                    "generated_contract": "infer_contract.generated_contract",
-                    "formula_expressions": "infer_contract.formula_expressions",
-                    "input_constants": "infer_contract.input_constants",
-                },
-                "outputs": {"generated_model": "generated_synthetic_model"},
-                "artifacts": {
-                    "contract": "freshforge-run/contract.json",
-                    "expressions": "freshforge-run/expressions.json",
-                    "constants": "freshforge-run/constants.json",
-                    "generated_model": "freshforge-run/generated_synthetic_model.py",
-                    "generation_result": "freshforge-run/generation-result.json",
-                },
-            },
-            {
-                "id": "execute_model",
-                "provider": "modelwright.model_execute",
-                "needs": ["generate_model"],
-                "inputs": {
-                    "generated_contract": "infer_contract.generated_contract",
-                    "generated_model": "generate_model.generated_model",
-                },
-                "outputs": {"generated_values": "generated_values"},
-                "artifacts": {
-                    "contract": "freshforge-run/contract.json",
-                    "generated_model": "freshforge-run/generated_synthetic_model.py",
-                    "generated_values": "freshforge-run/generated-values.json",
-                },
-            },
-            {
-                "id": "evaluate_model",
-                "provider": "modelwright.validation_evaluate",
-                "needs": ["execute_model"],
-                "inputs": {
-                    "generated_contract": "infer_contract.generated_contract",
-                    "generated_model": "generate_model.generated_model",
-                },
-                "outputs": {"validation_report": "validation_report"},
-                "parameters": {
-                    "scenario": str(scenario_path),
-                },
-                "artifacts": {
-                    "contract": "freshforge-run/contract.json",
-                    "generated_model": "freshforge-run/generated_synthetic_model.py",
-                    "scenario": str(scenario_path),
-                    "workbook_record": "freshforge-run/workbook-record.json",
-                    "evaluation_report": "freshforge-run/evaluation-report.json",
-                },
-            },
-        ],
-    }
     spec, diagnostics = validate_workflow_document(workflow)
     assert spec is not None
 
@@ -323,6 +346,7 @@ def test_freshforge_run_executes_synthetic_generated_model_workflow(tmp_path: Pa
         diagnostics=diagnostics,
         registry=_registry_with_modelwright_provider(),
         workdir=tmp_path,
+        run_namespace=namespace,
     )
 
     assert result.ok
@@ -339,3 +363,224 @@ def test_freshforge_run_executes_synthetic_generated_model_workflow(tmp_path: Pa
     assert evaluation["generated_execution"]["executed"] is True
     assert evaluation["cached_validation_report"]["status"] == "pass"
     assert (artifact_dir / "generated_synthetic_model.py").exists()
+
+    run_summary = result.summary()
+    assert run_summary.run_namespace == namespace
+    assert run_summary.node_count == 4
+    assert run_summary.artifact_count == 18
+    assert {node.id for node in run_summary.nodes} == {
+        "infer_contract",
+        "generate_model",
+        "execute_model",
+        "evaluate_model",
+    }
+
+    node_summaries = {node.id: node.data["summary"] for node in result.nodes}
+    assert node_summaries["infer_contract"] == {
+        "stage": "model_infer_contract",
+        "inferred": True,
+        "input_ref_count": 3,
+        "output_ref_count": 2,
+        "symbol_count": 8,
+        "expression_count": 5,
+        "constant_count": 3,
+        "diagnostic_count": 0,
+        "error_count": 0,
+        "warning_count": 0,
+    }
+    assert node_summaries["generate_model"]["stage"] == "model_generate"
+    assert node_summaries["generate_model"]["generated"] is True
+    assert node_summaries["generate_model"]["source_line_count"] > 0
+    assert node_summaries["execute_model"] == {
+        "stage": "model_execute",
+        "executed": True,
+        "declared_output_count": 2,
+        "generated_output_count": 2,
+        "missing_output_diagnostic_count": 0,
+        "diagnostic_count": 0,
+        "error_count": 0,
+        "warning_count": 0,
+    }
+    assert node_summaries["evaluate_model"]["cached_validation"] == {
+        "available": True,
+        "status": "pass",
+        "comparison_count": 2,
+        "match_count": 2,
+        "mismatch_count": 0,
+        "diagnostic_count": 0,
+        "error_count": 0,
+        "warning_count": 0,
+    }
+    assert node_summaries["evaluate_model"]["oracle_validation"]["available"] is False
+
+
+def test_validation_evaluate_failure_fails_freshforge_node(tmp_path: Path) -> None:
+    pytest.importorskip("freshforge")
+    from freshforge.execution import run_workflow
+    from freshforge.validation import validate_workflow_document
+
+    workbook_path = build_workbook(tmp_path / "synthetic_model.xlsx")
+    workflow, artifact_dir = _synthetic_generated_model_workflow(
+        tmp_path=tmp_path,
+        workbook_path=workbook_path,
+        run_namespace=None,
+        cached_summary_b2=999.0,
+    )
+    spec, diagnostics = validate_workflow_document(workflow)
+    assert spec is not None
+
+    result = run_workflow(
+        spec,
+        diagnostics=diagnostics,
+        registry=_registry_with_modelwright_provider(),
+        workdir=tmp_path,
+    )
+
+    assert not result.ok
+    assert result.nodes[-1].id == "evaluate_model"
+    assert result.nodes[-1].status.value == "failed"
+    assert {diagnostic.code for diagnostic in result.nodes[-1].diagnostics} == {
+        "modelwright.validation_evaluate.failed"
+    }
+    summary = result.nodes[-1].data["summary"]
+    assert summary["cached_validation"]["status"] == "fail"
+    assert summary["cached_validation"]["mismatch_count"] == 1
+    evaluation = json.loads((artifact_dir / "evaluation-report.json").read_text(encoding="utf-8"))
+    assert evaluation["cached_validation_report"]["status"] == "fail"
+
+
+def _provider_node_type(node_type_id: str):
+    for node_type in provider_factory().metadata().node_types:
+        if node_type.id == node_type_id:
+            return node_type
+    raise AssertionError(f"missing Modelwright provider node type {node_type_id}")
+
+
+def _context():
+    return SimpleNamespace(resolve_path=lambda value: Path(value))
+
+
+def _synthetic_generated_model_workflow(
+    *,
+    tmp_path: Path,
+    workbook_path: Path,
+    run_namespace: str | None,
+    cached_summary_b2: float,
+) -> tuple[dict[str, object], Path]:
+    artifact_dir = tmp_path / "freshforge-run"
+    if run_namespace is not None:
+        artifact_dir = tmp_path / run_namespace / "freshforge-run"
+    artifact_dir.mkdir(parents=True)
+    output_refs_path = artifact_dir / "output_refs.json"
+    output_refs_path.write_text(
+        json.dumps(["Summary!B2", "Summary!B3"], indent=2),
+        encoding="utf-8",
+    )
+    workbook_record_path = artifact_dir / "workbook-record.json"
+    workbook_record_path.write_text(
+        json.dumps(
+            WorkbookRecord(
+                workbook_id="synthetic_model.xlsx",
+                source_path="synthetic_model.xlsx",
+                cells=(
+                    CellRecord(
+                        cell_ref="Summary!B2",
+                        kind="formula",
+                        raw_value="=Calc!B4",
+                        cached_value=cached_summary_b2,
+                    ),
+                    CellRecord(
+                        cell_ref="Summary!B3",
+                        kind="formula",
+                        raw_value='=IF(B2>100,"high","ok")',
+                        cached_value="ok",
+                    ),
+                ),
+            ).to_dict(),
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    scenario_path = Path("tests/fixtures/synthetic_model/baseline_scenario.json").resolve()
+
+    return (
+        {
+            "workflow": {"id": "modelwright_freshforge_run"},
+            "nodes": [
+                {
+                    "id": "infer_contract",
+                    "provider": "modelwright.model_infer_contract",
+                    "outputs": {
+                        "generated_contract": "generated_contract",
+                        "formula_expressions": "formula_expressions",
+                        "input_constants": "input_constants",
+                    },
+                    "parameters": {
+                        "workbook": str(workbook_path),
+                        "module_name": "generated_synthetic_model",
+                    },
+                    "artifacts": {
+                        "output_refs": "freshforge-run/output_refs.json",
+                        "contract": "freshforge-run/contract.json",
+                        "expressions": "freshforge-run/expressions.json",
+                        "constants": "freshforge-run/constants.json",
+                        "inference_result": "freshforge-run/inference-result.json",
+                    },
+                },
+                {
+                    "id": "generate_model",
+                    "provider": "modelwright.model_generate",
+                    "needs": ["infer_contract"],
+                    "inputs": {
+                        "generated_contract": "infer_contract.generated_contract",
+                        "formula_expressions": "infer_contract.formula_expressions",
+                        "input_constants": "infer_contract.input_constants",
+                    },
+                    "outputs": {"generated_model": "generated_synthetic_model"},
+                    "artifacts": {
+                        "contract": "freshforge-run/contract.json",
+                        "expressions": "freshforge-run/expressions.json",
+                        "constants": "freshforge-run/constants.json",
+                        "generated_model": "freshforge-run/generated_synthetic_model.py",
+                        "generation_result": "freshforge-run/generation-result.json",
+                    },
+                },
+                {
+                    "id": "execute_model",
+                    "provider": "modelwright.model_execute",
+                    "needs": ["generate_model"],
+                    "inputs": {
+                        "generated_contract": "infer_contract.generated_contract",
+                        "generated_model": "generate_model.generated_model",
+                    },
+                    "outputs": {"generated_values": "generated_values"},
+                    "artifacts": {
+                        "contract": "freshforge-run/contract.json",
+                        "generated_model": "freshforge-run/generated_synthetic_model.py",
+                        "generated_values": "freshforge-run/generated-values.json",
+                    },
+                },
+                {
+                    "id": "evaluate_model",
+                    "provider": "modelwright.validation_evaluate",
+                    "needs": ["execute_model"],
+                    "inputs": {
+                        "generated_contract": "infer_contract.generated_contract",
+                        "generated_model": "generate_model.generated_model",
+                    },
+                    "outputs": {"validation_report": "validation_report"},
+                    "parameters": {
+                        "scenario": str(scenario_path),
+                    },
+                    "artifacts": {
+                        "contract": "freshforge-run/contract.json",
+                        "generated_model": "freshforge-run/generated_synthetic_model.py",
+                        "scenario": str(scenario_path),
+                        "workbook_record": "freshforge-run/workbook-record.json",
+                        "evaluation_report": "freshforge-run/evaluation-report.json",
+                    },
+                },
+            ],
+        },
+        artifact_dir,
+    )

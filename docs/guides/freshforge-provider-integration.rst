@@ -76,6 +76,19 @@ exist, executable generated-model stages can also be run with:
 
    freshforge run path/to/generated_model_workflow.yaml --workdir /path/to/project --json
 
+FreshForge run namespaces can isolate repeated runs under a relative artifact
+prefix:
+
+.. code-block:: bash
+
+   freshforge run path/to/generated_model_workflow.yaml \
+      --workdir /path/to/project \
+      --namespace strategy/output-columns \
+      --json
+
+With a namespace, FreshForge resolves relative artifact paths under
+``workdir / namespace``. Absolute artifact paths remain absolute.
+
 The graph declares this order:
 
 1. extract workbook facts;
@@ -106,6 +119,40 @@ The executable provider currently supports ``model_infer_contract``,
 shell out to the CLI. Workbook extraction and graph construction remain
 Modelwright internals of contract inference unless a workflow deliberately uses
 those stages for planning context.
+
+Run And Stage Summaries
+-----------------------
+
+FreshForge owns the whole-run summary. In ``freshforge run --json`` output, the
+top-level ``summary`` object reports the workflow id, run namespace, node
+counts, diagnostic counts, artifact counts, and compact node summaries.
+
+Modelwright owns generated-model stage summaries inside each executed node's
+full result. Look in ``run.nodes[*].data.summary`` for compact stage facts:
+
+- ``model_infer_contract`` reports whether inference succeeded plus selected
+  input, output, symbol, expression, constants, and diagnostic counts.
+- ``model_generate`` reports whether Python source was generated plus source
+  line/byte counts, contract counts, and diagnostic counts.
+- ``model_execute`` reports whether the generated model executed plus declared
+  and observed output counts.
+- ``validation_evaluate`` reports scenario id, generated-execution counts, and
+  cached/oracle validation comparison, match, mismatch, status, and diagnostic
+  counts.
+
+The raw JSON artifacts are still written exactly as before. Stage summaries are
+small convenience payloads for downstream automation; they are not replacements
+for raw inference, generation, execution, or evaluation artifacts.
+
+Validation Failure Semantics
+----------------------------
+
+``validation_evaluate`` is fail-fast for explicit validation failure. If the
+generated model has error diagnostics, or if an available cached/oracle
+validation report has status ``fail``, the FreshForge node returns failed status
+with diagnostic ``modelwright.validation_evaluate.failed``. If generated
+execution succeeds but no validation report is available, the node may still
+succeed while its stage summary records that validation evidence is unavailable.
 
 FABLE Pyculator Boundary
 ------------------------
