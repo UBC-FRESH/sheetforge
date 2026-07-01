@@ -1054,6 +1054,11 @@ Phase 35 is complete on `main`: Modelwright's FreshForge provider now emits comp
 summaries and sharper diagnostics for generated-model workflows, using FreshForge Phase 7
 namespaces and whole-run summaries where useful.
 
+Phase 36 is active on `feature/p36-compact-validation-evidence`: Modelwright is adding generic
+compact validation-evidence extraction so downstream packages can publish sanitized evidence
+summaries without copying raw generated source, generated values, workbooks, or full validation
+reports.
+
 ## Phase 33: FreshForge Provider Pilot For Modelwright Workflows
 
 GitHub parent issue: #205
@@ -1287,12 +1292,38 @@ Closeout evidence:
 
 GitHub parent issue: #221
 
-Status: planned backlog.
+Active branch: `feature/p36-compact-validation-evidence`.
+
+Status: active.
 
 Goal: expose compact generated-model validation evidence that downstream packages can record in
 docs, planning notes, and optional CI workflows without tracking raw validation reports.
 
-Child issues: create only when this phase is activated.
+- [x] P36.1 Define generic validation-evidence schema and paths. Child issue: #231.
+  - [x] Add generic evidence identity and default path conventions.
+  - [x] Add `ValidationEvidencePaths` and `ValidationEvidenceSummary`.
+  - [x] Keep FABLE-specific workbook-version wording out of Modelwright.
+- [x] P36.2 Add evidence extraction and conservative equivalence status logic. Child issue: #232.
+  - [x] Summarize inference, generation, generated values, validation scenario, and evaluation
+        artifacts.
+  - [x] Mark missing artifacts as skipped unless required.
+  - [x] Mark evidence incomplete when explicit comparison counts are absent.
+  - [x] Mark equivalence pass only with explicit comparable/match/mismatch zero-mismatch evidence.
+- [x] P36.3 Add writer and CLI packaging command. Child issue: #229.
+  - [x] Write compact `summary.json` and `summary.md` files.
+  - [x] Add `modelwright validation evidence`.
+  - [x] Support evidence id, artifact/output dirs, scenario path, require-artifacts, and JSON output
+        flags.
+- [x] P36.4 Update docs, roadmap, changelog, and downstream guidance. Child issue: #230.
+  - [x] Add API and CLI documentation.
+  - [x] Add validation-evidence guide and cross-link generated-model workflow docs.
+  - [x] Update the Phase 35/36 downstream planning note.
+- [ ] P36.5 Verify, PR, deploy docs, and close phase. Child issue: #233.
+  - [x] Run full local verification.
+  - [x] Open PR from `feature/p36-compact-validation-evidence` to `main`.
+  - [ ] Merge only after CI passes.
+  - [ ] Confirm post-merge Test and Docs Pages workflows pass.
+  - [ ] Close Phase 36 child issues and parent #221.
 
 Dependency note: this phase follows Phase 35 because compact evidence should be derived from stable
 stage summaries and diagnostics. FABLE Pyculator Phase 20 should consume this generic evidence rather
@@ -1302,6 +1333,31 @@ Acceptance boundary:
 
 - May summarize validation evidence for downstream publication and CI gates.
 - Must not declare arbitrary workbook equivalence or absorb FABLE-specific output selection logic.
+
+Implementation evidence:
+
+- Added `modelwright.evidence` with generic validation-evidence path and summary records.
+- Added conservative extraction rules for existing inference, generation, generated-values,
+  validation-scenario, and evaluation artifacts.
+- Added sanitized `summary.json` and `summary.md` writers that report counts and statuses without
+  copying raw generated source, raw generated output values, workbook contents, or full comparison
+  rows.
+- Added `modelwright validation evidence` with evidence id, artifact/output directory, scenario,
+  require-artifacts, and JSON output options.
+- Added Sphinx guide, CLI reference, API reference, and generated-model workflow cross-links.
+
+Local verification:
+
+- `.venv/bin/python -m pytest tests/test_evidence.py tests/test_cli.py tests/test_public_api.py -q`
+  passed with 28 tests.
+- `.venv/bin/python -m ruff check .` passed.
+- `.venv/bin/python -m pytest` passed with 195 tests and 1 skipped benchmark.
+- `.venv/bin/sphinx-build -b html docs _build/html -W` passed.
+- `.venv/bin/python scripts/verify_docs_theme.py _build/html` passed.
+- `scripts/check_release_artifacts.sh` passed; artifact inspection included `modelwright/evidence.py`,
+  and the clean wheel install imported `modelwright 0.1.0a7` and smoke-tested the CLI.
+- `git diff --check` passed.
+- Phase 36 PR #234 is open.
 
 ## Phase 32: FABLE Pyculator Onboarding And Validation Pilot
 

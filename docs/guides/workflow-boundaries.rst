@@ -65,6 +65,8 @@ Validation
 ``modelwright.validation`` builds reports from already-observed generated and oracle values.
 ``modelwright.formulas_oracle`` provides an optional pure-Python oracle boundary for workbooks supported
 by the ``formulas`` package.
+``modelwright.evidence`` packages compact summaries from existing generated-model workflow artifacts;
+it does not rerun generation, execution, validation, or workbook conversion.
 
 No One-Step Conversion Yet
 --------------------------

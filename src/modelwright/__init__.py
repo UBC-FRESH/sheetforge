@@ -19,6 +19,13 @@ from modelwright.evaluation import (
     ValidationEvaluationResult,
     evaluate_generated_model,
 )
+from modelwright.evidence import (
+    ValidationEvidencePaths,
+    ValidationEvidenceSummary,
+    extract_validation_evidence,
+    validation_evidence_paths,
+    write_validation_evidence,
+)
 from modelwright.conversion import (
     ConversionPlan,
     ConversionSource,
@@ -152,8 +159,10 @@ __all__ = [
     "TableRef",
     "TableRecord",
     "TableView",
-    "ValidationReport",
     "ValidationEvaluationResult",
+    "ValidationEvidencePaths",
+    "ValidationEvidenceSummary",
+    "ValidationReport",
     "ValidationScenario",
     "ValidationSummary",
     "WorkbookOracle",
@@ -173,6 +182,7 @@ __all__ = [
     "compare_scenarios_frame",
     "execute_generated_model",
     "evaluate_generated_model",
+    "extract_validation_evidence",
     "extract_workbook",
     "generate_python_module",
     "infer_generated_module_contract",
@@ -187,4 +197,6 @@ __all__ = [
     "table",
     "table_frame",
     "translate_formula_cell",
+    "validation_evidence_paths",
+    "write_validation_evidence",
 ]

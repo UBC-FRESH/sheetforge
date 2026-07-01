@@ -30,7 +30,7 @@ scenario bundles, notebook rendering, and FABLE-facing validation/publication gu
 
 ## Phase 35 Intent
 
-Phase 35 makes Modelwright's generated-model workflow stages easier for downstream tools to
+Phase 35 made Modelwright's generated-model workflow stages easier for downstream tools to
 summarize without parsing large raw reports. It consumes FreshForge Phase 7's run namespaces and
 whole-run summaries by adding compact provider-owned stage summaries under
 `ProviderRunResult.data["summary"]`.
@@ -44,9 +44,19 @@ policy.
 
 ## Phase 36 Intent
 
-Phase 36 should move generic compact validation evidence extraction closer to the Modelwright stage
+Phase 36 moves generic compact validation evidence extraction closer to the Modelwright stage
 that owns generated-model validation. Downstream packages should be able to record sanitized summary
 evidence without copying raw validation reports, generated source, source workbooks, or bulky
 generated values.
 
+The Modelwright layer owns generic evidence identities, artifact directories, compact JSON/Markdown
+writers, and conservative equivalence status rules:
+
+- `pass` only when explicit comparable-output, match, and mismatch counts prove zero mismatches;
+- `fail` when explicit counts show mismatches or missing matches;
+- `incomplete` when generated execution exists but comparison counts are absent;
+- `skipped` when artifacts are missing in an optional evidence-packaging environment.
+
 It should not declare arbitrary workbook equivalence or choose FABLE-specific output-ref strategies.
+FABLE Pyculator Phase 20 can later wrap these helpers with FABLE workbook-version defaults and public
+benchmark messaging.

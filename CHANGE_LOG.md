@@ -4,6 +4,16 @@ This file records completed project work in chronological order.
 
 ## 2026-06-22
 
+- Activated Phase 36 on `feature/p36-compact-validation-evidence`, created child issues #231, #232,
+  #229, #230, and #233 under parent issue #221, and scoped the phase around generic compact
+  validation-evidence extraction for downstream automation without FABLE-specific path conventions
+  or new equivalence claims.
+- Added `modelwright.evidence` with generic validation-evidence path and summary records,
+  conservative extraction logic, sanitized JSON/Markdown writers, and a `modelwright validation
+  evidence` CLI command for packaging existing generated-model workflow artifacts.
+- Verified the Phase 36 implementation locally with targeted evidence/CLI/API tests, Ruff, full pytest
+  (`195` passed and `1` skipped benchmark), Sphinx warning-as-error docs, Read the Docs theme
+  verification, release artifact checks, and `git diff --check`.
 - Activated Phase 35 on `feature/p35-generated-model-workflow-summaries`, created child issues #223
   through #227 under parent issue #220, and scoped the phase around compact Modelwright stage
   summaries plus sharper FreshForge provider diagnostics for generated-model workflows.
