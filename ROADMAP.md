@@ -1218,6 +1218,12 @@ Status: planned backlog.
 Goal: improve machine-readable summaries and diagnostics for Modelwright generated-model workflows
 used through FreshForge and downstream tools.
 
+Child issues: create only when this phase is activated.
+
+Dependency note: this phase should consume FreshForge Phase 7 run namespaces/summaries where useful
+and provide the stage-level generated-model summaries needed by FABLE Pyculator Phase 18 output-ref
+strategy comparisons.
+
 Acceptance boundary:
 
 - May expose clearer generated-model workflow status, artifact, and diagnostic summaries.
@@ -1232,6 +1238,12 @@ Status: planned backlog.
 
 Goal: expose compact generated-model validation evidence that downstream packages can record in
 docs, planning notes, and optional CI workflows without tracking raw validation reports.
+
+Child issues: create only when this phase is activated.
+
+Dependency note: this phase follows Phase 35 because compact evidence should be derived from stable
+stage summaries and diagnostics. FABLE Pyculator Phase 20 should consume this generic evidence rather
+than duplicating raw Modelwright validation-report parsing.
 
 Acceptance boundary:
 

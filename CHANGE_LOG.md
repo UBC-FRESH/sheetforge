@@ -256,3 +256,6 @@ This file records completed project work in chronological order.
 - Created Modelwright parent issues #220 and #221 and recorded planned roadmap phases for generated
   workflow summaries/provider diagnostics and compact validation evidence extraction needed by the
   downstream CLEWs-C2020 FreshForge/FABLE Pyculator automation lane.
+- Added `planning/phase-35-36-downstream-automation-chain.md` and expanded the Phase 35/36 roadmap
+  entries to record their dependency on FreshForge Phase 7 and their downstream role in FABLE
+  Pyculator output-ref strategy comparisons and opt-in benchmark evidence workflows.
