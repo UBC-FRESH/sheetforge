@@ -20,7 +20,7 @@ scenario bundles, notebook rendering, and FABLE-facing validation/publication gu
 ## Coordinated Sequence
 
 1. FreshForge Phase 7 adds run namespaces and compact workflow-run summaries.
-2. Modelwright Phase 35 exposes clearer generated-model workflow summaries and provider diagnostics.
+2. Modelwright Phase 35 exposes clearer generated-model stage summaries and provider diagnostics.
 3. Modelwright Phase 36 extracts compact validation evidence suitable for downstream automation.
 4. FABLE Pyculator Phase 18 compares FABLE output-ref strategies using FreshForge namespaces and
    Modelwright summaries.
@@ -30,9 +30,14 @@ scenario bundles, notebook rendering, and FABLE-facing validation/publication gu
 
 ## Phase 35 Intent
 
-Phase 35 should make Modelwright's generated-model workflow stages easier for downstream tools to
-summarize without parsing large raw reports. It should focus on status, artifact paths, counts, and
-diagnostics for infer-contract, generate, execute, and validation stages.
+Phase 35 makes Modelwright's generated-model workflow stages easier for downstream tools to
+summarize without parsing large raw reports. It consumes FreshForge Phase 7's run namespaces and
+whole-run summaries by adding compact provider-owned stage summaries under
+`ProviderRunResult.data["summary"]`.
+
+Those summaries focus on status, artifact-independent counts, and diagnostics for infer-contract,
+generate, execute, and validation stages. FreshForge still owns the whole-run summary and namespace;
+Modelwright owns the stage-specific generated-model facts inside each node result.
 
 It should not add FABLE output-table discovery, scenario-bundle semantics, or FreshForge scheduling
 policy.
@@ -45,4 +50,3 @@ evidence without copying raw validation reports, generated source, source workbo
 generated values.
 
 It should not declare arbitrary workbook equivalence or choose FABLE-specific output-ref strategies.
-
