@@ -32,6 +32,11 @@ This file records completed project work in chronological order.
   skipped benchmark, warning-clean Sphinx docs, Read the Docs theme verification, release artifact
   checks, `modelwright --help`, `modelwright model infer-contract --help`, and FreshForge provider
   discovery showing Modelwright provider version `0.1.0a7` with FreshForge `0.1.0a2` installed.
+- Published `modelwright==0.1.0a7` to PyPI from annotated tag `v0.1.0a7`, created the matching
+  GitHub prerelease, verified PyPI JSON lists the wheel and sdist artifacts, confirmed a clean
+  ignored PyPI install of `modelwright[notebook]==0.1.0a7` imports `modelwright 0.1.0a7`, imports
+  pandas, and runs `modelwright --help`, and verified the post-merge Test and Docs Pages workflows
+  passed for the release PR.
 - Activated Phase 31 on `feature/p31-literate-notebook-examples`, created GitHub parent issue #183 and child issues #187, #185, #186, #184, #188, and #189, and scoped the next `0.1.0a6` alpha around actual known-valid literate `.ipynb` notebook files for the synthetic and generated 2020 FABLE examples, plus matching Sphinx Examples Gallery documentation and validation.
 - Completed P31.1 through P31.5 by adding real literate Jupyter notebooks under `examples/notebooks/` for the synthetic and generated 2020 FABLE notebook-interface workflows; each notebook includes headings, explanatory markdown, code cells, and stored outputs; Sphinx Examples Gallery pages now link to downloadable `.ipynb` files; and default tests validate notebook JSON, Python kernel metadata, markdown-before-code structure, stored outputs, synthetic notebook execution, and static FABLE notebook validation-boundary output without running the expensive generated FABLE model in default pytest.
 - Prepared the `0.1.0a6` release candidate by bumping package/import metadata and release docs, passing repo-local bootstrap, Ruff, default `pytest -vv` with `167` passed and `1` benchmark skip, Sphinx warning-as-error docs with notebook downloads copied, Read the Docs theme verification, and `scripts/check_release_artifacts.sh`; the artifact checker built a roughly `56K` wheel and `2.2M` sdist, included the tracked literate notebooks in the sdist, installed the wheel into a clean ignored environment, imported `modelwright 0.1.0a6`, and smoke-tested the CLI.

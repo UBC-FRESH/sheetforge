@@ -1047,10 +1047,8 @@ Phase 34 is complete on `main`: Modelwright's FreshForge provider can execute
 supported generated-model workflow stages using Modelwright Python APIs and the
 FreshForge serial local runner.
 
-Phase 32 is in release closeout on `feature/p32-v0.1.0a7-release`: publish
-`modelwright==0.1.0a7` with the generated-model artifact materialization and
-FreshForge generated-model workflow orchestration evidence accumulated since
-`0.1.0a6`.
+Phase 32 is complete: `modelwright==0.1.0a7` is published to PyPI and GitHub as the generated-model
+workflow orchestration alpha.
 
 ## Phase 33: FreshForge Provider Pilot For Modelwright Workflows
 
@@ -1246,7 +1244,7 @@ GitHub parent issue: #191
 
 Active branch: `main` after PR #202.
 
-Status: active.
+Status: complete.
 
 Goal: turn the current Modelwright humane-interface prototype into a structured onboarding and
 validation pilot for Abdulateef, Gloria, and Camilla. The phase should make setup repeatable, make
@@ -1294,16 +1292,16 @@ Release target: `modelwright==0.1.0a7`.
         validation run. Implementation issue: #203.
   - [x] Apply only focused notebook/docs/API-polish changes justified by pilot feedback.
   - [x] Keep unrelated converter compatibility work out of this phase.
-- [ ] P32.6 Publish `modelwright==0.1.0a7`. Child issue: #197.
-  - Status: active.
+- [x] P32.6 Publish `modelwright==0.1.0a7`. Child issue: #197.
+  - Status: complete.
   - [x] Confirm P32 onboarding/protocol/template scope and evidence are complete.
   - [x] Bump package/import version and release docs to `0.1.0a7`.
   - [x] Run local release checks, including Ruff, pytest, Sphinx docs, docs theme verification, and
         release artifact checks.
-  - [ ] Open and merge the P32 PR to `main`.
-  - [ ] Create annotated tag `v0.1.0a7`.
-  - [ ] Publish through the gated release workflow after maintainer approval.
-  - [ ] Verify PyPI JSON, clean PyPI install, import version, CLI help, GitHub release, and docs deployment.
+  - [x] Open and merge the P32 PR to `main`.
+  - [x] Create annotated tag `v0.1.0a7`.
+  - [x] Publish through the gated release workflow after maintainer approval.
+  - [x] Verify PyPI JSON, clean PyPI install, import version, CLI help, GitHub release, and docs deployment.
 
 Acceptance boundary:
 
@@ -1362,3 +1360,13 @@ Verification evidence:
 - `.venv/bin/modelwright --help` and `.venv/bin/modelwright model infer-contract --help` passed.
 - `.venv/bin/freshforge providers --json` reported the Modelwright provider version as `0.1.0a7`
   after installing FreshForge `0.1.0a2`.
+- Phase 32 release PR #222 merged to `main` at `878c0ad`.
+- Post-merge `Test` workflow run #28540307396 passed.
+- Post-merge `docs-pages` workflow run #28540307391 passed and deployed.
+- Annotated tag `v0.1.0a7` was pushed.
+- Tag-triggered `Release` workflow run #28540356638 built artifacts and published to PyPI.
+- GitHub prerelease `modelwright 0.1.0a7` was created with the workflow-built wheel and sdist
+  attached.
+- PyPI JSON listed `modelwright-0.1.0a7-py3-none-any.whl` and `modelwright-0.1.0a7.tar.gz`.
+- Clean PyPI install verified `modelwright[notebook]==0.1.0a7`, imported `modelwright 0.1.0a7`,
+  imported pandas, and ran `modelwright --help`.
