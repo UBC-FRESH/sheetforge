@@ -46,6 +46,12 @@ Evaluation Orchestration
 .. automodule:: modelwright.evaluation
    :members:
 
+Validation Evidence
+-------------------
+
+.. automodule:: modelwright.evidence
+   :members:
+
 Conversion Planning
 -------------------
 

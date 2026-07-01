@@ -107,6 +107,24 @@ equivalent:
      --verbose \
      > tmp/generated-model/evaluation-report.json
 
+Package Compact Evidence
+------------------------
+
+When the generated-model artifacts already exist, package a small sanitized summary for downstream
+automation or documentation:
+
+.. code-block:: bash
+
+   modelwright validation evidence \
+     --artifact-dir tmp/generated-model \
+     --output-dir tmp/validation-evidence/generated-model \
+     --json
+
+This writes ``summary.json`` and ``summary.md`` with stage counts, comparison counts, missing-artifact
+information, and conservative evidence/equivalence statuses. It does not copy raw generated source,
+raw output values, workbook contents, or full validation reports. See
+:doc:`validation-evidence` for the exact status rules.
+
 FABLE Workbook Versions
 -----------------------
 

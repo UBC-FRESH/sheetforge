@@ -14,6 +14,11 @@ def test_root_facade_exports_primary_entrypoints() -> None:
     assert "GeneratedExecutionResult" in modelwright.__all__
     assert "evaluate_generated_model" in modelwright.__all__
     assert "ValidationEvaluationResult" in modelwright.__all__
+    assert "validation_evidence_paths" in modelwright.__all__
+    assert "extract_validation_evidence" in modelwright.__all__
+    assert "write_validation_evidence" in modelwright.__all__
+    assert "ValidationEvidencePaths" in modelwright.__all__
+    assert "ValidationEvidenceSummary" in modelwright.__all__
     assert "infer_generated_module_contract" in modelwright.__all__
     assert "GeneratedContractInferenceResult" in modelwright.__all__
     assert "ModelFacade" in modelwright.__all__

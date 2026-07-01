@@ -12,6 +12,11 @@ from typer.main import get_command
 
 from modelwright.conversion import BenchmarkRole, build_conversion_plan
 from modelwright.evaluation import evaluate_generated_model
+from modelwright.evidence import (
+    extract_validation_evidence,
+    validation_evidence_paths,
+    write_validation_evidence,
+)
 from modelwright.execution import execute_generated_model
 from modelwright.extraction import WorkbookRecord, extract_workbook
 from modelwright.formulas import FormulaExpression, build_formula_reference_index, translate_formula_cell
@@ -319,6 +324,78 @@ def validation_evaluate(
     )
 
 
+@validation_app.command("evidence")
+def validation_evidence(
+    evidence_id: str = typer.Option(
+        "generated-model",
+        "--evidence-id",
+        help="Stable identifier for this compact evidence package.",
+    ),
+    artifact_dir: Path | None = typer.Option(
+        None,
+        "--artifact-dir",
+        help="Directory containing generated-model workflow artifacts.",
+    ),
+    output_dir: Path | None = typer.Option(
+        None,
+        "--output-dir",
+        help="Directory where compact summary.json and summary.md should be written.",
+    ),
+    scenario: Path | None = typer.Option(
+        None,
+        "--scenario",
+        exists=True,
+        dir_okay=False,
+        readable=True,
+        help="Optional validation scenario JSON path. Defaults to artifact-dir/validation-scenario.json.",
+    ),
+    require_artifacts: bool = typer.Option(
+        False,
+        "--require-artifacts",
+        help="Fail when any expected artifact is missing instead of writing skipped evidence.",
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit command result as JSON.",
+    ),
+) -> None:
+    """Package compact validation evidence from existing workflow artifacts."""
+
+    try:
+        payload = _validation_evidence_payload(
+            evidence_id=evidence_id,
+            artifact_dir=artifact_dir,
+            output_dir=output_dir,
+            scenario=scenario,
+            require_artifacts=require_artifacts,
+        )
+    except FileNotFoundError as error:
+        error_payload: dict[str, JsonValue] = {"ok": False, "error": str(error)}
+        if json_output:
+            _emit_json(error_payload)
+            raise typer.Exit(1) from error
+        raise typer.BadParameter(str(error)) from error
+
+    if json_output:
+        _emit_json(payload)
+        return
+
+    summary = cast(dict[str, JsonValue], payload["summary"])
+    comparison = cast(dict[str, JsonValue], summary["comparison"])
+    typer.echo("Modelwright validation evidence")
+    typer.echo(f"Evidence status: {summary['evidence_status']}")
+    typer.echo(f"Equivalence status: {summary['equivalence_status']}")
+    typer.echo(f"Comparable outputs: {comparison.get('comparable_output_count')}")
+    typer.echo(f"Matches: {comparison.get('match_count')}")
+    typer.echo(f"Mismatches: {comparison.get('mismatch_count')}")
+    typer.echo(f"Summary JSON: {payload['summary_json_path']}")
+    typer.echo(f"Summary Markdown: {payload['summary_markdown_path']}")
+    missing = cast(list[str], summary.get("missing_artifacts", []))
+    if missing:
+        typer.echo(f"Missing artifacts: {len(missing)}")
+
+
 @conversion_app.command("plan")
 def conversion_plan(
     workbook: Path = typer.Argument(..., exists=True, dir_okay=False, readable=True, help="Source workbook path."),
@@ -516,6 +593,35 @@ def _evaluate_payload(
     )
     progress("evaluate generated model done")
     return result.to_dict()
+
+
+def _validation_evidence_payload(
+    *,
+    evidence_id: str,
+    artifact_dir: Path | None,
+    output_dir: Path | None,
+    scenario: Path | None,
+    require_artifacts: bool,
+) -> dict[str, JsonValue]:
+    paths = validation_evidence_paths(
+        evidence_id=evidence_id,
+        artifact_dir=artifact_dir,
+        output_dir=output_dir,
+        validation_scenario_path=scenario,
+    )
+    summary = extract_validation_evidence(paths, require_artifacts=require_artifacts)
+    written = write_validation_evidence(summary, paths)
+    return {
+        "ok": True,
+        "evidence_id": summary.evidence_id,
+        "evidence_status": summary.evidence_status,
+        "equivalence_status": summary.equivalence_status,
+        "summary_json_path": written["summary_json_path"],
+        "summary_markdown_path": written["summary_markdown_path"],
+        "missing_artifacts": list(summary.missing_artifacts),
+        "comparison": summary.comparison,
+        "summary": summary.to_dict(),
+    }
 
 
 def _conversion_plan_payload(

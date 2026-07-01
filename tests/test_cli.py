@@ -407,6 +407,94 @@ def test_validation_evaluate_command_outputs_evaluation_json(tmp_path: Path) -> 
     assert payload["oracle_validation_report"] is None
 
 
+def test_validation_evidence_help_is_available() -> None:
+    result = runner.invoke(app, ["validation", "evidence", "--help"])
+
+    assert result.exit_code == 0
+    assert "--evidence-id" in result.stdout
+    assert "--require-artifacts" in result.stdout
+
+
+def test_validation_evidence_json_skips_missing_artifacts_by_default(tmp_path: Path) -> None:
+    artifact_dir = tmp_path / "missing-artifacts"
+    output_dir = tmp_path / "evidence"
+
+    result = runner.invoke(
+        app,
+        [
+            "validation",
+            "evidence",
+            "--evidence-id",
+            "empty",
+            "--artifact-dir",
+            str(artifact_dir),
+            "--output-dir",
+            str(output_dir),
+            "--json",
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["ok"] is True
+    assert payload["evidence_status"] == "skipped"
+    assert payload["equivalence_status"] == "incomplete"
+    assert payload["missing_artifacts"]
+    assert (output_dir / "summary.json").exists()
+    assert (output_dir / "summary.md").exists()
+
+
+def test_validation_evidence_require_artifacts_fails(tmp_path: Path) -> None:
+    result = runner.invoke(
+        app,
+        [
+            "validation",
+            "evidence",
+            "--artifact-dir",
+            str(tmp_path / "missing-artifacts"),
+            "--require-artifacts",
+            "--json",
+        ],
+    )
+
+    assert result.exit_code != 0
+    payload = json.loads(result.stdout)
+    assert payload["ok"] is False
+    assert "missing validation evidence artifact" in payload["error"]
+
+
+def test_validation_evidence_uses_custom_artifact_output_and_scenario_paths(tmp_path: Path) -> None:
+    artifact_dir = tmp_path / "artifacts"
+    output_dir = tmp_path / "evidence"
+    scenario_path = tmp_path / "custom-scenario.json"
+    _write_validation_evidence_artifacts(artifact_dir, scenario_path)
+
+    result = runner.invoke(
+        app,
+        [
+            "validation",
+            "evidence",
+            "--evidence-id",
+            "synthetic",
+            "--artifact-dir",
+            str(artifact_dir),
+            "--output-dir",
+            str(output_dir),
+            "--scenario",
+            str(scenario_path),
+            "--json",
+        ],
+    )
+
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["evidence_status"] == "complete"
+    assert payload["equivalence_status"] == "pass"
+    assert payload["comparison"]["comparable_output_count"] == 2
+    assert payload["summary_json_path"] == str(output_dir / "summary.json")
+    assert json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))["evidence_id"] == "synthetic"
+
+
 def test_conversion_plan_command_outputs_plan_json(tmp_path: Path) -> None:
     workbook_path = build_workbook(tmp_path / "synthetic_model.xlsx")
 
@@ -501,3 +589,66 @@ def _synthetic_generation_inputs(tmp_path: Path):
 
 def _write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def _write_validation_evidence_artifacts(artifact_dir: Path, scenario_path: Path) -> None:
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    _write_json(
+        artifact_dir / "inference-result.json",
+        {
+            "inferred": True,
+            "contract": {"input_refs": ["Inputs!B2"], "output_refs": ["Summary!B2", "Summary!B3"], "symbols": {}},
+            "expressions": {"Summary!B2": {}, "Summary!B3": {}},
+            "constants": {"Inputs!B2": 100},
+            "diagnostics": [],
+        },
+    )
+    _write_json(
+        artifact_dir / "generation-result.json",
+        {
+            "generated": True,
+            "contract": {"input_refs": ["Inputs!B2"], "output_refs": ["Summary!B2", "Summary!B3"], "symbols": {}},
+            "source_code": "def calculate(inputs=None):\n    return {}\n",
+            "diagnostics": [],
+        },
+    )
+    _write_json(
+        artifact_dir / "generated-values.json",
+        {
+            "executed": True,
+            "contract": {"output_refs": ["Summary!B2", "Summary!B3"]},
+            "output_values": {"Summary!B2": 70.2, "Summary!B3": "ok"},
+            "diagnostics": [],
+        },
+    )
+    _write_json(
+        scenario_path,
+        {
+            "scenario_id": "baseline",
+            "inputs": [{"cell_ref": "Inputs!B2", "kind": "number", "value": 100}],
+            "outputs": [
+                {"cell_ref": "Summary!B2", "kind": "number"},
+                {"cell_ref": "Summary!B3", "kind": "text"},
+            ],
+        },
+    )
+    _write_json(
+        artifact_dir / "evaluation-report.json",
+        {
+            "scenario_id": "baseline",
+            "generated_execution": {"executed": True, "output_values": {"Summary!B2": 70.2}, "diagnostics": []},
+            "cached_validation_report": {
+                "scenario_id": "baseline",
+                "oracle_backend": "cached_workbook",
+                "status": "pass",
+                "comparisons": [
+                    {"cell_ref": "Summary!B2", "matches": True, "generated": 70.2, "oracle": 70.2},
+                    {"cell_ref": "Summary!B3", "matches": True, "generated": "ok", "oracle": "ok"},
+                ],
+                "mismatches": [],
+                "diagnostics": [],
+            },
+            "oracle_validation_report": None,
+            "diagnostics": [],
+        },
+    )

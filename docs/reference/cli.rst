@@ -75,9 +75,21 @@ Validation Commands
      --verbose \
      > tmp/evaluation-report.json
 
+   modelwright validation evidence \
+     --evidence-id generated-model \
+     --artifact-dir tmp/generated-model \
+     --output-dir tmp/validation-evidence/generated-model \
+     --json
+
 The evaluation command executes the generated Python model, then builds cached-workbook and/or
 oracle-backed validation reports when those inputs are supplied. Verbose progress is written to stderr so
 stdout remains valid JSON for redirected reports.
+
+The evidence command packages compact ``summary.json`` and ``summary.md`` files from existing
+generated-model workflow artifacts. It is extraction-only: it does not rerun generation, execution, or
+validation. Missing artifacts are reported as ``skipped`` by default; use ``--require-artifacts`` to
+make missing evidence fail. See :doc:`../guides/validation-evidence` for the conservative
+``evidence_status`` and ``equivalence_status`` rules.
 
 Conversion Commands
 -------------------
