@@ -1043,6 +1043,94 @@ Release result:
 
 ## Current Next Steps
 
+## Phase 33: FreshForge Provider Pilot For Modelwright Workflows
+
+GitHub parent issue: #205
+
+Active branch: `feature/p33-modelwright-freshforge-provider`.
+
+Status: implemented locally; PR pending.
+
+Goal: add a plan-only FreshForge provider for Modelwright workflow stages so FreshForge can discover,
+validate, inspect, and plan workbook-to-generated-model workflows without executing Modelwright
+commands, reading declared artifacts, or adding a GitHub direct-reference FreshForge dependency to
+published package metadata.
+
+- [x] P33.1 Add FreshForge provider package boundary. Child issue: #206.
+  - Status: complete.
+  - [x] Add `modelwright.freshforge` provider factory module.
+  - [x] Keep FreshForge imports lazy and optional.
+  - [x] Add `freshforge.providers` entry point for Modelwright.
+  - [x] Preserve PyPI-safe package metadata without a GitHub direct-reference FreshForge dependency.
+  - [x] Test provider factory and normal import boundary.
+- [x] P33.2 Add plan-only Modelwright provider node vocabulary. Child issue: #207.
+  - Status: complete.
+  - [x] Define provider id `modelwright`.
+  - [x] Expose plan-only node types for workbook extraction, graphing, contract inference,
+        generation, execution, validation evaluation, and conversion planning.
+  - [x] Validate required inputs, outputs, parameters, and artifacts declared by provider metadata.
+  - [x] Confirm provider metadata serializes deterministically.
+- [x] P33.3 Add public-safe generated-model workflow example. Child issue: #208.
+  - Status: complete.
+  - [x] Add `examples/freshforge/generated_model_workflow.yaml`.
+  - [x] Use public-safe synthetic paths only.
+  - [x] Declare the Modelwright CLI-stage artifact flow without running commands.
+  - [x] Test that the example validates and plans when FreshForge is installed.
+- [x] P33.4 Add docs and tests for provider discovery/planning. Child issue: #209.
+  - Status: complete.
+  - [x] Add Sphinx docs for the Modelwright FreshForge provider.
+  - [x] Link the guide from the docs index and relevant workflow docs.
+  - [x] Document FreshForge planning versus Modelwright CLI execution.
+  - [x] Document why FABLE-specific output-ref discovery belongs in FABLE Pyculator.
+  - [x] Add tests for provider discovery, example planning, metadata, and diagnostics.
+- [ ] P33.5 Verify, PR, and close Phase 33. Child issue: #210.
+  - Status: active.
+  - [x] Run Ruff, pytest, Sphinx docs, docs theme verification, release artifact checks, and
+        `git diff --check`.
+  - [x] Smoke-test FreshForge `providers`, `validate`, `inspect`, and `plan` after installing
+        FreshForge separately.
+  - [x] Update roadmap and changelog evidence.
+  - [ ] Open PR from `feature/p33-modelwright-freshforge-provider` to `main`.
+  - [ ] Merge only after CI passes and close the parent issue after merge.
+
+Acceptance boundary:
+
+- May claim Modelwright exposes a plan-only FreshForge provider for workflow graph validation,
+  inspection, and planning.
+- Must not claim FreshForge executes Modelwright nodes, materializes artifacts, caches stages,
+  checkpoints runs, or replaces Modelwright CLI/API execution.
+- Must keep FABLE-specific output-ref discovery out of Modelwright.
+- Must keep normal `import modelwright` from importing FreshForge eagerly.
+
+Implementation evidence:
+
+- Added `modelwright.freshforge` with a lazy, non-executing provider factory and provider id
+  `modelwright`.
+- Added a PyPI-safe `freshforge.providers` entry point without adding a FreshForge package dependency.
+- Added plan-only node types for extraction, graphing, contract inference, generation, execution,
+  validation evaluation, and conversion planning.
+- Added `examples/freshforge/generated_model_workflow.yaml` as a public-safe plan-only workflow.
+- Added `docs/guides/freshforge-provider-integration.rst`, linked it from the docs index, workflow
+  boundary guide, and API reference.
+- Added `tests/test_freshforge_integration.py` covering metadata, entry-point declaration, import
+  boundary, example planning, and provider diagnostics.
+
+Verification evidence:
+
+- `.venv/bin/python -m ruff check .` passed.
+- `.venv/bin/python -m pytest tests/test_freshforge_integration.py -q` passed with `6` tests after
+  installing FreshForge from `v0.1.0a1`.
+- `.venv/bin/python -m pytest` passed with `179` passed and `1` skipped benchmark.
+- `.venv/bin/sphinx-build -b html docs _build/html -W` passed.
+- `.venv/bin/python scripts/verify_docs_theme.py _build/html` passed.
+- FreshForge smoke checks passed: `freshforge providers --json`, `freshforge validate
+  examples/freshforge/generated_model_workflow.yaml --json`, `freshforge inspect
+  examples/freshforge/generated_model_workflow.yaml --json`, and `freshforge plan
+  examples/freshforge/generated_model_workflow.yaml --json`.
+- `scripts/check_release_artifacts.sh` passed; the clean wheel install imported `modelwright
+  0.1.0a6`, and artifact inspection included `modelwright/freshforge.py` plus entry-point metadata.
+- `git diff --check` passed.
+
 ## Phase 32: FABLE Pyculator Onboarding And Validation Pilot
 
 GitHub parent issue: #191

@@ -76,3 +76,11 @@ which outputs were generated, and which oracle was used for validation.
 ``modelwright model infer-contract`` is therefore a materialization step for an explicit selected-output
 boundary, not a claim that Modelwright can automatically choose the right full-workbook model boundary
 for every spreadsheet.
+
+FreshForge Planning
+-------------------
+
+Modelwright also exposes a plan-only FreshForge provider for declaring these stages as a workflow
+graph. FreshForge can validate, inspect, and plan that graph, but it does not execute Modelwright
+commands or materialize artifacts. See :doc:`freshforge-provider-integration` for the provider
+boundary and example workflow.

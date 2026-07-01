@@ -48,6 +48,9 @@ Changelog = "https://github.com/UBC-FRESH/modelwright/blob/main/CHANGE_LOG.md"
 [project.scripts]
 modelwright = "modelwright.cli:app"
 
+[project.entry-points."freshforge.providers"]
+modelwright = "modelwright.freshforge:provider_factory"
+
 [project.optional-dependencies]
 docs = [
   "sphinx>=7",

@@ -64,6 +64,12 @@ Notebook Helpers
 .. automodule:: modelwright.notebooks
    :members:
 
+FreshForge Provider
+-------------------
+
+.. automodule:: modelwright.freshforge
+   :members:
+
 Validation
 ----------
 
