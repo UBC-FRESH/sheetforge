@@ -1,0 +1,93 @@
+workflow:
+  id: modelwright_generated_model_example
+  name: Modelwright generated-model workflow example
+  description: Plan-only FreshForge graph for a public-safe Modelwright generated-model workflow.
+nodes:
+  - id: extract_workbook
+    provider: modelwright.workbook_extract
+    outputs:
+      workbook_record: extracted_workbook
+    parameters:
+      workbook: examples/synthetic/workbook.xlsx
+    artifacts:
+      workbook_record: tmp/freshforge-demo/workbook-record.json
+  - id: build_graph
+    provider: modelwright.workbook_graph
+    needs:
+      - extract_workbook
+    inputs:
+      workbook_record: extract_workbook.workbook_record
+    outputs:
+      dependency_graph: dependency_graph
+    artifacts:
+      dependency_graph: tmp/freshforge-demo/dependency-graph.json
+  - id: infer_contract
+    provider: modelwright.model_infer_contract
+    needs:
+      - build_graph
+    inputs:
+      workbook_record: extract_workbook.workbook_record
+      dependency_graph: build_graph.dependency_graph
+    outputs:
+      generated_contract: generated_contract
+      formula_expressions: formula_expressions
+      input_constants: input_constants
+    parameters:
+      module_name: generated_demo_model
+    artifacts:
+      output_refs: tmp/freshforge-demo/output_refs.json
+      contract: tmp/freshforge-demo/contract.json
+      expressions: tmp/freshforge-demo/expressions.json
+      constants: tmp/freshforge-demo/constants.json
+      inference_result: tmp/freshforge-demo/inference-result.json
+  - id: generate_model
+    provider: modelwright.model_generate
+    needs:
+      - infer_contract
+    inputs:
+      generated_contract: infer_contract.generated_contract
+      formula_expressions: infer_contract.formula_expressions
+      input_constants: infer_contract.input_constants
+    outputs:
+      generated_model: generated_demo_model
+    artifacts:
+      generated_model: tmp/freshforge-demo/generated_demo_model.py
+      generation_result: tmp/freshforge-demo/generation-result.json
+  - id: execute_model
+    provider: modelwright.model_execute
+    needs:
+      - generate_model
+    inputs:
+      generated_contract: infer_contract.generated_contract
+      generated_model: generate_model.generated_model
+    outputs:
+      generated_values: generated_values
+    artifacts:
+      generated_values: tmp/freshforge-demo/generated-values.json
+  - id: evaluate_model
+    provider: modelwright.validation_evaluate
+    needs:
+      - execute_model
+    inputs:
+      generated_contract: infer_contract.generated_contract
+      generated_model: generate_model.generated_model
+    outputs:
+      validation_report: validation_report
+    parameters:
+      scenario: examples/synthetic/baseline_scenario.json
+    artifacts:
+      scenario: examples/synthetic/baseline_scenario.json
+      evaluation_report: tmp/freshforge-demo/evaluation-report.json
+  - id: summarize_conversion
+    provider: modelwright.conversion_plan
+    needs:
+      - evaluate_model
+    inputs:
+      workbook_record: extract_workbook.workbook_record
+      dependency_graph: build_graph.dependency_graph
+    outputs:
+      conversion_plan: conversion_plan
+    parameters:
+      benchmark_role: synthetic_fixture
+    artifacts:
+      conversion_plan: tmp/freshforge-demo/conversion-plan.json
