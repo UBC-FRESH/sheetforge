@@ -13,6 +13,9 @@ This file records completed project work in chronological order.
 - Added Phase 35 provider diagnostics for empty required output/artifact declarations and
   stage-specific generated-model generation, execution, and validation failures; explicit
   validation failures now fail the FreshForge `validation_evaluate` node.
+- Completed Phase 35 by merging PR #228, verifying PR Test workflow run 28547298026 and PR
+  docs-pages run 28547298025, then confirming post-merge Test run 28547368269 and docs-pages run
+  28547368962 passed and deployed GitHub Pages.
 - Activated Phase 33 as a maintainer-approved parallel FreshForge provider pilot on
   `feature/p33-modelwright-freshforge-provider`, created parent issue #205 and child issues #206
   through #210, and scoped a plan-only Modelwright provider that FreshForge can discover, validate,

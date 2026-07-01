@@ -1050,9 +1050,9 @@ FreshForge serial local runner.
 Phase 32 is complete: `modelwright==0.1.0a7` is published to PyPI and GitHub as the generated-model
 workflow orchestration alpha.
 
-Phase 35 is active on `feature/p35-generated-model-workflow-summaries`: it adds compact
-Modelwright stage summaries and sharper provider diagnostics for FreshForge-executed generated-model
-workflows, using FreshForge Phase 7 namespaces and whole-run summaries where useful.
+Phase 35 is complete on `main`: Modelwright's FreshForge provider now emits compact stage
+summaries and sharper diagnostics for generated-model workflows, using FreshForge Phase 7
+namespaces and whole-run summaries where useful.
 
 ## Phase 33: FreshForge Provider Pilot For Modelwright Workflows
 
@@ -1219,7 +1219,7 @@ GitHub parent issue: #220
 
 Active branch: `feature/p35-generated-model-workflow-summaries`.
 
-Status: active.
+Status: complete.
 
 Goal: improve machine-readable summaries and diagnostics for Modelwright generated-model workflows
 used through FreshForge and downstream tools.
@@ -1237,10 +1237,10 @@ used through FreshForge and downstream tools.
 - [x] P35.4 Update docs, roadmap, changelog, and examples. Child issue: #226.
   - [x] Update FreshForge provider docs with namespace and stage-summary guidance.
   - [x] Update downstream planning note and changelog.
-- [ ] P35.5 Verify, PR, deploy docs, and close phase. Child issue: #227.
+- [x] P35.5 Verify, PR, deploy docs, and close phase. Child issue: #227.
   - [x] Run full local verification.
-  - [ ] Open PR and verify CI/docs.
-  - [ ] Confirm post-merge docs deployment.
+  - [x] Open PR and verify CI/docs.
+  - [x] Confirm post-merge docs deployment.
 
 Dependency note: this phase should consume FreshForge Phase 7 run namespaces/summaries where useful
 and provide the stage-level generated-model summaries needed by FABLE Pyculator Phase 18 output-ref
@@ -1274,6 +1274,14 @@ Local verification:
 - FreshForge smoke checks passed: `freshforge providers --json`, `freshforge validate
   examples/freshforge/generated_model_workflow.yaml --json`, and `freshforge plan
   examples/freshforge/generated_model_workflow.yaml --json`.
+
+Closeout evidence:
+
+- Phase 35 PR #228 merged to `main`.
+- PR Test workflow run 28547298026 passed quality, pytest, and release-artifact jobs.
+- PR docs-pages workflow run 28547298025 passed.
+- Post-merge Test workflow run 28547368269 passed quality, pytest, and release-artifact jobs.
+- Post-merge docs-pages workflow run 28547368962 passed and deployed GitHub Pages.
 
 ## Phase 36: Compact Validation Evidence Extraction For Downstream Automation
 
