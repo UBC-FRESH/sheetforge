@@ -58,6 +58,7 @@ docs = [
 ]
 dev = [
   "build>=1.2",
+  "freshforge>=0.1.0a5,<0.2",
   "formulas",
   "pandas>=2",
   "pytest>=8",
@@ -65,6 +66,9 @@ dev = [
   "sphinx>=7",
   "sphinx-rtd-theme>=2",
   "twine>=5"
+]
+freshforge = [
+  "freshforge>=0.1.0a5,<0.2"
 ]
 notebook = [
   "pandas>=2"
@@ -80,6 +84,7 @@ release = [
   "twine>=5"
 ]
 test = [
+  "freshforge>=0.1.0a5,<0.2",
   "formulas",
   "pandas>=2",
   "pytest>=8"

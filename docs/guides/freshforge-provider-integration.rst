@@ -18,19 +18,24 @@ validation scenario, and artifact policy.
 Install
 -------
 
-FreshForge is currently consumed from its GitHub release rather than as a
-Modelwright package dependency. For development, install Modelwright normally
-and then install FreshForge into the same environment:
+FreshForge is optional. The Modelwright core package does not import or require
+FreshForge, but the ``freshforge`` extra installs the PyPI alpha needed for
+provider discovery, planning, and execution:
 
 .. code-block:: bash
 
-   python -m pip install -e .[dev]
-   python -m pip install "freshforge @ git+https://github.com/UBC-FRESH/freshforge.git@v0.1.0a3"
+   python -m pip install "modelwright[freshforge]"
 
-Modelwright registers a ``freshforge.providers`` entry point, but it does not
-add a GitHub direct-reference dependency in ``pyproject.toml``. This keeps
-Modelwright's published package metadata PyPI-safe while FreshForge is still
-early and moving.
+For source-checkout development, install the development extra from the
+repository root:
+
+.. code-block:: bash
+
+   python -m pip install -e ".[dev]"
+
+Modelwright registers a ``freshforge.providers`` entry point while keeping
+normal ``import modelwright`` FreshForge-free. FreshForge remains alpha
+software, so the optional dependency is constrained to the ``0.1`` alpha line.
 
 Provider Discovery
 ------------------

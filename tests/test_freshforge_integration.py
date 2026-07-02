@@ -127,13 +127,15 @@ def test_provider_metadata_serializes_deterministically() -> None:
     }
 
 
-def test_pyproject_declares_freshforge_entry_point_without_direct_dependency() -> None:
+def test_pyproject_declares_freshforge_entry_point_and_optional_dependency() -> None:
     pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
 
     entry_points = pyproject["project"]["entry-points"]["freshforge.providers"]
     assert entry_points["modelwright"] == "modelwright.freshforge:provider_factory"
     optional = pyproject["project"]["optional-dependencies"]
-    assert "freshforge" not in optional
+    assert optional["freshforge"] == ["freshforge>=0.1.0a5,<0.2"]
+    assert "freshforge>=0.1.0a5,<0.2" in optional["dev"]
+    assert "freshforge>=0.1.0a5,<0.2" in optional["test"]
     assert "freshforge" not in "\n".join(pyproject["project"]["dependencies"])
 
 
