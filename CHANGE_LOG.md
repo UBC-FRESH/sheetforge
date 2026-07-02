@@ -4,6 +4,9 @@ This file records completed project work in chronological order.
 
 ## 2026-07-02
 
+- Updated the optional FreshForge integration dependency now that FreshForge is published on PyPI:
+  `modelwright[freshforge]`, `dev`, and `test` install `freshforge>=0.1.0a5,<0.2` while the core
+  Modelwright package remains FreshForge-free.
 - Released Modelwright `v0.1.0a8` after PR #240 merged to `main`, post-merge Test workflow
   #28559618570 passed, post-merge Docs Pages workflow #28559618583 passed, annotated tag
   `v0.1.0a8` triggered Release workflow #28559646142, and trusted publishing uploaded
