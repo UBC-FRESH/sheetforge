@@ -2,6 +2,18 @@
 
 This file records completed project work in chronological order.
 
+## 2026-07-02
+
+- Released Modelwright `v0.1.0a8` after PR #240 merged to `main`, post-merge Test workflow
+  #28559618570 passed, post-merge Docs Pages workflow #28559618583 passed, annotated tag
+  `v0.1.0a8` triggered Release workflow #28559646142, and trusted publishing uploaded
+  `modelwright==0.1.0a8` to PyPI.
+- Created the GitHub prerelease for `v0.1.0a8` and verified PyPI listed both wheel and sdist
+  artifacts.
+- Smoke-tested a clean PyPI install of `modelwright[notebook]==0.1.0a8`, including import version,
+  `modelwright --help`, `modelwright model infer-contract --help`, and
+  `modelwright validation evidence --help`.
+
 ## 2026-06-22
 
 - Activated Phase 37 on `feature/v0.1.0a8-release`, created parent issue #235 and child issues #236

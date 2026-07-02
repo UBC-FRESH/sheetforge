@@ -1369,9 +1369,10 @@ Local verification:
 
 GitHub parent issue: #235
 
-Active branch: `feature/v0.1.0a8-release`.
+Release branch: `feature/v0.1.0a8-release`.
 
-Status: active.
+Status: complete after PR #240, tag `v0.1.0a8`, PyPI publication, GitHub prerelease, and
+clean PyPI install smoke tests.
 
 Goal: publish `modelwright==0.1.0a8` to GitHub and PyPI as the generated-model evidence workflow
 alpha release.
@@ -1385,11 +1386,11 @@ alpha release.
 - [x] P37.3 Verify Modelwright release artifacts and smoke tests. Child issue: #238.
   - [x] Run local quality, tests, docs, docs theme, and release artifact checks.
   - [x] Smoke-test CLI and evidence commands.
-- [ ] P37.4 Tag, publish PyPI/GitHub release, and close phase. Child issue: #239.
-  - [ ] Open and merge release PR after CI passes.
-  - [ ] Create annotated tag `v0.1.0a8`.
-  - [ ] Publish to PyPI through trusted publishing.
-  - [ ] Create GitHub prerelease and verify clean PyPI install.
+- [x] P37.4 Tag, publish PyPI/GitHub release, and close phase. Child issue: #239.
+  - [x] Open and merge release PR after CI passes.
+  - [x] Create annotated tag `v0.1.0a8`.
+  - [x] Publish to PyPI through trusted publishing.
+  - [x] Create GitHub prerelease and verify clean PyPI install.
 
 Acceptance boundary:
 
@@ -1412,6 +1413,19 @@ Local verification:
 - After installing FreshForge `v0.1.0a3`, `.venv/bin/freshforge providers --json` reported the
   Modelwright provider version as `0.1.0a8`.
 - `git diff --check` passed.
+
+Release evidence:
+
+- PR #240 merged to `main`.
+- Post-merge Test workflow run #28559618570 passed.
+- Post-merge Docs Pages workflow run #28559618583 passed and deployed.
+- Annotated tag `v0.1.0a8` was pushed.
+- Release workflow run #28559646142 built artifacts and published `modelwright==0.1.0a8` to PyPI.
+- PyPI listed both `modelwright-0.1.0a8-py3-none-any.whl` and `modelwright-0.1.0a8.tar.gz`.
+- GitHub prerelease `v0.1.0a8` was created.
+- Clean PyPI install of `modelwright[notebook]==0.1.0a8` imported version `0.1.0a8` and
+  smoke-tested `modelwright --help`, `modelwright model infer-contract --help`, and
+  `modelwright validation evidence --help`.
 
 ## Phase 32: FABLE Pyculator Onboarding And Validation Pilot
 
